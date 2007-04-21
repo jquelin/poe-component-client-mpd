@@ -7,7 +7,7 @@ use strict;
 use lib 'lib';
 use POE qw[ Component::Client::MPD ];
 
-my $id = POE::Component::Client::MPD->spawn;
+POE::Component::Client::MPD->spawn( {alias => 'mpd'} );
 POE::Session->create(
     inline_states => {
         _start     => \&start,
@@ -23,7 +23,7 @@ exit;
 sub start {
     my $k = $_[KERNEL];
     $k->alias_set('client'); # increment refcount
-    $k->post( $id, 'coll:all_files' );
+    $k->post( 'mpd', 'coll:all_files' );
 }
 
 sub result {
