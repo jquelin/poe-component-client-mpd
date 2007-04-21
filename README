@@ -1,0 +1,70 @@
+POE::Component::Client::MPD
+===========================
+
+POE::Component::Client::MPD is a perl module for developing MPD (Music Player
+Daemon) clients (and other scripts that control the MPD server) based on the
+POE framework.
+
+Read more about MPD on http://www.musicpd.org/
+Read more about POE on http://poe.perl.org/
+
+
+
+INSTALLATION
+============
+
+To install this module, run the following commands:
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+
+Or, using Module::Builder:
+
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
+
+
+
+SUPPORT AND DOCUMENTATION
+=========================
+
+After installing, you can find documentation for this module with the perldoc
+command.
+
+    perldoc POE::Component::Client::MPD
+
+You can also look for information at:
+  . Search CPAN
+        http://search.cpan.org/dist/POE-Component-Client-MPD
+  . CPAN Request Tracker:
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD
+  . AnnoCPAN, annotated CPAN documentation:
+        http://annocpan.org/dist/POE-Component-Client-MPD
+  . CPAN Ratings:
+        http://cpanratings.perl.org/d/POE-Component-Client-MPD
+
+
+
+COPYRIGHT AND LICENCE
+=====================
+
+Copyright (C) 2007 Jerome Quelin
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA

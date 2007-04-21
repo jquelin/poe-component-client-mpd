@@ -1,0 +1,39 @@
+Poe::Component::Client::MPD is a poe component to interact with mpd (Music
+Player Daemon) servers.
+
+it can be created with the following:
+    POE::Component::Client::MPD->spawn;
+
+
+upon creation, it will spawn two things:
+ - a poe::session that will act as a dispatcher for your client
+ - a private poe::component::client::tcp that will handle the communication
+   with the mpd server
+
+you aren't allowed, under any circumstance, to try to communicate with the
+private component.
+
+
+The poe session is acting as a dispatcher. it will receive all the messages
+and will reroute them to:
+ - either a pococ-mpd-collection object,
+ - or a pococ-mpd-playlist object
+
+
+
+regarding naming scheme:
+ - since there's no public subs / methods to be called, all subs will begin
+   with an underscore ('_'). this will have the added benefit that tests for
+   pod coverage will be happy. ;)
+ - events that are internal to pococ-mpd (ie, sent from within the same poco)
+   are referred to as private.
+        event:   _<event_name>
+        hanlder: _onpriv_<event_name>()
+ - events that travel between pococ-mpd and pococ-tcp are refered to as
+   protected.
+        event:   _<event_name>
+        hanlder: _onprot_<event_name>()
+ - events that form the api of pococ-mpd are so-called public events.
+        even:    <event_name>
+        handler: _onpub_<event_name>()
+
