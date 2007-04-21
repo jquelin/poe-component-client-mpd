@@ -169,12 +169,42 @@ Commands are then sent to the server as the class's methods are called.
 
 
 
-=head1 FUNCTIONS
+=head1 PUBLIC PACKAGE METHODS
 
-=head2 function1
+=head2 spawn( \%params )
+
+This method will create a POE session responsible for communicating with mpd.
+It will return the poe id of the session newly created.
+
+You can tune the pococ by passing some arguments as a hash reference, where
+the hash keys are:
+
+=over 4
+
+=item * host
+
+The hostname of the mpd server. If none given, defaults to C<MPD_HOST>
+environment variable. If this var isn't set, defaults to C<localhost>.
 
 
-=head2 function2
+=item * port
+
+The port of the mpd server. If none given, defaults to C<MPD_PORT>
+environment variable. If this var isn't set, defaults to C<6600>.
+
+
+=item * password
+
+The password to sent to mpd to authenticate the client. If none given, defaults
+to C<MPD_PASSWORD> environment variable. If this var isn't set, defaults to C<>.
+
+
+=item * alias
+
+An optional string to alias the newly created POE session.
+
+
+=back
 
 
 =head1 BUGS
