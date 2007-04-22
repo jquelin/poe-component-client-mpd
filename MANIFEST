@@ -1,9 +1,11 @@
 bin/client.pl
+Build.PL
 Changes
 DESIGN
 lib/POE/Component/Client/MPD.pm
 lib/POE/Component/Client/MPD/Collection.pm
 lib/POE/Component/Client/MPD/Connection.pm
+lib/POE/Component/Client/MPD/Playlist.pm
 Makefile.PL
 MANIFEST
 META.yml
