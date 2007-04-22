@@ -34,7 +34,7 @@ sub spawn {
     my ($type, $args) = @_;
 
     my $collection = POE::Component::Client::MPD::Collection->new;
-    #my $playlist   = POE::Component::Client::MPD::Playlist->new;
+    my $playlist   = POE::Component::Client::MPD::Playlist->new;
 
     my $session = POE::Session->create(
         args          => [ $args ],
@@ -50,6 +50,9 @@ sub spawn {
 #                 ],
             $collection => {
                 'coll:all_files' => '_all_files',
+            },
+            $playlist   => {
+                'pl:add'         => '_onpub_add',
             },
         ],
     );
