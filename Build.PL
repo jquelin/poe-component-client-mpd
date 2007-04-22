@@ -13,13 +13,12 @@ my $builder = Module::Build->new (
                         '*~', '*/*~', '*/*/*~', '*/*/*/*~', '*/*/*/*/*~' ],
     script_files => [ ],
     build_requires => {
-        'POE'           => 0,
-        'Test::More'    => 0,
-        'perl'          => '5.8.0',
+        'Test::More'  => 0,
     },
     requires => {
-        'POE'             => 0,
-        'perl'            => '5.8.0',
+        'Audio::MPD' => '0.14.0',
+        'POE'        => 0,
+        'perl'       => '5.8.0',
     },
 );
 
