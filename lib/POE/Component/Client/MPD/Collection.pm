@@ -35,7 +35,7 @@ sub _all_files {
     my $args = {
         from     => $_[SENDER]->ID,
         state    => $_[STATE],
-        commands => [ 'lsinfo' ], #'list filename' ],
+        commands => [ 'list filename' ],
     };
     $kernel->yield( '_send', $args );
 }
