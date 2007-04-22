@@ -23,6 +23,7 @@ use warnings;
 use POE qw[ Component::Client::TCP ];
 use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
+use POE::Component::Client::MPD::Playlist;
 use base qw[ Class::Accessor::Fast ];
 __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
 
