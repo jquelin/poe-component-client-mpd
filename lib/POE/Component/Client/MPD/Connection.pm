@@ -41,7 +41,7 @@ sub spawn {
         ServerInput  => \&_onpriv_ServerInput,
 
         InlineStates => {
-            send => \&_onpub_send,        # send data
+            send => \&_onprot_send,        # send data
         }
     );
 
@@ -77,7 +77,7 @@ sub _onpriv_ServerInput {
     push @{ $_[HEAP]{incoming} }, $input;
 }
 
-sub _onpub_send {
+sub _onprot_send {
     $_[HEAP]->{server}->put(@_[ARG0 .. $#_]);
 }
 
