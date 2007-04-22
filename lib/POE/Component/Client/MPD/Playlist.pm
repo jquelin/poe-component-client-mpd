@@ -27,7 +27,7 @@ sub new { return bless {}, shift; }
 
 
 #
-# pl:add $path, $path, ...
+# pl:add( $path, $path, ... )
 #
 # Add the songs identified by $path (relative to MPD's music directory) to
 # the current playlist.
@@ -52,7 +52,7 @@ sub _onpub_add {
 
 
 #
-# pl:delete $number, $number, ...
+# pl:delete( $number, $number, ... )
 #
 # Remove song $number (starting from 0) from the current playlist.
 # No return event.

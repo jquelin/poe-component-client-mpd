@@ -25,10 +25,12 @@ use POE;
 
 sub new { return bless {}, shift; }
 
+
 #
-# my @pathes = $collection->all_pathes;
+# pl:all_files()
 #
-# Return the list of all filenames (strings) currently known by mpd.
+# Return a mpd_result event with the list of all filenames (strings)
+# currently known by mpd.
 #
 sub _onpub_all_files {
     my ($kernel) = $_[KERNEL];
