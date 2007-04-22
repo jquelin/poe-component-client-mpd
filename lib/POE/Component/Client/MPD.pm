@@ -46,8 +46,8 @@ sub spawn {
         },
         object_states => [
 #             $self => [
-#                 '_start', '_connected',
-#                 '_got_data', '_got_mpd_version',
+#                 '_connected',
+#                 '_got_mpd_version',
 #                 ],
             $collection => {
                 'coll:all_files' => '_onpub_all_files',
