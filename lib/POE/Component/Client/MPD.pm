@@ -54,6 +54,7 @@ sub spawn {
             },
             $playlist   => {
                 'pl:add'         => '_onpub_add',
+                'pl:delete'      => '_onpub_delete',
             },
         ],
     );

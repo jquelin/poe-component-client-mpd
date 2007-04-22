@@ -30,7 +30,8 @@ sub new { return bless {}, shift; }
 # pl:add $path, $path, ...
 #
 # Add the songs identified by $path (relative to MPD's music directory) to
-# the current playlist. No return value.
+# the current playlist.
+# No return event.
 #
 sub _onpub_add {
     my @pathes   = @_[ARG0 .. $#_];    # args of the poe event
@@ -49,6 +50,29 @@ sub _onpub_add {
     $_[KERNEL]->yield( '_send', $args );
 }
 
+
+#
+# pl:delete $number, $number, ...
+#
+# Remove song $number (starting from 0) from the current playlist.
+# No return event.
+#
+sub _onpub_delete {
+    my @numbers  = @_[ARG0 .. $#_];    # args of the poe event
+    my @commands = (                   # build the commands
+        'command_list_begin',
+        map( qq[delete $_], reverse sort {$a<=>$b} @numbers ),
+        'command_list_end',
+    );
+
+    # send the commands to mpd.
+    my $args = {
+        from     => $_[SENDER]->ID,
+        state    => $_[STATE],
+        commands => \@commands
+    };
+    $_[KERNEL]->yield( '_send', $args );
+}
 
 
 1;
