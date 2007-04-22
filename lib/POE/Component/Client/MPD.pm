@@ -49,7 +49,7 @@ sub spawn {
 #                 '_got_data', '_got_mpd_version',
 #                 ],
             $collection => {
-                'coll:all_files' => '_all_files',
+                'coll:all_files' => '_onpub_all_files',
             },
             $playlist   => {
                 'pl:add'         => '_onpub_add',

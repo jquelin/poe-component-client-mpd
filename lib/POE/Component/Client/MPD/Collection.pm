@@ -30,7 +30,7 @@ sub new { return bless {}, shift; }
 #
 # Return the list of all filenames (strings) currently known by mpd.
 #
-sub _all_files {
+sub _onpub_all_files {
     my ($kernel) = $_[KERNEL];
     my $args = {
         from     => $_[SENDER]->ID,
