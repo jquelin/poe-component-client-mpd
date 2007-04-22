@@ -98,11 +98,6 @@ sub _connected {
     # send password information
 }
 
-sub _got_mpd_version {
-    my ($self,$vers) = @_[OBJECT, ARG0];
-    $self->_version($vers);
-}
-
 =end FIXME
 
 =cut
