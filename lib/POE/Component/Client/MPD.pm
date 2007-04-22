@@ -78,7 +78,7 @@ sub _onpriv_start {
     );
 
     # set an alias (for easier communication) if requested.
-    $_[KERNEL]->alias_set( $params{alias} ) if exists $params{alias};
+    $_[KERNEL]->alias_set(delete $params{alias}) if exists $params{alias};
 
     $h->{password} = delete $params{password};
     $h->{_socket}  = POE::Component::Client::MPD::Connection->spawn(\%params);
