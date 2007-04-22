@@ -40,9 +40,10 @@ sub spawn {
     my $session = POE::Session->create(
         args          => [ $args ],
         inline_states => {
-            '_start'    => \&_onpriv_start,
-            '_send'     => \&_onpriv_send,
-            '_got_data' => \&_onprot_got_data,
+            '_start'           => \&_onpriv_start,
+            '_send'            => \&_onpriv_send,
+            '_got_data'        => \&_onprot_got_data,
+            '_got_mpd_version' => \&_onprot_got_mpd_version,
         },
         object_states => [
 #             $self => [
@@ -116,6 +117,18 @@ sub _onprot_got_data {
     $_[KERNEL]->post( $args->{from}, 'mpd_result', $args );
 }
 
+
+#
+# _got_mpd_version( $vers )
+#
+# Event sent during connection, when mpd server sends its version.
+# Store it for later usage if needed.
+#
+sub _onprot_got_mpd_version {
+    $_[HEAP]->{version} = $_[ARG0];
+}
+
+
 #
 # {
 #   from    => $id,
@@ -131,9 +144,6 @@ sub _onpriv_send {
     push @{ $h->{fifo} }, $args;
     $k->post( $h->{_socket}, 'send', @{ $args->{commands} } );
 }
-
-
-
 
 
 1;
