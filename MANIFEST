@@ -1,6 +1,7 @@
 bin/client.pl
 Build.PL
 Changes
+COPYING
 DESIGN
 lib/POE/Component/Client/MPD.pm
 lib/POE/Component/Client/MPD/Collection.pm
