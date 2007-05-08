@@ -5,12 +5,14 @@ DESIGN
 lib/POE/Component/Client/MPD.pm
 lib/POE/Component/Client/MPD/Collection.pm
 lib/POE/Component/Client/MPD/Connection.pm
+lib/POE/Component/Client/MPD/Item.pm
+lib/POE/Component/Client/MPD/Item/Directory.pm
+lib/POE/Component/Client/MPD/Item/Song.pm
 lib/POE/Component/Client/MPD/Playlist.pm
 Makefile.PL
 MANIFEST
 META.yml
 README
 t/00-load.t
-t/boilerplate.t
-t/pod-coverage.t
-t/pod.t
+t/01-pod.t
+t/02-pod-coverage.t
