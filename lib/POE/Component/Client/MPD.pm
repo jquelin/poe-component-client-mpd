@@ -20,7 +20,7 @@ package POE::Component::Client::MPD;
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::TCP ];
+use POE;
 use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Playlist;
