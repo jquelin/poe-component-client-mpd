@@ -16,7 +16,6 @@ my $builder = Module::Build->new (
         'Test::More'  => 0,
     },
     requires => {
-        'Audio::MPD' => '0.14.0',
         'POE'        => 0,
         'perl'       => '5.8.0',
     },
