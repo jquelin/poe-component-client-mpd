@@ -1,0 +1,10 @@
+Revision history for POE-Component-Client-MPD
+
+
+0.0.1
+ - first version based on Audio::MPD, ported to poe.
+ - connection to mpd done by pococ-tcp.
+ - first commands implemented: coll:all_files, pl:add, pl:delete.
+ - test client available: bin/client.pl
+ - almost no tests. :-(
+
