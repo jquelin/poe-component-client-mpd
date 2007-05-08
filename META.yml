@@ -1,11 +1,35 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         POE-Component-Client-MPD
-version:      0.0.1
-version_from: lib/POE/Component/Client/MPD.pm
-installdirs:  site
+---
+name: POE-Component-Client-MPD
+version: 0.0.1
+author:
+  - 'Jerome Quelin <jquelin@cpan.org>'
+abstract: a full-blown mpd client library
+license: gpl
+resources:
+  license: http://www.opensource.org/licenses/gpl-license.php
 requires:
-    Test::More:                    0
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30_01
+  Class::Accessor: 0
+  POE: 0
+  perl: 5.8.0
+build_requires:
+  Test::More: 0
+provides:
+  POE::Component::Client::MPD:
+    file: lib/POE/Component/Client/MPD.pm
+    version: 0.0.1
+  POE::Component::Client::MPD::Collection:
+    file: lib/POE/Component/Client/MPD/Collection.pm
+  POE::Component::Client::MPD::Connection:
+    file: lib/POE/Component/Client/MPD/Connection.pm
+  POE::Component::Client::MPD::Item:
+    file: lib/POE/Component/Client/MPD/Item.pm
+  POE::Component::Client::MPD::Item::Directory:
+    file: lib/POE/Component/Client/MPD/Item/Directory.pm
+  POE::Component::Client::MPD::Item::Song:
+    file: lib/POE/Component/Client/MPD/Item/Song.pm
+  POE::Component::Client::MPD::Playlist:
+    file: lib/POE/Component/Client/MPD/Playlist.pm
+generated_by: Module::Build version 0.2806
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
