@@ -16,8 +16,9 @@ my $builder = Module::Build->new (
         'Test::More'  => 0,
     },
     requires => {
-        'POE'        => 0,
-        'perl'       => '5.8.0',
+        'Class::Accessor' => 0,
+        'POE'             => 0,
+        'perl'            => '5.8.0',
     },
 );
 

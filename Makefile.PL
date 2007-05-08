@@ -13,8 +13,9 @@ WriteMakefile(
     ABSTRACT_FROM       => 'lib/POE/Component/Client/MPD.pm',
     PL_FILES            => {},
     PREREQ_PM => {
-		'POE'        => 0,
-        'Test::More' => 0,
+		'Class::Accessor' => 0,
+		'POE'             => 0,
+        'Test::More'      => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => [

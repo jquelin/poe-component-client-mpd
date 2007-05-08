@@ -21,9 +21,7 @@ use strict;
 use warnings;
 
 use POE;
-
-
-sub new { return bless {}, shift; }
+use base qw[ Class::Accessor::Fast ];
 
 
 #
