@@ -20,7 +20,7 @@ package POE::Component::Client::MPD::Connection;
 use strict;
 use warnings;
 
-use POE;
+use POE qw[ Component::Client::TCP ];
 
 
 sub spawn {
@@ -93,6 +93,36 @@ POE::Component::Client::MPD::Connection - module handling the connection
 
 
 =head1 DESCRIPTION
+
+This module will spawn a poe session responsible for low-level communication
+with mpd. It is written as a pococ-tcp, which is taking care of everything
+needed.
+
+
+=head1 PUBLIC PACKAGE METHODS
+
+=head2 spawn( \%params )
+
+This method will create a POE::Component::TCP session responsible for low-level
+communication with mpd.
+
+It will return the poe id of the session newly created.
+
+You should provide some arguments as a hash reference, where the hash keys are:
+
+=over 4
+
+=item * host
+
+The hostname of the mpd server.
+
+
+=item * port
+
+The port of the mpd server.
+
+
+=back
 
 
 =head1 SEE ALSO
