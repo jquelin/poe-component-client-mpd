@@ -15,6 +15,7 @@ WriteMakefile(
     PREREQ_PM => {
 		'Class::Accessor' => 0,
 		'POE'             => 0,
+		'Readonly'        => 0,
         'Test::More'      => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
