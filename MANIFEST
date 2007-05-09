@@ -10,6 +10,7 @@ lib/POE/Component/Client/MPD/Item.pm
 lib/POE/Component/Client/MPD/Item/Directory.pm
 lib/POE/Component/Client/MPD/Item/Song.pm
 lib/POE/Component/Client/MPD/Playlist.pm
+lib/POE/Component/Client/MPD/Test.pm
 Makefile.PL
 MANIFEST
 META.yml
@@ -18,3 +19,9 @@ t/00-load.t
 t/01-pod.t
 t/02-pod-coverage.t
 t/10-item.t
+t/mpd-test/mpd.conf.template
+t/mpd-test/music/dir1/title-artist-album.ogg
+t/mpd-test/music/dir1/title-artist.ogg
+t/mpd-test/music/dir2/album.ogg
+t/mpd-test/music/title.ogg
+t/mpd-test/playlists/test.m3u
