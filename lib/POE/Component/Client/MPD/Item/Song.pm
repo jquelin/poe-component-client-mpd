@@ -122,7 +122,7 @@ POE::Component::Client::MPD development takes place on
 subversion repository is located at L<https://svn.musicpd.org>.
 
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 Jerome Quelin <jquelin@cpan.org>
 
