@@ -1,5 +1,8 @@
 Revision history for POE-Component-Client-MPD
 
+0.0.2 Wed May  9 18:14:12 CEST 2007
+ - missing prereq Readonly
+ - tests for pococm-item
 
 0.0.1 Tue May  8 18:00:57 CEST 2007
  - first version based on Audio::MPD, ported to poe.
