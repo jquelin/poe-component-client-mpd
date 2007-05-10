@@ -122,7 +122,7 @@ sub _onprot_got_data {
     my ($h, $data) = @_[HEAP, ARG0];
     my $args = shift @{ $h->{fifo} };
     $args->{data} = $data;
-    print "mpd got data for " . $args->{from} . "\n";
+    #print "mpd got data for " . $args->{from} . "\n";
     $_[KERNEL]->post( $args->{from}, 'mpd_result', $args );
 }
 
