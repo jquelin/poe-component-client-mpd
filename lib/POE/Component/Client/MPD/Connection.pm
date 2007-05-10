@@ -21,8 +21,26 @@ use strict;
 use warnings;
 
 use POE qw[ Component::Client::TCP ];
+use Readonly;
 
 
+Readonly my $IGNORE    => 0;
+Readonly my $RECONNECT => 1;
+
+
+#
+# my $id = POE::Component::Client::MPD::Connection->spawn( \%params )
+#
+# This method will create a POE::Component::TCP session responsible for
+# low-level communication with mpd. It will return the poe id of the
+# session newly created.
+#
+# Arguments are passed as a hash reference, with the keys:
+#   - host: hostname of the mpd server.
+#   - port: port of the mpd server.
+#
+# Those args are not supposed to be empty - ie, there's no defaut.
+#
 sub spawn {
     my ($type, $args) = @_;
 
@@ -41,15 +59,29 @@ sub spawn {
         ServerInput  => \&_onpriv_ServerInput,
 
         InlineStates => {
-            send => \&_onprot_send,        # send data
+            send       => \&_onprot_send,         # send data
+            disconnect => \&_onprot_disconnect,   # force quit
         }
     );
 
     return $id;
 }
 
+
+#
+# event: disconnect()
+#
+# Request the pococm-connection to be shutdown. No argument.
+#
+sub _onprot_disconnect {
+    $_[HEAP]->{on_disconnect} = $IGNORE; # no more auto-reconnect.
+    $_[KERNEL]->yield( 'shutdown' );     # shutdown socket.
+}
+
+
 sub _onpriv_Started {
-    $_[HEAP]{mpdhub} = $_[ARG0];
+    $_[HEAP]{mpdhub}        = $_[ARG0];
+    $_[HEAP]{on_disconnect} = $RECONNECT;
 }
 sub _onpriv_Connected {
     my ($h) = $_[HEAP];
@@ -58,6 +90,7 @@ sub _onpriv_Connected {
 }
 
 sub _onpriv_Disconnected {
+    return if $_[HEAP]->{on_disconnect} != $RECONNECT;
     $_[KERNEL]->yield('reconnect'); # auto-reconnect
 }
 
@@ -89,7 +122,7 @@ __END__
 
 =head1 NAME
 
-POE::Component::Client::MPD::Connection - module handling the connection
+POCOCM::Connection - module handling the tcp connection with mpd
 
 
 =head1 DESCRIPTION
@@ -97,6 +130,9 @@ POE::Component::Client::MPD::Connection - module handling the connection
 This module will spawn a poe session responsible for low-level communication
 with mpd. It is written as a pococ-tcp, which is taking care of everything
 needed.
+
+Note that you're B<not> supposed to use this class directly: it's one of the
+helper class for POCOCM.
 
 
 =head1 PUBLIC PACKAGE METHODS
@@ -123,6 +159,21 @@ The port of the mpd server.
 
 
 =back
+
+
+Those args are not supposed to be empty - ie, there's no defaut.
+
+
+=head1 PROTECTED EVENTS ACCEPTED
+
+The following events are accepted from outside this class - but of course
+restricted to POCOCM.
+
+
+=head2 disconnect()
+
+Request the pococm-connection to be shutdown. No argument.
+
 
 
 =head1 SEE ALSO
