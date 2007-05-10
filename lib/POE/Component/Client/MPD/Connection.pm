@@ -140,18 +140,30 @@ sub _onpriv_Disconnected {
 # transmitted given as param.
 #
 sub _onpriv_ServerInput {
-    my $input = $_[ARG0];
-    my ($k,$h) = @_[KERNEL,HEAP];
+    my ($k, $h, $input) = @_[KERNEL,HEAP, ARG0];
+    my $session = $h->{session};
 
     if ( $input eq 'OK' ) {
-        $_[KERNEL]->post($h->{session}, '_got_data', $_[HEAP]->{incoming});
-        $_[HEAP]->{incoming} = [];
+        # data flow finished: request treated.
+        $k->post($session, '_got_data', $h->{incoming});  # signal poe session
+        $h->{incoming} = [];                              # reset incoming data
         return;
     }
-    return $k->post($h->{session}, '_got_mpd_version', $1) if $input =~ /^OK MPD (.*)$/;
+
+    if ( $input =~ /^OK MPD (.*)$/ ) {
+        # only received just after the connection.
+        $k->post($session, '_got_mpd_version', $1);
+        return;
+    }
+
+
     if ( $input =~ /^ACK/ ) {
+        # error handling
+        # FIXME: implement
         return;
     }
+
+    # regular data, to be cooked (if needed) and stored.
     push @{ $_[HEAP]{incoming} }, $input;
 }
 
