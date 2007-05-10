@@ -28,7 +28,7 @@ use base qw[ Class::Accessor::Fast ];
 __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
 
 
-our $VERSION = '0.0.3';
+our $VERSION = '0.1.0';
 
 
 sub spawn {
@@ -131,7 +131,8 @@ sub _onprot_got_data {
 # Store it for later usage if needed.
 #
 sub _onprot_got_mpd_version {
-    $_[HEAP]->{version} = $_[ARG0]->answer->[0];
+    # FIXME
+    #$_[HEAP]->{version} = $_[ARG0]->answer->[0];
 }
 
 

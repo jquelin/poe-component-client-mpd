@@ -1,5 +1,22 @@
 Revision history for POE-Component-Client-MPD
 
+High-level changelog
+====================
+
+0.1.x  introduction of pococm-request
+0.0.x  imported stuff from audio::mpd + porting to poe
+
+
+Low-level changelog
+===================
+
+
+0.1.0 Thu May 10 20:53:30 CEST 2007
+ - new helper class: pococm-request
+ - migrated api to use it to pass data around
+
+**
+
 0.0.3 Thu May 10 19:11:56 CEST 2007
  - added test framework taken from audio::mpd
  - updated this framework to be poe-aware
