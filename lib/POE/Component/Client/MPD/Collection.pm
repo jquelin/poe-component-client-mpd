@@ -25,7 +25,7 @@ use base qw[ Class::Accessor::Fast ];
 
 
 #
-# pl:all_files()
+# event: pl:all_files()
 #
 # Return a mpd_result event with the list of all filenames (strings)
 # currently known by mpd.

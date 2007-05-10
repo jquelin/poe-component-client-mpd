@@ -25,7 +25,7 @@ use base qw[ Class::Accessor::Fast ];
 
 
 #
-# pl:add( $path, $path, ... )
+# event: pl:add( $path, $path, ... )
 #
 # Add the songs identified by $path (relative to MPD's music directory) to
 # the current playlist.
@@ -50,7 +50,7 @@ sub _onpub_add {
 
 
 #
-# pl:delete( $number, $number, ... )
+# event: pl:delete( $number, $number, ... )
 #
 # Remove song $number (starting from 0) from the current playlist.
 # No return event.
