@@ -38,8 +38,10 @@ Readonly my $RECONNECT => 1;
 # Arguments are passed as a hash reference, with the keys:
 #   - host: hostname of the mpd server.
 #   - port: port of the mpd server.
+#   - id:   poe session id of the peer to dialog with
 #
-# Those args are not supposed to be empty - ie, there's no defaut.
+# Those args are not supposed to be empty - ie, there's no defaut, and you
+# will get an error if you don't follow this requirement! :-)
 #
 sub spawn {
     my ($type, $args) = @_;
@@ -51,7 +53,7 @@ sub spawn {
         Filter        => 'POE::Filter::Line',
         Args          => [ $args->{id} ],
 
-        ConnectError => sub { }, # quiet errors
+        ConnectError => sub { }, # quiet errors - FIXME: implement!
         ServerError  => sub { }, # quiet errors
         Started      => \&_onpriv_Started,
         Connected    => \&_onpriv_Connected,
@@ -68,6 +70,9 @@ sub spawn {
 }
 
 
+#--
+# protected events
+
 #
 # event: disconnect()
 #
@@ -79,41 +84,76 @@ sub _onprot_disconnect {
 }
 
 
-sub _onpriv_Started {
-    $_[HEAP]{mpdhub}        = $_[ARG0];
-    $_[HEAP]{on_disconnect} = $RECONNECT;
-}
-sub _onpriv_Connected {
-    my ($h) = $_[HEAP];
-    $h->{incoming} = [];
-    $_[KERNEL]->post( $h->{mpdhub}, '_connected' );
+#
+# event: send( @data )
+#
+# Request pococm-conn to send the @data over the wires. Note that those
+# data should *not* be newline terminated.
+#
+sub _onprot_send {
+    # $_[HEAP]->{server} is a reserved slot of pococ-tcp.
+    $_[HEAP]->{server}->put( @_[ARG0 .. $#_] );
 }
 
+
+#--
+# private events
+
+#
+# event: Started( $id )
+#
+# Called whenever the session is started, but before the tcp connection is
+# established. Receives the session $id of the poe-session that will be our
+# peer during the life of this session.
+#
+sub _onpriv_Started {
+    $_[HEAP]{session}     = $_[ARG0];       # poe-session peer
+    $_[HEAP]{on_disconnect} = $RECONNECT;   # disconnect policy
+}
+
+
+#
+# event: Connected()
+#
+# Called whenever the tcp connection is established.
+#
+sub _onpriv_Connected {
+    $_[HEAP]->{incoming} = [];   # reset incoming data
+}
+
+
+#
+# event: Disconnected()
+#
+# Called whenever the tcp connection is broken / finished.
+#
 sub _onpriv_Disconnected {
     return if $_[HEAP]->{on_disconnect} != $RECONNECT;
     $_[KERNEL]->yield('reconnect'); # auto-reconnect
 }
 
+
+#
+# event: ServerInput( $input )
+#
+# Called whenever the tcp peer sends data over the wires, with the $input
+# transmitted given as param.
+#
 sub _onpriv_ServerInput {
     my $input = $_[ARG0];
     my ($k,$h) = @_[KERNEL,HEAP];
 
     if ( $input eq 'OK' ) {
-        $_[KERNEL]->post($h->{mpdhub}, '_got_data', $_[HEAP]->{incoming});
+        $_[KERNEL]->post($h->{session}, '_got_data', $_[HEAP]->{incoming});
         $_[HEAP]->{incoming} = [];
         return;
     }
-    return $k->post($h->{mpdhub}, '_got_mpd_version', $1) if $input =~ /^OK MPD (.*)$/;
+    return $k->post($h->{session}, '_got_mpd_version', $1) if $input =~ /^OK MPD (.*)$/;
     if ( $input =~ /^ACK/ ) {
         return;
     }
     push @{ $_[HEAP]{incoming} }, $input;
 }
-
-sub _onprot_send {
-    $_[HEAP]->{server}->put(@_[ARG0 .. $#_]);
-}
-
 
 
 1;
@@ -158,10 +198,16 @@ The hostname of the mpd server.
 The port of the mpd server.
 
 
+=item * id
+
+The POE session id of the peer to dialog with.
+
+
 =back
 
 
-Those args are not supposed to be empty - ie, there's no defaut.
+Those args are not supposed to be empty - ie, there's no defaut, and you
+will get an error if you don't follow this requirement! :-)
 
 
 =head1 PROTECTED EVENTS ACCEPTED
@@ -174,6 +220,11 @@ restricted to POCOCM.
 
 Request the pococm-connection to be shutdown. No argument.
 
+
+=head2 send( @data )
+
+Request pococm-conn to send @data over the wires. Note that those data should
+B<not> be newline terminated.
 
 
 =head1 SEE ALSO
