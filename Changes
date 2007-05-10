@@ -1,11 +1,16 @@
 Revision history for POE-Component-Client-MPD
 
+0.0.3 Thu May 10 19:11:56 CEST 2007
+ - added test framework taken from audio::mpd
+ - updated this framework to be poe-aware
+ - first functional test: coll:all_files
+
 0.0.2 Wed May  9 18:14:12 CEST 2007
- - missing prereq Readonly
+ - missing prereq readonly
  - tests for pococm-item
 
 0.0.1 Tue May  8 18:00:57 CEST 2007
- - first version based on Audio::MPD, ported to poe.
+ - first version based on audio::mpd, ported to poe.
  - connection to mpd done by pococ-tcp.
  - first commands implemented: coll:all_files, pl:add, pl:delete.
  - test client available: bin/client.pl
