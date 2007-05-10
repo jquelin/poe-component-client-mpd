@@ -27,6 +27,8 @@ __PACKAGE__->mk_accessors( qw[ directory ] );
 
 1;
 
+__END__
+
 =head1 NAME
 
 POE::Component::Client::MPD::Item::Directory - a directory object
