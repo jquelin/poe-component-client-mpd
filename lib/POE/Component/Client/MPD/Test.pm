@@ -21,8 +21,8 @@ use strict;
 use warnings;
 
 use FindBin     qw[ $Bin ];
+use POE         qw[ Component::Client::MPD ];
 use Readonly;
-
 
 use base qw[ Exporter ];
 our @EXPORT = qw[ customize_test_mpd_configuration start_test_mpd stop_test_mpd ];
@@ -30,8 +30,10 @@ our @EXPORT = qw[ customize_test_mpd_configuration start_test_mpd stop_test_mpd 
 #our ($VERSION) = '$Rev: 5727 $' =~ /(\d+)/;
 
 
+Readonly my $ALIAS    => 'tester';
 Readonly my $TEMPLATE => "$Bin/mpd-test/mpd.conf.template";
 Readonly my $CONFIG   => "$Bin/mpd-test/mpd.conf";
+
 
 { # this will be run when Audio::MPD::Test will be use-d.
     my $restart = 0;
@@ -40,6 +42,18 @@ Readonly my $CONFIG   => "$Bin/mpd-test/mpd.conf";
     customize_test_mpd_configuration();
     $restart = _stop_user_mpd_if_needed();
     $stopit  = start_test_mpd();
+
+    # fire pococm + create session to follow the tests.
+    POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+    POE::Session->create(
+        inline_states => {
+            _start     => \&_onpriv_start,
+            mpd_result => \&_onpub_mpd_result,
+            next_test  => \&_onpub_next_test,
+        }
+    );
+    POE::Kernel->run;
+    exit;
 
     END {
         stop_test_mpd() if $stopit;
@@ -135,6 +149,59 @@ sub _stop_user_mpd_if_needed {
     system( 'mpd --kill 2>/dev/null') == 0 or die "can't stop user mpd: $?\n";
     sleep 1;  # wait 1 second to free output device
     return 1;
+}
+
+
+#--
+# private events
+
+
+#
+# event: _start()
+#
+# Called when the poe session has started.
+#
+sub _onpriv_start {
+    my $k = $_[KERNEL];
+    $k->alias_set($ALIAS);           # increment refcount
+    $k->yield( 'next_test' );       # launch the first test.
+}
+
+
+#--
+# public events
+
+
+#
+# event: next_test()
+#
+# Called to schedule the next test.
+#
+sub _onpub_next_test {
+    my $k = $_[KERNEL];
+
+    if ( scalar @::tests == 0 ) { # no more tests.
+        $k->alias_remove($ALIAS);
+        $k->post( 'mpd', 'disconnect' );
+        return;
+    }
+
+    # post next event.
+    my $event = $::tests[0][0];
+    my $args  = $::tests[0][1];
+    $k->post( 'mpd', $event, @$args );
+}
+
+
+#
+# event: mpd_result( $answer )
+#
+# Called when mpd talks back, with $answer as a pococm-answer param.
+#
+sub _onpub_mpd_result {
+    $::tests[0][2]->( $_[ARG0] );      # check if everything went fine
+    shift @::tests;                    # remove test being played
+    $_[KERNEL]->yield( 'next_test' );  # call next test
 }
 
 

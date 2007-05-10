@@ -27,60 +27,21 @@ use Readonly;
 use Test::More;
 
 
-# are we able to test module?
-eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
-
-
 our @tests = (
     # [ 'event', [ $arg1, $arg2, ... ], \&sub_checking_results ]
     [ 'coll:all_files', [], \&printit ],
     [ 'coll:all_files', [], \&printit ],
 );
 
+
+# are we able to test module?
+eval 'use POE::Component::Client::MPD::Test';
+plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
+
+
 plan tests => 73;
 
 
-Readonly my $ALIAS => 'tester';
-
-# fire pococm + create session to follow the tests.
-POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
-POE::Session->create(
-    inline_states => {
-        _start     => \&start,
-        mpd_result => \&mpd_result,
-        next_test  => \&next_test,
-    }
-);
-POE::Kernel->run;
-exit;
-
-sub start {
-    my $k = $_[KERNEL];
-    $k->alias_set($ALIAS);           # increment refcount
-    $k->yield( 'next_test' );        # launch the first test.
-}
-
-sub next_test {
-    my $k = $_[KERNEL];
-
-    if ( scalar @tests == 0 ) { # no more tests.
-        $k->alias_remove($ALIAS);
-        $k->post( 'mpd', 'disconnect' );
-        return;
-    }
-
-    # post next event.
-    my $event = $tests[0][0];
-    my $args  = $tests[0][1];
-    $k->post( 'mpd', $event, @$args );
-}
-
-sub mpd_result {
-    $tests[0][2]->( $_[ARG0] );         # check if everything went fine
-    shift @tests;                       # remove test being played
-    $_[KERNEL]->yield( 'next_test' );   # call next test
-}
 
 
 sub printit { print "$_\n" for @{ $_[0]->{data} }; }
