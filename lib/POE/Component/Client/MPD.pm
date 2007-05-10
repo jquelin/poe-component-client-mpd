@@ -44,6 +44,7 @@ sub spawn {
             '_send'            => \&_onpriv_send,
             '_got_data'        => \&_onprot_got_data,
             '_got_mpd_version' => \&_onprot_got_mpd_version,
+            'disconnect'       => \&_onpub_disconnect,
         },
         object_states => [
 #             $self => [
@@ -64,6 +65,18 @@ sub spawn {
 }
 
 
+#
+# event: disconnect()
+#
+# Request the pococm to be shutdown. No argument.
+#
+sub _onpub_disconnect {
+    my ($k,$h) = @_[KERNEL, HEAP];
+    $k->alias_remove( $h->{alias} ) if defined $h->{alias};
+    $k->post( $h->{_socket}, 'disconnect' );
+}
+
+
 sub _onpriv_start {
     my ($h, $args) = @_[HEAP, ARG0];
 
@@ -78,7 +91,8 @@ sub _onpriv_start {
     );
 
     # set an alias (for easier communication) if requested.
-    $_[KERNEL]->alias_set(delete $params{alias}) if exists $params{alias};
+    $h->{alias} = delete $params{alias};
+    $_[KERNEL]->alias_set($h->{alias}) if defined $h->{alias};
 
     $h->{password} = delete $params{password};
     $h->{_socket}  = POE::Component::Client::MPD::Connection->spawn(\%params);
