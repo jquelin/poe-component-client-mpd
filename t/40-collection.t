@@ -22,15 +22,15 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD ];
+use POE;
 use Readonly;
 use Test::More;
 
 
-our @tests = (
+our $nbtests = 2;
+our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], \&sub_checking_results ]
-    [ 'coll:all_files', [], \&printit ],
-    [ 'coll:all_files', [], \&printit ],
+    [ 'coll:all_files', [], \&check_all_files ],
 );
 
 
@@ -39,12 +39,13 @@ eval 'use POE::Component::Client::MPD::Test';
 plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
 
 
-plan tests => 73;
 
+sub check_all_files {
+    my $list = $_[0]->{data};
+    is( scalar @$list, 4, 'all_files return the pathes' );
+    like( $list->[0], qr/\.ogg$/, 'all_files return strings' );
+}
 
-
-
-sub printit { print "$_\n" for @{ $_[0]->{data} }; }
 
 __END__
 
@@ -122,12 +123,6 @@ is( $list[0], 'dir1-artist', 'all_artists return strings' );
 is( scalar @list, 3, 'all_titles return the titles' );
 like( $list[0], qr/-title$/, 'all_titles return strings' );
 
-
-#
-# testing all_pathes.
-@list = $coll->all_pathes;
-is( scalar @list, 4, 'all_pathes return the pathes' );
-like( $list[0], qr/\.ogg$/, 'all_pathes return strings' );
 
 
 #
