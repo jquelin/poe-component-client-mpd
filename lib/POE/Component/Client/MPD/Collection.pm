@@ -20,7 +20,7 @@ package POE::Component::Client::MPD::Collection;
 use strict;
 use warnings;
 
-use POE;
+use POE  qw[ Component::Client::MPD::Request ];
 use base qw[ Class::Accessor::Fast ];
 
 
@@ -32,12 +32,12 @@ use base qw[ Class::Accessor::Fast ];
 #
 sub _onpub_all_files {
     my ($kernel) = $_[KERNEL];
-    my $args = {
-        from     => $_[SENDER]->ID,
-        state    => $_[STATE],
-        commands => [ 'list filename' ],
-    };
-    $kernel->yield( '_send', $args );
+    my $req = POE::Component::Client::MPD::Request->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _commands => [ 'list filename' ],
+    } );
+    $kernel->yield( '_send', $req );
 }
 
 1;

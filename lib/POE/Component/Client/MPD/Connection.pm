@@ -85,14 +85,16 @@ sub _onprot_disconnect {
 
 
 #
-# event: send( @data )
+# event: send( $request )
 #
-# Request pococm-conn to send the @data over the wires. Note that those
-# data should *not* be newline terminated.
+# Request pococm-conn to send the $request over the wires. Note that this
+# request is a pococm-request object, and that the ->_commands should
+# *not* be newline terminated.
 #
 sub _onprot_send {
     # $_[HEAP]->{server} is a reserved slot of pococ-tcp.
-    $_[HEAP]->{server}->put( @_[ARG0 .. $#_] );
+    $_[HEAP]->{server}->put( @{ $_[ARG0]->_commands } );
+    $_[HEAP]->{request} = $_[ARG0];
 }
 
 
@@ -145,8 +147,10 @@ sub _onpriv_ServerInput {
 
     if ( $input eq 'OK' ) {
         # data flow finished: request treated.
-        $k->post($session, '_got_data', $h->{incoming});  # signal poe session
-        $h->{incoming} = [];                              # reset incoming data
+        my $req = $h->{request};
+        $req->answer( $h->{incoming} );
+        $k->post($session, '_got_data', $req);  # signal poe session
+        $h->{incoming} = [];                    # reset incoming data
         return;
     }
 
@@ -233,9 +237,10 @@ restricted to POCOCM.
 Request the pococm-connection to be shutdown. No argument.
 
 
-=head2 send( @data )
+=head2 send( $request )
 
-Request pococm-conn to send @data over the wires. Note that those data should
+Request pococm-conn to send the C<$request> over the wires. Note that this
+request is a pococm-request object, and that the ->_commands should
 B<not> be newline terminated.
 
 

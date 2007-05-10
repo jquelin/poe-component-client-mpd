@@ -41,7 +41,7 @@ plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
 
 
 sub check_all_files {
-    my $list = $_[0]->{data};
+    my $list = $_[0]->answer;
     is( scalar @$list, 4, 'all_files return the pathes' );
     like( $list->[0], qr/\.ogg$/, 'all_files return strings' );
 }
