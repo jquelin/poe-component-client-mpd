@@ -34,11 +34,12 @@ plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
 
 our @tests = (
     # [ 'event', [ $arg1, $arg2, ... ], \&sub_checking_results ]
-    [ 'coll:all_files', [], \&start ],
-    [ 'coll:all_files', [], \&start ],
+    [ 'coll:all_files', [], \&printit ],
+    [ 'coll:all_files', [], \&printit ],
 );
 
 plan tests => 73;
+
 
 Readonly my $ALIAS => 'tester';
 
@@ -55,48 +56,34 @@ POE::Kernel->run;
 exit;
 
 sub start {
-    my ($k, $h) = @_[KERNEL, HEAP];
-    $k->alias_set($ALIAS);  # increment refcount
-
-    # initialize the tests to be ran.
-    $h->{idx}   = 0;
-    $h->{tests} = [
-        # [ 'event', [ $arg1, $arg2, ... ], \&sub_checking_results ]
-        [ 'coll:all_files', [], \&start ],
-        [ 'coll:all_files', [], \&start ],
-    ];
-
-    # launch the first test.
-    $k->yield( 'next_test' );
+    my $k = $_[KERNEL];
+    $k->alias_set($ALIAS);           # increment refcount
+    $k->yield( 'next_test' );        # launch the first test.
 }
 
 sub next_test {
-    my ($k, $h) = @_[KERNEL, HEAP];
-    my $idx   = $h->{idx};
-    my $event = $h->{tests}[$idx][0];
-    my $args  = $h->{tests}[$idx][1];
+    my $k = $_[KERNEL];
+
+    if ( scalar @tests == 0 ) { # no more tests.
+        $k->alias_remove($ALIAS);
+        $k->post( 'mpd', 'disconnect' );
+        return;
+    }
+
+    # post next event.
+    my $event = $tests[0][0];
+    my $args  = $tests[0][1];
     $k->post( 'mpd', $event, @$args );
 }
 
 sub mpd_result {
-    my ($k, $h, $a) = @_[KERNEL, HEAP, ARG0];
-    my $idx   = $h->{idx};
-
-    # check
-    print "$_\n" for @{ $a->{data} };
-
-    #
-    $h->{idx}++;
-    if ( $idx == scalar @{ $h->{tests} } - 1 ) {
-        # no more tests.
-        $k->alias_remove($ALIAS);
-        $k->post( 'mpd', 'disconnect' );
-    } else {
-        $k->yield( 'next_test' );
-    }
+    $tests[0][2]->( $_[ARG0] );         # check if everything went fine
+    shift @tests;                       # remove test being played
+    $_[KERNEL]->yield( 'next_test' );   # call next test
 }
 
 
+sub printit { print "$_\n" for @{ $_[0]->{data} }; }
 
 __END__
 
