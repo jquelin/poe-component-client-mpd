@@ -23,6 +23,8 @@ use warnings;
 use FindBin     qw[ $Bin ];
 use POE         qw[ Component::Client::MPD ];
 use Readonly;
+use Test::More;
+
 
 use base qw[ Exporter ];
 our @EXPORT = qw[ customize_test_mpd_configuration start_test_mpd stop_test_mpd ];
@@ -35,13 +37,16 @@ Readonly my $TEMPLATE => "$Bin/mpd-test/mpd.conf.template";
 Readonly my $CONFIG   => "$Bin/mpd-test/mpd.conf";
 
 
-{ # this will be run when Audio::MPD::Test will be use-d.
+{ # this will be run when pococm::Test will be use-d.
     my $restart = 0;
     my $stopit  = 0;
 
     customize_test_mpd_configuration();
     $restart = _stop_user_mpd_if_needed();
     $stopit  = start_test_mpd();
+
+    # fake mpd has been started successfully, plan the tests.
+    plan tests => $::nbtests;
 
     # fire pococm + create session to follow the tests.
     POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
