@@ -23,12 +23,12 @@ use strict;
 use warnings;
 
 use POE::Component::Client::MPD::Item;
-use Test::More tests => 18;
+use Test::More tests => 21;
 
 my ($i, $output, @output, %params);
 
 #
-# testing audio::mpd::item::song
+# testing pococm::item::song
 $output = 'file: some/random/path/to/a/song.ogg
 Time: 234
 Artist: Foo Bar
@@ -54,7 +54,7 @@ isa_ok( $i, 'POE::Component::Client::MPD::Item', 'song inherits from item' );
 
 
 #
-# testing as_string from audio::mpd::item::song.
+# testing as_string from pococm::item::song.
 is( $i->as_string, 'Frobnizer = 26 = Foo Bar = Blah!', 'as_string() with all tags' );
 $i->track(undef);
 is( $i->as_string, 'Foo Bar = Blah!', 'as_string() without track' );
@@ -67,7 +67,7 @@ is( $i->as_string, 'some/random/path/to/a/song.ogg', 'as_string() without title'
 
 
 #
-# testing audio::mpd::item::directory
+# testing pococm::item::directory
 $output = "directory: some/random/path\n";
 @output = split /\n/, $output;
 %params = map { /^([^:]+):\s+(.*)$/ ? ($1=>$2) : () } @output;
@@ -75,6 +75,17 @@ $i = POE::Component::Client::MPD::Item->new( %params );
 isa_ok( $i, 'POE::Component::Client::MPD::Item::Directory', 'directory creation' );
 is( $i->directory, 'some/random/path',  'accessor: directory' );
 isa_ok( $i, 'POE::Component::Client::MPD::Item', 'directory inherits from item' );
+
+
+#
+# testing pococm::item::playlist
+$output = "playlist: some_name\n";
+@output = split /\n/, $output;
+%params = map { /^([^:]+):\s+(.*)$/ ? ($1=>$2) : () } @output;
+$i = POE::Component::Client::MPD::Item->new( %params );
+isa_ok( $i, 'POE::Component::Client::MPD::Item::Playlist', 'playlist creation' );
+is( $i->playlist, 'some_name',  'accessor: playlist' );
+isa_ok( $i, 'POE::Component::Client::MPD::Item', 'playlistinherits from item' );
 
 
 exit;

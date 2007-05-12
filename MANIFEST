@@ -8,6 +8,7 @@ lib/POE/Component/Client/MPD/Collection.pm
 lib/POE/Component/Client/MPD/Connection.pm
 lib/POE/Component/Client/MPD/Item.pm
 lib/POE/Component/Client/MPD/Item/Directory.pm
+lib/POE/Component/Client/MPD/Item/Playlist.pm
 lib/POE/Component/Client/MPD/Item/Song.pm
 lib/POE/Component/Client/MPD/Message.pm
 lib/POE/Component/Client/MPD/Playlist.pm

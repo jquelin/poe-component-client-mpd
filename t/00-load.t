@@ -22,13 +22,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 BEGIN { use_ok( 'POE::Component::Client::MPD' ); }
 my $version = $POE::Component::Client::MPD::VERSION;
 diag( "Testing POE::Component::Client::MPD $version, Perl $], $^X" );
 
 use_ok( 'POE::Component::Client::MPD::Item::Directory' );
+use_ok( 'POE::Component::Client::MPD::Item::Playlist' );
 use_ok( 'POE::Component::Client::MPD::Item::Song' );
 use_ok( 'POE::Component::Client::MPD::Item' );
 use_ok( 'POE::Component::Client::MPD::Message' );
