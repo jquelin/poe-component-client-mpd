@@ -205,14 +205,14 @@ sub _onpriv_ServerInput {
     # table of dispatch: check input against regex, and fire event
     # if it did match.
     my @dispatch = (
-        [ qr/^OK$/,          '_ServerInput_data_eot'    ],
-        [ qr/^ACK/,          '_ServerInput_error'       ],
-        [ qr/^/,             '_ServerInput_data'        ],
+        [ qr/^OK$/,        '_ServerInput_data_eot' ],
+        [ qr/^ACK (.*)/,   '_ServerInput_error'    ],
+        [ qr/^/,           '_ServerInput_data'     ],
     );
 
     foreach my $d (@dispatch) {
         next unless $input =~ $d->[0];
-        $_[KERNEL]->yield( $d->[1], $input );
+        $_[KERNEL]->yield( $d->[1], $input, $1 );
         last;
     }
 }
