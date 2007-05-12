@@ -20,7 +20,9 @@ package POE::Component::Client::MPD::Connection;
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::TCP ];
+use POE;
+use POE::Component::Client::MPD::Message;
+use POE::Component::Client::TCP;
 use Readonly;
 
 
@@ -168,6 +170,19 @@ sub _onpriv_ServerInput {
     }
 
     # regular data, to be cooked (if needed) and stored.
+    my $cooking = $h->{message}->_cooking;
+    COOKING:
+    {
+        last COOKING if $cooking == $RAW;
+
+        $cooking == $STRIP_FIRST and do {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to remove the first field (with the colon ":" acting as
+            # separator).
+            $input = ( split(/:\s+/, $input, 2) )[1];
+            last COOKING;
+        };
+    }
     push @{ $_[HEAP]{incoming} }, $input;
 }
 
