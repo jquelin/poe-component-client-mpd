@@ -178,7 +178,7 @@ __END__
 
 =head1 NAME
 
-POCOCM::Connection - module handling the tcp connection with mpd
+POE::Component::Client::MPD::Connection - module handling the tcp connection with mpd
 
 
 =head1 DESCRIPTION

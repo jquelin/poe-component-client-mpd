@@ -62,7 +62,7 @@ __END__
 
 =head1 NAME
 
-POE::Component::Client::MPD::Item::Song - an object with some audio tags
+POE::Component::Client::MPD::Item::Song - a song object with some audio tags
 
 
 =head1 DESCRIPTION
