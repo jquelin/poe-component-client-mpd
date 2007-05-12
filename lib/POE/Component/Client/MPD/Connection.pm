@@ -196,8 +196,9 @@ sub _onpriv_ServerInput {
                 _from   => $h->{session},
             } );
             $k->post( $h->{session}, '_mpd_error', $error );
-            return;
         }
+
+        return;
     }
 
 
@@ -211,7 +212,7 @@ sub _onpriv_ServerInput {
 
     foreach my $d (@dispatch) {
         next unless $input =~ $d->[0];
-        $_[KERNEL]->yield( $d->[1], $input, $1 );
+        $_[KERNEL]->yield( $d->[1], $input );
         last;
     }
 }
