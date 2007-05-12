@@ -36,6 +36,7 @@ sub _onpub_all_files {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
         _commands => [ 'list filename' ],
+        _cooking  => $STRIP_FIRST,
     } );
     $kernel->yield( '_send', $req );
 }
