@@ -23,7 +23,7 @@ use warnings;
 use Readonly;
 
 use base qw[ Class::Accessor::Fast Exporter ];
-__PACKAGE__->mk_accessors( qw[ answer error request _commands _cooking _from ] );
+__PACKAGE__->mk_accessors( qw[ data error request _commands _cooking _from ] );
 
 Readonly our $RAW         => 0; # data is to be returned raw
 Readonly our $AS_ITEMS    => 1; # data is to be returned as pococm-item
@@ -44,7 +44,7 @@ POE::Component::Client::MPD::Message - a message from POCOCM
 
 =head1 SYNOPSIS
 
-    print $msg->answer . "\n";
+    print $msg->data . "\n";
 
 
 =head1 DESCRIPTION

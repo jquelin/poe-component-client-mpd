@@ -94,7 +94,7 @@ sub _onprot_disconnect {
 sub _onprot_send {
     # $_[HEAP]->{server} is a reserved slot of pococ-tcp.
     $_[HEAP]->{server}->put( @{ $_[ARG0]->_commands } );
-    $_[HEAP]->{request} = $_[ARG0];
+    $_[HEAP]->{message} = $_[ARG0];
 }
 
 
@@ -147,9 +147,9 @@ sub _onpriv_ServerInput {
 
     if ( $input eq 'OK' ) {
         # data flow finished: request treated.
-        my $req = $h->{request};
-        $req->answer( $h->{incoming} );
-        $k->post($session, '_got_data', $req);  # signal poe session
+        my $msg = $h->{message};
+        $msg->data( $h->{incoming} );
+        $k->post($session, '_got_data', $msg);  # signal poe session
         $h->{incoming} = [];                    # reset incoming data
         return;
     }
