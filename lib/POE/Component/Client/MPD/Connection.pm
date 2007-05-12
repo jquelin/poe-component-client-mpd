@@ -21,6 +21,7 @@ use strict;
 use warnings;
 
 use POE;
+use POE::Component::Client::MPD::Item;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::TCP;
 use Readonly;
@@ -231,17 +232,49 @@ sub _onpriv_ServerInput_data {
     my $cooking = $msg->_cooking;
     COOKING:
     {
-        last COOKING if $cooking == $RAW;
+        $cooking == $RAW and do {
+            # nothing to do, just push the data.
+            push @{ $h->{incoming} }, $input;
+            last COOKING;
+        };
+
+        $cooking == $AS_ITEMS and do {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to build a pococm-item.
+            my ($k,$v) = split /:\s+/, $input, 2;
+            $k = lc $k;
+
+            if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
+                # build a new pococm-item
+                my $item = POE::Component::Client::MPD::Item->new( $k => $v );
+                push @{ $h->{incoming} }, $item;
+                last COOKING;
+            }
+
+            # just complete the current pococm-item
+            $h->{incoming}[-1]->$k($v);
+            last COOKING;
+        };
+
+        $cooking == $AS_KV and do {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to get a list of key / value (with the colon ":" acting
+            # as separator).
+            my @data = split(/:\s+/, $input, 2);
+            push @{ $h->{incoming} }, @data;
+            last COOKING;
+        };
 
         $cooking == $STRIP_FIRST and do {
             # Lots of POCOCM methods are sending commands and then parse the
             # output to remove the first field (with the colon ":" acting as
             # separator).
             $input = ( split(/:\s+/, $input, 2) )[1];
+            push @{ $h->{incoming} }, $input;
             last COOKING;
         };
     }
-    push @{ $h->{incoming} }, $input;
+
 }
 
 
