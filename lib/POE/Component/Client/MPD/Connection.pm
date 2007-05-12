@@ -63,8 +63,15 @@ sub spawn {
         ServerInput  => \&_onpriv_ServerInput,
 
         InlineStates => {
+            # protected events
             send       => \&_onprot_send,         # send data
             disconnect => \&_onprot_disconnect,   # force quit
+
+            # private events
+            _ServerInput_data         => \&_onpriv_ServerInput_data,
+            _ServerInput_data_eot     => \&_onpriv_ServerInput_data_eot,
+            _ServerInput_mpd_version  => \&_onpriv_ServerInput_mpd_version,
+            _ServerInput_error        => \&_onpriv_ServerInput_error,
         }
     );
 
@@ -144,30 +151,32 @@ sub _onpriv_Disconnected {
 # transmitted given as param.
 #
 sub _onpriv_ServerInput {
-    my ($k, $h, $input) = @_[KERNEL,HEAP, ARG0];
-    my $session = $h->{session};
+    my $input = $_[ARG0];
 
-    if ( $input eq 'OK' ) {
-        # data flow finished: request treated.
-        my $msg = $h->{message};
-        $msg->data( $h->{incoming} );
-        $k->post($session, '_got_data', $msg);  # signal poe session
-        $h->{incoming} = [];                    # reset incoming data
-        return;
+    # table of dispatch: check input against regex, and fire event
+    # if it did match.
+    my @dispatch = (
+        [ qr/^OK$/,          '_ServerInput_data_eot'    ],
+        [ qr/^OK MPD (.*)$/, '_ServerInput_mpd_version' ],
+        [ qr/^ACK/,          '_ServerInput_error'       ],
+        [ qr/^/,             '_ServerInput_data'        ],
+    );
+
+    foreach my $d (@dispatch) {
+        next unless $input =~ $d->[0];
+        $_[KERNEL]->yield( $d->[1], $input, $1 );
+        last;
     }
-
-    if ( $input =~ /^OK MPD (.*)$/ ) {
-        # only received just after the connection.
-        $k->post($session, '_got_mpd_version', $1);
-        return;
-    }
+}
 
 
-    if ( $input =~ /^ACK/ ) {
-        # error handling
-        # FIXME: implement
-        return;
-    }
+#
+# event: _ServerInput_data( $input )
+#
+# Called when the stream of data is finished.
+#
+sub _onpriv_ServerInput_data {
+    my ($h, $input) = @_[HEAP, ARG0];
 
     # regular data, to be cooked (if needed) and stored.
     my $cooking = $h->{message}->_cooking;
@@ -183,7 +192,43 @@ sub _onpriv_ServerInput {
             last COOKING;
         };
     }
-    push @{ $_[HEAP]{incoming} }, $input;
+    push @{ $h->{incoming} }, $input;
+}
+
+
+#
+# event: _ServerInput_data_eot()
+#
+# Called when the stream of data is finished.
+#
+sub _onpriv_ServerInput_data_eot {
+    my ($k, $h) = @_[KERNEL, HEAP];
+    my $session = $h->{session};
+    my $msg     = $h->{message};
+    $msg->data( $h->{incoming} );           # complete message with data
+    $k->post($session, '_got_data', $msg);  # signal poe session
+    $h->{incoming} = [];                    # reset incoming data
+}
+
+
+#
+# event: _ServerInput_mpd_version(undef, $version)
+#
+# Called just after the connection, with mpd's $version.
+#
+sub _onpriv_ServerInput_mpd_version {
+    my $session = $_[HEAP]->{session};
+    $_[KERNEL]->post($session, '_got_mpd_version', $_[ARG1]);
+}
+
+
+#
+# event: _ServerInput_error(undef, $error)
+#
+# Called when a message resulted in an $error for mpd.
+#
+sub _onpriv_ServerInput_error {
+    # FIXME: implement
 }
 
 
