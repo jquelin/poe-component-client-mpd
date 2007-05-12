@@ -3,13 +3,21 @@ Revision history for POE-Component-Client-MPD
 High-level changelog
 ====================
 
-0.1.x  introduction of pococm-message, cooking in pococm-conn
+0.1.x  pococm-conn cleaning + features, pococm-message
 0.0.x  imported stuff from audio::mpd + porting to poe
 
 
 Low-level changelog
 ===================
 
+
+0.1.2 Sat May 12 19:30:11 CEST 2007
+ - pococm-conn implements all cookings ($AS_ITEMS, $AS_KV)
+ - pococm-conn now spawns an error if:
+    . connection can't be made
+    . remote server isn't mpd
+ - added tests for pococm-conn
+ - new item available: pococmi-playlist
 
 0.1.1 Sat May 12 13:53:55 CEST 2007
  - pococm-request renamed in pococm-message
