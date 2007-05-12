@@ -55,10 +55,11 @@ sub spawn {
         Filter        => 'POE::Filter::Line',
         Args          => [ $args->{id} ],
 
-        ConnectError => sub { }, # quiet errors - FIXME: implement!
+
         ServerError  => sub { }, # quiet errors
         Started      => \&_onpriv_Started,
         Connected    => \&_onpriv_Connected,
+        ConnectError => \&_onpriv_ConnectError,
         Disconnected => \&_onpriv_Disconnected,
         ServerInput  => \&_onpriv_ServerInput,
 
@@ -134,6 +135,25 @@ sub _onpriv_Connected {
     my $h = $_[HEAP];
     $h->{fifo}     = [];   # current messages
     $h->{incoming} = [];   # reset incoming data
+}
+
+
+#
+# event: ConnectError($syscall, $errno, $errstr)
+#
+# Called whenever the tcp connection fails to be established. Receives
+# the $syscall that failed, as well as $errno and $errstr.
+#
+sub _onpriv_ConnectError {
+    my ($syscall, $errno, $errstr) = @_[ARG0, ARG1, ARG2];
+
+    my $session = $_[HEAP]{session};
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        error   => "$syscall: ($errno) $errstr",
+        request => 'connect',
+        _from   => $session,
+    } );
+    $_[KERNEL]->post( $session, '_mpd_error', $msg );
 }
 
 
