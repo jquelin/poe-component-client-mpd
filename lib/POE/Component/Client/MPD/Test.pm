@@ -186,9 +186,9 @@ sub _onpub_next_test {
 
 
 #
-# event: mpd_result( $answer )
+# event: mpd_result( $msg )
 #
-# Called when mpd talks back, with $answer as a pococm-answer param.
+# Called when mpd talks back, with $msg as a pococm-message param.
 #
 sub _onpub_mpd_result {
     $::tests[0][2]->( $_[ARG0] );      # check if everything went fine
