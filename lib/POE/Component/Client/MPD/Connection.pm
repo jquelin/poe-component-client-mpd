@@ -94,16 +94,17 @@ sub _onprot_disconnect {
 
 
 #
-# event: send( $request )
+# event: send( $message )
 #
-# Request pococm-conn to send the $request over the wires. Note that this
-# request is a pococm-request object, and that the ->_commands should
-# *not* be newline terminated.
+# Request pococm-conn to send the commands of $message over the wires.
+# Note that $message is a pococm-message object, and that the ->_commands
+# should *not* be newline terminated.
 #
 sub _onprot_send {
+    my ($h, $msg) = @_[HEAP, ARG0];
     # $_[HEAP]->{server} is a reserved slot of pococ-tcp.
-    $_[HEAP]->{server}->put( @{ $_[ARG0]->_commands } );
-    $_[HEAP]->{message} = $_[ARG0];
+    $h->{server}->put( @{ $msg->_commands } );
+    push @{ $h->{fifo} }, $msg;
 }
 
 
@@ -118,8 +119,9 @@ sub _onprot_send {
 # peer during the life of this session.
 #
 sub _onpriv_Started {
-    $_[HEAP]{session}     = $_[ARG0];       # poe-session peer
-    $_[HEAP]{on_disconnect} = $RECONNECT;   # disconnect policy
+    my $h = $_[HEAP];
+    $h->{session}       = $_[ARG0];     # poe-session peer
+    $h->{on_disconnect} = $RECONNECT;   # disconnect policy
 }
 
 
@@ -129,7 +131,9 @@ sub _onpriv_Started {
 # Called whenever the tcp connection is established.
 #
 sub _onpriv_Connected {
-    $_[HEAP]->{incoming} = [];   # reset incoming data
+    my $h = $_[HEAP];
+    $h->{fifo}     = [];   # current messages
+    $h->{incoming} = [];   # reset incoming data
 }
 
 
@@ -179,7 +183,8 @@ sub _onpriv_ServerInput_data {
     my ($h, $input) = @_[HEAP, ARG0];
 
     # regular data, to be cooked (if needed) and stored.
-    my $cooking = $h->{message}->_cooking;
+    my $msg = $h->{fifo}[0];
+    my $cooking = $msg->_cooking;
     COOKING:
     {
         last COOKING if $cooking == $RAW;
@@ -204,9 +209,9 @@ sub _onpriv_ServerInput_data {
 sub _onpriv_ServerInput_data_eot {
     my ($k, $h) = @_[KERNEL, HEAP];
     my $session = $h->{session};
-    my $msg     = $h->{message};
+    my $msg     = shift @{ $h->{fifo} };    # remove completed msg
     $msg->data( $h->{incoming} );           # complete message with data
-    $k->post($session, '_got_data', $msg);  # signal poe session
+    $k->post($session, '_mpd_data', $msg);  # signal poe session
     $h->{incoming} = [];                    # reset incoming data
 }
 
@@ -218,7 +223,7 @@ sub _onpriv_ServerInput_data_eot {
 #
 sub _onpriv_ServerInput_mpd_version {
     my $session = $_[HEAP]->{session};
-    $_[KERNEL]->post($session, '_got_mpd_version', $_[ARG1]);
+    $_[KERNEL]->post($session, '_mpd_version', $_[ARG1]);
 }
 
 
@@ -228,7 +233,11 @@ sub _onpriv_ServerInput_mpd_version {
 # Called when a message resulted in an $error for mpd.
 #
 sub _onpriv_ServerInput_error {
-    # FIXME: implement
+    my $h = $_[HEAP];
+    my $session = $h->{session};
+    my $msg     = shift @{ $h->{fifo} };
+    $msg->error( $_[ARG1] );
+    $_[KERNEL]->post($session, '_mpd_error', $msg);
 }
 
 

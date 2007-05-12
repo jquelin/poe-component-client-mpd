@@ -40,11 +40,12 @@ sub spawn {
     my $session = POE::Session->create(
         args          => [ $args ],
         inline_states => {
-            '_start'           => \&_onpriv_start,
-            '_send'            => \&_onpriv_send,
-            '_got_data'        => \&_onprot_got_data,
-            '_got_mpd_version' => \&_onprot_got_mpd_version,
-            'disconnect'       => \&_onpub_disconnect,
+            '_start'       => \&_onpriv_start,
+            '_send'        => \&_onpriv_send,
+            '_mpd_data'    => \&_onprot_mpd_data,
+            '_mpd_error'   => \&_onprot_mpd_error,
+            '_mpd_version' => \&_onprot_mpd_version,
+            'disconnect'   => \&_onpub_disconnect,
         },
         object_states => [
 #             $self => [
@@ -118,11 +119,14 @@ sub _connected {
 
 
 
-sub _onprot_got_data {
+sub _onprot_mpd_data {
     my $req = $_[ARG0];
     $_[KERNEL]->post( $req->_from, 'mpd_result', $req );
 }
 
+sub _onprot_mpd_error {
+    warn "mpd error\n";
+}
 
 #
 # _got_mpd_version( $vers )
@@ -130,7 +134,7 @@ sub _onprot_got_data {
 # Event sent during connection, when mpd server sends its version.
 # Store it for later usage if needed.
 #
-sub _onprot_got_mpd_version {
+sub _onprot_mpd_version {
     # FIXME
     #$_[HEAP]->{version} = $_[ARG0]->answer->[0];
 }
