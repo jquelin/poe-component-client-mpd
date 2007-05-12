@@ -36,7 +36,7 @@ our @tests   = (
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
+plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 
 
 
