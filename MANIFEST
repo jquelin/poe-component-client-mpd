@@ -20,6 +20,7 @@ t/00-load.t
 t/01-pod.t
 t/02-pod-coverage.t
 t/10-item.t
+t/20-conn-failed.t
 t/40-collection.t
 t/mpd-test/mpd.conf.template
 t/mpd-test/music/dir1/title-artist-album.ogg
