@@ -30,7 +30,7 @@ use Test::More;
 our $nbtests = 2;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], \&sub_checking_results ]
-    [ 'coll:all_files', [], \&check_all_files ],
+    [ 'coll.all_files', [], \&check_all_files ],
 );
 
 
