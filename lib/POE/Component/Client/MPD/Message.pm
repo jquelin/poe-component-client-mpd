@@ -15,7 +15,7 @@
 #
 #
 
-package POE::Component::Client::MPD::Request;
+package POE::Component::Client::MPD::Message;
 
 use strict;
 use warnings;
@@ -39,17 +39,17 @@ __END__
 
 =head1 NAME
 
-POCOCM::Request - a request object to/from mpd
+POE::Component::Client::MPD::Message - a message from POCOCM
 
 
 =head1 SYNOPSIS
 
-    print $req->answer . "\n";
+    print $msg->answer . "\n";
 
 
 =head1 DESCRIPTION
 
-C<POCOCM::Request> is more a placeholder for a hash ref with some pre-defined
+C<POCOCM::Message> is more a placeholder for a hash ref with some pre-defined
 keys.
 
 
