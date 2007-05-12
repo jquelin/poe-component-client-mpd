@@ -37,13 +37,25 @@ Readonly my $TEMPLATE => "$Bin/mpd-test/mpd.conf.template";
 Readonly my $CONFIG   => "$Bin/mpd-test/mpd.conf";
 
 
-{ # this will be run when pococm::Test will be use-d.
+sub import { # this will be run when pococm::Test will be use-d.
+    my $self   = shift;
+    my %params = @_;
+
     my $restart = 0;
     my $stopit  = 0;
 
     customize_test_mpd_configuration();
     $restart = _stop_user_mpd_if_needed();
     $stopit  = start_test_mpd();
+
+    END {
+        stop_test_mpd() if $stopit;
+        return unless $restart;       # no need to restart
+        system 'mpd 2>/dev/null';     # restart user mpd
+        sleep 1;                      # wait 1 second to let mpd start.
+    }
+
+    return if exists $params{dont_start_poe};
 
     # fake mpd has been started successfully, plan the tests.
     plan tests => $::nbtests;
@@ -59,13 +71,6 @@ Readonly my $CONFIG   => "$Bin/mpd-test/mpd.conf";
     );
     POE::Kernel->run;
     exit;
-
-    END {
-        stop_test_mpd() if $stopit;
-        return unless $restart;       # no need to restart
-        system 'mpd 2>/dev/null';     # restart user mpd
-        sleep 1;                      # wait 1 second to let mpd start.
-    }
 }
 
 
@@ -133,7 +138,6 @@ sub stop_test_mpd {
 #--
 # private subs
 
-
 #
 # my $was_running = _stop_user_mpd_if_needed()
 #
@@ -158,24 +162,7 @@ sub _stop_user_mpd_if_needed {
 
 
 #--
-# private events
-
-
-#
-# event: _start()
-#
-# Called when the poe session has started.
-#
-sub _onpriv_start {
-    my $k = $_[KERNEL];
-    $k->alias_set($ALIAS);           # increment refcount
-    $k->yield( 'next_test' );       # launch the first test.
-}
-
-
-#--
 # public events
-
 
 #
 # event: next_test()
@@ -207,6 +194,21 @@ sub _onpub_mpd_result {
     $::tests[0][2]->( $_[ARG0] );      # check if everything went fine
     shift @::tests;                    # remove test being played
     $_[KERNEL]->yield( 'next_test' );  # call next test
+}
+
+
+#--
+# private events
+
+#
+# event: _start()
+#
+# Called when the poe session has started.
+#
+sub _onpriv_start {
+    my $k = $_[KERNEL];
+    $k->alias_set($ALIAS);           # increment refcount
+    $k->yield( 'next_test' );        # launch the first test.
 }
 
 
