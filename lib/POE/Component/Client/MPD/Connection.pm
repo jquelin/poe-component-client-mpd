@@ -26,9 +26,11 @@ use POE::Component::Client::TCP;
 use Readonly;
 
 
+Readonly my $FALSE => 0;
+Readonly my $TRUE  => 1;
+
 Readonly my $IGNORE    => 0;
 Readonly my $RECONNECT => 1;
-
 
 #
 # my $id = POE::Component::Client::MPD::Connection->spawn( \%params )
@@ -133,8 +135,9 @@ sub _onpriv_Started {
 #
 sub _onpriv_Connected {
     my $h = $_[HEAP];
-    $h->{fifo}     = [];   # current messages
-    $h->{incoming} = [];   # reset incoming data
+    $h->{fifo}     = [];     # current messages
+    $h->{incoming} = [];     # reset incoming data
+    $h->{is_mpd}   = $FALSE; # is remote server a mpd sever?
 }
 
 
@@ -175,13 +178,33 @@ sub _onpriv_Disconnected {
 # transmitted given as param.
 #
 sub _onpriv_ServerInput {
-    my $input = $_[ARG0];
+    my ($h, $input) = @_[HEAP, ARG0];
+
+    # did we check we were talking to a mpd server?
+    if ( not $h->{is_mpd} ) {
+        # we did not had the chance to check if it's a mpd server: let's do it.
+        my $k = $_[KERNEL];
+
+        if ( $input =~ /^OK MPD (.*)$/ ) {
+            $h->{is_mpd} = $TRUE;  # remote server *is* a mpd sever
+            $k->yield( '_ServerInput_mpd_version', $1 );
+        } else {
+            # oops, it appears that it's not a mpd server...
+            my $error = POE::Component::Client::MPD::Message->new( {
+                error   => "Not a mpd server - welcome string was: $input",
+                request => 'connect',
+                _from   => $h->{session},
+            } );
+            $k->post( $h->{session}, '_mpd_error', $error );
+            return;
+        }
+    }
+
 
     # table of dispatch: check input against regex, and fire event
     # if it did match.
     my @dispatch = (
         [ qr/^OK$/,          '_ServerInput_data_eot'    ],
-        [ qr/^OK MPD (.*)$/, '_ServerInput_mpd_version' ],
         [ qr/^ACK/,          '_ServerInput_error'       ],
         [ qr/^/,             '_ServerInput_data'        ],
     );
@@ -237,13 +260,14 @@ sub _onpriv_ServerInput_data_eot {
 
 
 #
-# event: _ServerInput_mpd_version(undef, $version)
+# event: _ServerInput_mpd_version($version)
 #
 # Called just after the connection, with mpd's $version.
 #
 sub _onpriv_ServerInput_mpd_version {
-    my $session = $_[HEAP]->{session};
-    $_[KERNEL]->post($session, '_mpd_version', $_[ARG1]);
+    my $h = $_[HEAP];
+    my $session  = $h->{session};
+    $_[KERNEL]->post($session, '_mpd_version', $_[ARG0]);
 }
 
 
