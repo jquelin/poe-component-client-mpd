@@ -52,6 +52,25 @@ POE::Component::Client::MPD::Collection - module handling collection commands
 
 =head1 DESCRIPTION
 
+C<POCOCM::Collection> is responsible for handling collection-related
+commands. To achieve those commands, send the corresponding event to
+the POCOCM session you created: it will be responsible for dispatching
+the event where it is needed.
+
+
+=head1 PUBLIC EVENTS
+
+The following is a list of general purpose events accepted by POCOCM.
+
+
+=head2 Retrieving songs & directories
+
+=head2 Retrieving the whole collection
+
+=head2 Picking songs
+
+=head2 Songs, albums & artists relations
+
 
 =head1 SEE ALSO
 

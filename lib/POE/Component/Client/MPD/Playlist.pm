@@ -84,6 +84,25 @@ POE::Component::Client::MPD::Playlist - module handling playlist commands
 
 =head1 DESCRIPTION
 
+C<POCOCM::Playlist> is responsible for handling playlist-related commands.
+To achieve those commands, send the corresponding event to the POCOCM
+session you created: it will be responsible for dispatching the event
+where it is needed.
+
+
+=head1 PUBLIC EVENTS
+
+The following is a list of general purpose events accepted by POCOCM.
+
+
+=head2 Retrieving information
+
+=head2 Adding / removing songs
+
+=head2 Changing playlist order
+
+=head2 Managing playlists
+
 
 =head1 SEE ALSO
 
