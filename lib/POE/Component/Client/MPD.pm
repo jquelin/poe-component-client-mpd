@@ -234,6 +234,7 @@ the hash keys are:
 =over 4
 
 =item * host
+=item C<POCOCM::Playlist> for playlist-related commands
 
 The hostname of the mpd server. If none given, defaults to C<MPD_HOST>
 environment variable. If this var isn't set, defaults to C<localhost>.
@@ -257,6 +258,46 @@ An optional string to alias the newly created POE session.
 
 
 =back
+
+
+=head1 PUBLIC EVENTS
+
+=head2 Incoming events
+
+For a list of public events that you can send to a POCOCM session, check:
+
+=over 4
+
+=item C<POCOCM::Commands> for general commands
+
+=item C<POCOCM::Playlist> for playlist-related commands
+
+=item C<POCOCM::Collection> for collection-related commands
+
+=back
+
+
+=head2 Outgoing events
+
+C<POCOCM> will answer back with the following events:
+
+=over 4
+
+=item mpd_data( $msg )
+
+Sent when mpd answers back with some data. C<$msg> is a C<POCOCM-Message>.
+
+=item mpd_error( $msg )
+
+Sent when there was an error during mpd interaction. Note that this event
+is also fired if the connection can't be established.
+
+C<$msg> is a C<POCOCM-Message>.
+
+
+=back
+
+Feel free to ignore them if you don't care.
 
 
 =head1 BUGS
