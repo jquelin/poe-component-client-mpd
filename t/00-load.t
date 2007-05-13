@@ -35,5 +35,5 @@ use_ok( 'POE::Component::Client::MPD::Item' );
 use_ok( 'POE::Component::Client::MPD::Message' );
 use_ok( 'POE::Component::Client::MPD::Collection' );
 use_ok( 'POE::Component::Client::MPD::Commands' );
-use_ok( 'POE::Component::Client::MPD::Connection' );
 use_ok( 'POE::Component::Client::MPD::Playlist' );
+use_ok( 'POE::Component::Client::MPD::Connection' );
