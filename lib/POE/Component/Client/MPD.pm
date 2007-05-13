@@ -61,8 +61,9 @@ sub spawn {
         args          => [ $args ],
         inline_states => {
             # private events
-            '_start'       => \&_onpriv_start,
-            '_send'        => \&_onpriv_send,
+            '_start'             => \&_onpriv_start,
+            '_send'              => \&_onpriv_send,
+            '_post_array2scalar' => \&_onpriv_post_array2scalar,
             # protected events
             '_mpd_data'    => \&_onprot_mpd_data,
             '_mpd_error'   => \&_onprot_mpd_error,
@@ -219,6 +220,20 @@ sub _connected {
 #
 sub _onpriv_send {
     $_[KERNEL]->post( $_[HEAP]->{_socket}, 'send', $_[ARG0] );
+}
+
+
+#
+# event: _post_array2scalar( $msg )
+#
+# Transform $msg->data from array ref to a single scalar. Useful only
+# as a postback callback, and if there's only one value in data().
+#
+sub _onpriv_post_array2scalar {
+    my $msg  = $_[ARG0];
+    my $data = $msg->data->[0];
+    $msg->data($data);
+    $_[KERNEL]->yield( '_mpd_data', $msg );
 }
 
 
