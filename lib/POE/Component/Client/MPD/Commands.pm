@@ -27,6 +27,27 @@ use POE::Component::Client::MPD::Status;
 use base qw[ Class::Accessor::Fast ];
 
 # -- MPD interaction: general commands
+
+#
+# event: updatedb( [$path] )
+#
+# Force mpd to rescan its collection. If $path (relative to MPD's music
+# directory) is supplied, MPD will only scan it - otherwise, MPD will rescan
+# its whole collection.
+#
+sub _onpub_updatedb {
+    my $path = defined $_[ARG0] ? $_[ARG0] : '';
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "update $path" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- MPD interaction: handling volume & output
 
 #
