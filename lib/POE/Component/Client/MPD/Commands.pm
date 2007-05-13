@@ -193,6 +193,25 @@ sub _onpub_play {
 
 
 #
+# event: playid( [$song] )
+#
+# Begin playing playlist at song ID $song. If no argument supplied,
+# resume playing.
+#
+sub _onpub_playid {
+    my $number = defined $_[ARG0] ? $_[ARG0] : '';
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "playid $number" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
 # event: next()
 #
 # Play next song in playlist.

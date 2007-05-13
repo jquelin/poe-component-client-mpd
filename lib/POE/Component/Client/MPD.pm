@@ -72,17 +72,21 @@ sub spawn {
         },
         object_states => [
             $commands   => { # general purpose commands
+                # -- MPD interaction: general commands
+                # -- MPD interaction: handling volume & output
                 'volume'           => '_onpub_volume',
                 'output_enable'    => '_onpub_output_enable',
                 'output_disable'   => '_onpub_output_disable',
-
+                # -- MPD interaction: retrieving info from current state
                 'stats'            => '_onpub_stats',
                 '_stats_postback'  => '_onpriv_stats_postback',
                 'status'           => '_onpub_status',
                 '_status_postback' => '_onpriv_status_postback',
                 'current'          => '_onpub_current',
-
+                # -- MPD interaction: altering settings
+                # -- MPD interaction: controlling playback
                 'play'             => '_onpub_play',
+                'playid'           => '_onpub_playid',
                 'next'             => '_onpub_next',
             },
             $collection => { # collection related commands
