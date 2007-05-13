@@ -314,14 +314,34 @@ sub _onpub_prev {
 sub _onpub_seek {
     my ($time, $song) = @_[ARG0, ARG1];
     $time ||= 0; $time = int $time;
-    # FIXME: $song = $self->status->song if not defined $song; # seek in current song
     my $msg = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
         _answer   => $DISCARD,
-        _commands => [ "seek $song $time" ],
         _cooking  => $RAW,
     } );
+
+    if ( defined $song ) {
+        $msg->_commands( [ "seek $song $time" ] );
+    } else {
+        $msg->_pre_from( '_seek_need_current' );
+        $msg->_pre_event( 'status' );
+        $msg->_pre_data( $time );
+    }
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: _seek_need_current( $msg, $current )
+#
+# Use $current to get current song, before sending real seek $msg.
+#
+sub _onpriv_seek_need_current {
+    my ($msg, $current) = @_[ARG0, ARG1];
+    my $song = $current->data->song;
+    my $time = $msg->_pre_data;
+    $msg->_commands( [ "seek $song $time" ] );
     $_[KERNEL]->yield( '_send', $msg );
 }
 
@@ -335,17 +355,36 @@ sub _onpub_seek {
 sub _onpub_seekid {
     my ($time, $song) = @_[ARG0, ARG1];
     $time ||= 0; $time = int $time;
-    # FIXME: $song = $self->status->songid if not defined $song; # seek in current song
     my $msg = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
         _answer   => $DISCARD,
-        _commands => [ "seekid $song $time" ],
         _cooking  => $RAW,
     } );
+
+    if ( defined $song ) {
+        $msg->_commands( [ "seekid $song $time" ] );
+    } else {
+        $msg->_pre_from( '_seekid_need_current' );
+        $msg->_pre_event( 'status' );
+        $msg->_pre_data( $time );
+    }
     $_[KERNEL]->yield( '_send', $msg );
 }
 
+
+#
+# event: _seekid_need_current( $msg, $current )
+#
+# Use $current to get current song, before sending real seekid $msg.
+#
+sub _onpriv_seekid_need_current {
+    my ($msg, $current) = @_[ARG0, ARG1];
+    my $song = $current->data->song;
+    my $time = $msg->_pre_data;
+    $msg->_commands( [ "seekid $song $time" ] );
+    $_[KERNEL]->yield( '_send', $msg );
+}
 
 
 1;
