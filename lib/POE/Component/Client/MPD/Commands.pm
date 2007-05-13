@@ -305,6 +305,49 @@ sub _onpub_prev {
 }
 
 
+#
+# event: seek( $time, [$song] )
+#
+# Seek to $time seconds in song number $song. If $song number is not specified
+# then the perl module will try and seek to $time in the current song.
+#
+sub _onpub_seek {
+    my ($time, $song) = @_[ARG0, ARG1];
+    $time ||= 0; $time = int $time;
+    # FIXME: $song = $self->status->song if not defined $song; # seek in current song
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "seek $song $time" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: seekid( $time, [$songid] )
+#
+# Seek to $time seconds in song ID $songid. If $songid number is not specified
+# then the perl module will try and seek to $time in the current song.
+#
+sub _onpub_seekid {
+    my ($time, $song) = @_[ARG0, ARG1];
+    $time ||= 0; $time = int $time;
+    # FIXME: $song = $self->status->songid if not defined $song; # seek in current song
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "seekid $song $time" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+
 1;
 
 __END__

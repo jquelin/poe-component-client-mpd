@@ -93,6 +93,8 @@ sub spawn {
                 'stop'             => '_onpub_stop',
                 'next'             => '_onpub_next',
                 'prev'             => '_onpub_prev',
+                'seek'             => '_onpub_seek',
+                'seekid'           => '_onpub_seekid',
             },
             $collection => { # collection related commands
                 'coll.all_files'    => '_onpub_all_files',
