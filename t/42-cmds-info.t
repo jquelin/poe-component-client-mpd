@@ -32,8 +32,8 @@ my @songs = qw[ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg ];
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    [ 'updatedb', [],      $DISCARD, \&check_stats  ],
-    [ 'pl.add',   \@songs, $DISCARD, \&check_stats  ],
+    [ 'updatedb', [],      $DISCARD, undef          ],
+    [ 'pl.add',   \@songs, $DISCARD, undef          ],
     [ 'stats',    [],      $SEND,    \&check_stats  ],
 
     [ 'play',     [],      $DISCARD, undef          ],
