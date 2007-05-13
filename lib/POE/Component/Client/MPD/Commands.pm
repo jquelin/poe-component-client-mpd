@@ -83,6 +83,24 @@ sub _onpub_output_disable {
 
 
 # -- MPD interaction: retrieving info from current state
+
+#
+# event: stats()
+#
+# Return a POCOCM::Stats object with the current statistics of MPD.
+#
+sub _onpub_stats {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ 'stats' ],
+        _cooking  => $AS_KV,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- MPD interaction: altering settings
 # -- MPD interaction: controlling playback
 

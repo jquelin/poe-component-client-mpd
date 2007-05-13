@@ -76,6 +76,8 @@ sub spawn {
                 'output_enable'  => '_onpub_output_enable',
                 'output_disable' => '_onpub_output_disable',
 
+                'stats'          => '_onpub_stats',
+
                 'next'           => '_onpub_next',
             },
             $collection => { # collection related commands
