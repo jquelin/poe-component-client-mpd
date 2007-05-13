@@ -22,6 +22,7 @@ use warnings;
 
 use POE;
 use POE::Component::Client::MPD::Collection;
+use POE::Component::Client::MPD::Commands;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::MPD::Playlist;
@@ -53,6 +54,7 @@ sub spawn {
     my ($type, $args) = @_;
 
     my $collection = POE::Component::Client::MPD::Collection->new;
+    my $commands   = POE::Component::Client::MPD::Commands->new;
     my $playlist   = POE::Component::Client::MPD::Playlist->new;
 
     my $session = POE::Session->create(
@@ -69,6 +71,9 @@ sub spawn {
             'disconnect'   => \&_onpub_disconnect,
         },
         object_states => [
+            $commands   => { # general purpose commands
+                'next'          => '_onpub_next',
+            },
             $collection => { # collection related commands
                 'coll.all_files' => '_onpub_all_files',
             },
