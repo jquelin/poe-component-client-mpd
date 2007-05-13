@@ -78,6 +78,8 @@ sub spawn {
 
                 'stats'            => '_onpub_stats',
                 '_stats_postback'  => '_onpriv_stats_postback',
+                'status'           => '_onpub_status',
+                '_status_postback' => '_onpriv_status_postback',
 
                 'next'             => '_onpub_next',
             },

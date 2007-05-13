@@ -23,6 +23,7 @@ use warnings;
 use POE;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::MPD::Stats;
+use POE::Component::Client::MPD::Status;
 use base qw[ Class::Accessor::Fast ];
 
 # -- MPD interaction: general commands
@@ -114,6 +115,39 @@ sub _onpriv_stats_postback {
     my $msg   = $_[ARG0];
     my %stats = @{ $msg->data };
     my $stats = POE::Component::Client::MPD::Stats->new( \%stats );
+    $msg->data($stats);
+    $_[KERNEL]->yield( '_mpd_data', $msg );
+}
+
+
+#
+# event: status()
+#
+# Return a hash with the current status of MPD.
+#
+sub _onpub_status {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ 'status' ],
+        _cooking  => $AS_KV,
+        _post     => '_status_postback',
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: _status_postback( $msg )
+#
+# Transform $msg->data from hash to a POCOCM::Status object with the current
+# status of MPD.
+#
+sub _onpriv_status_postback {
+    my $msg   = $_[ARG0];
+    my %stats = @{ $msg->data };
+    my $stats = POE::Component::Client::MPD::Status->new( \%stats );
     $msg->data($stats);
     $_[KERNEL]->yield( '_mpd_data', $msg );
 }
