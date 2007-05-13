@@ -315,8 +315,8 @@ your bug as I make changes.
 You can find more information on the mpd project on its homepage at
 L<http://www.musicpd.org>, or its wiki L<http://mpd.wikia.com>.
 
-POE::Component::Client::MPD development takes place on C<< <audio-mpd at
-googlegroups.com> >>: feel free to join us. (use
+C<POE::Component::Client::MPD development> takes place on C<< <audio-mpd
+at googlegroups.com> >>: feel free to join us. (use
 L<http://groups.google.com/group/audio-mpd> to sign in). Our subversion
 repository is located at L<https://svn.musicpd.org>.
 
@@ -338,7 +338,6 @@ L<http://cpanratings.perl.org/d/POE-Component-Client-MPD>
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD>
 
 =back
-
 
 
 =head1 AUTHOR
