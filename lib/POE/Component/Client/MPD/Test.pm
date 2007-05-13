@@ -20,8 +20,10 @@ package POE::Component::Client::MPD::Test;
 use strict;
 use warnings;
 
-use FindBin     qw[ $Bin ];
-use POE         qw[ Component::Client::MPD ];
+use FindBin qw[ $Bin ];
+use POE;
+use POE::Component::Client::MPD;
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -182,6 +184,7 @@ sub _onpub_next_test {
     my $event = $::tests[0][0];
     my $args  = $::tests[0][1];
     $k->post( 'mpd', $event, @$args );
+    shift @::tests if $::tests[0][2] == $DISCARD;
 }
 
 
@@ -191,7 +194,7 @@ sub _onpub_next_test {
 # Called when mpd talks back, with $msg as a pococm-message param.
 #
 sub _onpub_mpd_result {
-    $::tests[0][2]->( $_[ARG0] );      # check if everything went fine
+    $::tests[0][3]->( $_[ARG0] );      # check if everything went fine
     shift @::tests;                    # remove test being played
     $_[KERNEL]->yield( 'next_test' );  # call next test
 }

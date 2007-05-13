@@ -22,15 +22,15 @@
 use strict;
 use warnings;
 
-use POE;
+use POE qw[ Component::Client::MPD::Message ];
 use Readonly;
 use Test::More;
 
 
 our $nbtests = 2;
 our @tests   = (
-    # [ 'event', [ $arg1, $arg2, ... ], \&sub_checking_results ]
-    [ 'coll.all_files', [], \&check_all_files ],
+    # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
+    [ 'coll.all_files', [], $SEND, \&check_all_files ],
 );
 
 
