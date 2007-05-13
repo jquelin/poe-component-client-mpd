@@ -87,7 +87,7 @@ sub _onpub_output_disable {
 #
 # event: stats()
 #
-# Return a POCOCM::Stats object with the current statistics of MPD.
+# Return a hash with the current statistics of MPD.
 #
 sub _onpub_stats {
     my $msg = POE::Component::Client::MPD::Message->new( {
@@ -96,7 +96,22 @@ sub _onpub_stats {
         _answer   => $SEND,
         _commands => [ 'stats' ],
         _cooking  => $AS_KV,
+        _post     => '_stats_postback',
     } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: _stats_postback( $msg )
+#
+# Transform $msg->data from hash to a POCOCM::Stats object with the current
+# statistics of MPD.
+#
+sub _onpriv_stats_postback {
+    my $msg = $_[ARG0];
+    my $stats = POE::Component::Client::MPD::Stats->new( $msg->data );
+    $msg->data($stats);
     $_[KERNEL]->yield( '_send', $msg );
 }
 

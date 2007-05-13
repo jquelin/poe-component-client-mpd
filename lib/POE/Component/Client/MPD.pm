@@ -72,20 +72,21 @@ sub spawn {
         },
         object_states => [
             $commands   => { # general purpose commands
-                'volume'         => '_onpub_volume',
-                'output_enable'  => '_onpub_output_enable',
-                'output_disable' => '_onpub_output_disable',
+                'volume'           => '_onpub_volume',
+                'output_enable'    => '_onpub_output_enable',
+                'output_disable'   => '_onpub_output_disable',
 
-                'stats'          => '_onpub_stats',
+                'stats'            => '_onpub_stats',
+                '_stats_postback'  => '_onpriv_stats_postback',
 
-                'next'           => '_onpub_next',
+                'next'             => '_onpub_next',
             },
             $collection => { # collection related commands
-                'coll.all_files'  => '_onpub_all_files',
+                'coll.all_files'    => '_onpub_all_files',
             },
             $playlist   => { # playlist related commands
-                'pl.add'          => '_onpub_add',
-                'pl.delete'       => '_onpub_delete',
+                'pl.add'            => '_onpub_add',
+                'pl.delete'         => '_onpub_delete',
             },
         ],
     );
