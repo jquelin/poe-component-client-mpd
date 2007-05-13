@@ -184,7 +184,10 @@ sub _onpub_next_test {
     my $event = $::tests[0][0];
     my $args  = $::tests[0][1];
     $k->post( 'mpd', $event, @$args );
-    shift @::tests if $::tests[0][2] == $DISCARD;
+
+    return unless $::tests[0][2] == $DISCARD;
+    shift @::tests;
+    $k->yield( 'next_test' );
 }
 
 
