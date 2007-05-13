@@ -265,6 +265,24 @@ sub _onpub_next {
     $_[KERNEL]->yield( '_send', $msg );
 }
 
+
+#
+# event: prev()
+#
+# Play previous song in playlist.
+#
+sub _onpub_next {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ 'previous' ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 1;
 
 __END__
