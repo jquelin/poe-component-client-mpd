@@ -20,9 +20,11 @@ package POE::Component::Client::MPD::Commands;
 use strict;
 use warnings;
 
-use POE;
+use POE  qw[ Component::Client::MPD::Message ];
 use base qw[ Class::Accessor::Fast ];
 
+
+# -- MPD interaction: controlling playback
 
 #
 # event: next()
@@ -31,7 +33,14 @@ use base qw[ Class::Accessor::Fast ];
 # No return event.
 #
 sub _onpub_next {
-}
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ 'next' ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );}
 
 1;
 
