@@ -106,7 +106,8 @@ sub _onpub_disconnect {
 # Received when mpd finished to send back some data.
 #
 sub _onprot_mpd_data {
-    $_[KERNEL]->post( $req->_from, 'mpd_result', $_[ARG0] );
+    my $msg = $_[ARG0];
+    $_[KERNEL]->post( $msg->_from, 'mpd_result', $msg );
 }
 
 sub _onprot_mpd_error {
