@@ -27,7 +27,7 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 11;
+our $nbtests = 19;
 my @songs = qw[
     title.ogg dir1/title-artist-album.ogg
     dir1/title-artist.ogg dir2/album.ogg
@@ -74,6 +74,26 @@ our @tests   = (
     [ 'prev',     [],      $DISCARD, undef           ],
     [ 'status',   [],      $SEND,    \&check_next    ],
 
+    # seek
+    [ 'seek',     [1,2],   $DISCARD, undef           ],
+    [ 'pause',    [1],     $DISCARD, undef           ],
+    [ 'status',   [],      $SEND,    \&check_seek1   ],
+    [ 'seek',     [],      $DISCARD, undef           ],
+    [ 'pause',    [1],     $SLEEP1,  undef           ],
+    [ 'status',   [],      $SEND,    \&check_seek2   ],
+    [ 'seek',     [1],     $DISCARD, undef           ],
+    [ 'pause',    [1],     $SLEEP1,  undef           ],
+    [ 'status',   [],      $SEND,    \&check_seek3   ],
+
+    # seekid
+    [ 'seekid',   [1,1],   $DISCARD, undef           ],
+    [ 'status',   [],      $SEND,    \&check_seekid1 ],
+    [ 'seekid',   [],      $DISCARD, undef           ],
+    [ 'pause',    [1],     $SLEEP1,  undef           ],
+    [ 'status',   [],      $SEND,    \&check_seekid2 ],
+    [ 'seekid',   [1],     $DISCARD, undef           ],
+    [ 'pause',    [1],     $SLEEP1,  undef           ],
+    [ 'status',   [],      $SEND,    \&check_seekid3 ],
 );
 
 
@@ -93,32 +113,17 @@ sub check_pause4  { is( $_[0]->data->state,  'play',  'pause() toggles to play' 
 sub check_stop    { is( $_[0]->data->state,  'stop',  'stop() forces full stop' ); }
 sub check_prev    { is( $_[0]->data->song,   2,       'next() changes track to next one' ); }
 sub check_next    { is( $_[0]->data->song,   1,       'prev() changes track to previous one' ); }
-
-__END__
-
-
-
-
-#
-# testing seek / seekid.
-$mpd->pause(1);
-$mpd->seek( 1, 2 );
-is( $mpd->status->song,     2, 'seek() can change the current track' );
-is( $mpd->status->time->sofar_secs, 1, 'seek() seeks in the song' );
-$mpd->seek;
-is( $mpd->status->time->sofar_secs, 0, 'seek() defaults to beginning of song' );
-$mpd->seek(1);
-is( $mpd->status->time->sofar_secs, 1, 'seek() defaults to current song ' );
-
-
-$mpd->seekid( 1, 1 );
-is( $mpd->status->songid,   1, 'seekid() can change the current track' );
-is( $mpd->status->time->sofar_secs, 1, 'seekid() seeks in the song' );
-$mpd->seekid;
-is( $mpd->status->time->sofar_secs, 0, 'seekid() defaults to beginning of song' );
-$mpd->seekid(1);
-is( $mpd->status->time->sofar_secs, 1, 'seekid() defaults to current song' );
-
-
-
-exit;
+sub check_seek1 {
+    my $status = $_[0]->data;
+    is( $status->song,             2, 'seek() can change the current track' );
+    is( $status->time->sofar_secs, 1, 'seek() seeks in the song' );
+}
+sub check_seek2   { is( $_[0]->data->time->sofar_secs, 0, 'seek() defaults to beginning of song' ); }
+sub check_seek3   { is( $_[0]->data->time->sofar_secs, 1, 'seek() defaults to current song ' ); }
+sub check_seekid1 {
+    my $status = $_[0]->data;
+    is( $status->songid,           1, 'seekid() can change the current track' );
+    is( $status->time->sofar_secs, 1, 'seekid() seeks in the song' );
+}
+sub check_seekid2 { is( $_[0]->data->time->sofar_secs, 0, 'seekid() defaults to beginning of song' ); }
+sub check_seekid3 { is( $_[0]->data->time->sofar_secs, 1, 'seekid() defaults to current song' ); }
