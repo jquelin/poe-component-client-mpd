@@ -40,22 +40,21 @@ sub spawn {
     my $session = POE::Session->create(
         args          => [ $args ],
         inline_states => {
+            # private events
             '_start'       => \&_onpriv_start,
             '_send'        => \&_onpriv_send,
+            # protected events
             '_mpd_data'    => \&_onprot_mpd_data,
             '_mpd_error'   => \&_onprot_mpd_error,
             '_mpd_version' => \&_onprot_mpd_version,
+            # public events
             'disconnect'   => \&_onpub_disconnect,
         },
         object_states => [
-#             $self => [
-#                 '_connected',
-#                 '_got_mpd_version',
-#                 ],
-            $collection => {
+            $collection => { # collection related commands
                 'coll.all_files' => '_onpub_all_files',
             },
-            $playlist   => {
+            $playlist   => { # playlist related commands
                 'pl.add'         => '_onpub_add',
                 'pl.delete'      => '_onpub_delete',
             },
@@ -66,6 +65,9 @@ sub spawn {
 }
 
 
+#--
+# public events
+
 #
 # event: disconnect()
 #
@@ -73,11 +75,47 @@ sub spawn {
 #
 sub _onpub_disconnect {
     my ($k,$h) = @_[KERNEL, HEAP];
-    $k->alias_remove( $h->{alias} ) if defined $h->{alias};
-    $k->post( $h->{_socket}, 'disconnect' );
+    $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
+    $k->post( $h->{_socket}, 'disconnect' );                # pococm-conn
 }
 
 
+#--
+# protected events.
+
+#
+# Event: _mpd_data( $msg )
+#
+# Received when mpd finished to send back some data.
+#
+sub _onprot_mpd_data {
+    $_[KERNEL]->post( $req->_from, 'mpd_result', $_[ARG0] );
+}
+
+sub _onprot_mpd_error {
+    warn "mpd error\n";
+}
+
+#
+# Event: _mpd_version( $vers )
+#
+# Event received during connection, when mpd server sends its version.
+# Store it for later usage if needed.
+#
+sub _onprot_mpd_version {
+    $_[HEAP]->{version} = $_[ARG0];
+}
+
+
+#--
+# private events
+
+#
+# Event: _start( \%params )
+#
+# Called when the poe session gets initialized. Receive a reference
+# to %params, same as spawn() received.
+#
 sub _onpriv_start {
     my ($h, $args) = @_[HEAP, ARG0];
 
@@ -119,36 +157,11 @@ sub _connected {
 
 
 
-sub _onprot_mpd_data {
-    my $req = $_[ARG0];
-    $_[KERNEL]->post( $req->_from, 'mpd_result', $req );
-}
-
-sub _onprot_mpd_error {
-    warn "mpd error\n";
-}
-
 #
-# _got_mpd_version( $vers )
+# event: _send( $msg )
 #
-# Event sent during connection, when mpd server sends its version.
-# Store it for later usage if needed.
-#
-sub _onprot_mpd_version {
-    # FIXME
-    #$_[HEAP]->{version} = $_[ARG0]->answer->[0];
-}
-
-
-#
-# {
-#   from    => $id,
-#   state   => $state,
-#   command => [ $cmd, ... ],
-# }
-#
-# send data over tcp to mpd server. note that $data should not be newline
-# terminated (it's handled via the poe::filter).
+# Event received to request message sending over tcp to mpd server.
+# $msg is a pococm-message partially filled.
 #
 sub _onpriv_send {
     $_[KERNEL]->post( $_[HEAP]->{_socket}, 'send', $_[ARG0] );
