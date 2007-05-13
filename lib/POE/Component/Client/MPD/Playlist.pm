@@ -81,7 +81,7 @@ sub _onpub_delete {
 #
 # Remove all the songs from the current playlist.
 #
-sub _onpub_updatedb {
+sub _onpub_clear {
     my $msg = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
