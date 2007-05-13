@@ -24,6 +24,9 @@ use POE  qw[ Component::Client::MPD::Message ];
 use base qw[ Class::Accessor::Fast ];
 
 
+# -- Collection: retrieving songs & directories
+# -- Collection: retrieving the whole collection
+
 #
 # event: pl.all_files()
 #
@@ -40,6 +43,9 @@ sub _onpub_all_files {
     } );
     $_[KERNEL]->yield( '_send', $msg );
 }
+
+# -- Collection: picking songs
+# -- Collection: songs, albums & artists relations
 
 1;
 

@@ -23,7 +23,10 @@ use warnings;
 use POE  qw[ Component::Client::MPD::Message ];
 use base qw[ Class::Accessor::Fast ];
 
-
+# -- MPD interaction: general commands
+# -- MPD interaction: handling volume & output
+# -- MPD interaction: retrieving info from current state
+# -- MPD interaction: altering settings
 # -- MPD interaction: controlling playback
 
 #

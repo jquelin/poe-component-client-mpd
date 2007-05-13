@@ -23,6 +23,8 @@ use warnings;
 use POE;
 use base qw[ Class::Accessor::Fast ];
 
+# -- Playlist: retrieving information
+# -- Playlist: adding / removing songs
 
 #
 # event: pl:add( $path, $path, ... )
@@ -72,6 +74,9 @@ sub _onpub_delete {
     $_[KERNEL]->yield( '_send', $args );
 }
 
+
+# -- Playlist: changing playlist order
+# -- Playlist: managing playlists
 
 1;
 
