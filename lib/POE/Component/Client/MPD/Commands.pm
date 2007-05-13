@@ -25,6 +25,63 @@ use base qw[ Class::Accessor::Fast ];
 
 # -- MPD interaction: general commands
 # -- MPD interaction: handling volume & output
+
+#
+# event: volume( $volume )
+#
+# Sets the audio output volume percentage to absolute $volume.
+# If $volume is prefixed by '+' or '-' then the volume is changed relatively
+# by that value.
+#
+sub _onpub_volume {
+    my $volume = $_[ARG0]; # FIXME: +/- prefix
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "setvol $volume" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: output_enable( $output )
+#
+# Enable the specified audio output. $output is the ID of the audio output.
+#
+sub _onpub_output_enable {
+    my $output = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "enableoutput $output" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: output_disable( $output )
+#
+# Disable the specified audio output. $output is the ID of the audio output.
+#
+sub _onpub_output_disable {
+    my $output = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "disableoutput $output" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- MPD interaction: retrieving info from current state
 # -- MPD interaction: altering settings
 # -- MPD interaction: controlling playback
@@ -43,7 +100,8 @@ sub _onpub_next {
         _commands => [ 'next' ],
         _cooking  => $RAW,
     } );
-    $_[KERNEL]->yield( '_send', $msg );}
+    $_[KERNEL]->yield( '_send', $msg );
+}
 
 1;
 
