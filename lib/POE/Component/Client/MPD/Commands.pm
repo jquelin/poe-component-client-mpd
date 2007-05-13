@@ -153,8 +153,44 @@ sub _onpriv_status_postback {
 }
 
 
+#
+# event: current()
+#
+# Return a POCOCM::Item::Song representing the song currently playing.
+#
+sub _onpub_current {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ 'currentsong' ],
+        _cooking  => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- MPD interaction: altering settings
 # -- MPD interaction: controlling playback
+
+#
+# event: play( [$song] )
+#
+# Begin playing playlist at song number $song. If no argument supplied,
+# resume playing.
+#
+sub _onpub_play {
+    my $number = defined $_[ARG0] ? $_[ARG0] : '';
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "play $number" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
 
 #
 # event: next()

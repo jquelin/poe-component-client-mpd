@@ -80,7 +80,9 @@ sub spawn {
                 '_stats_postback'  => '_onpriv_stats_postback',
                 'status'           => '_onpub_status',
                 '_status_postback' => '_onpriv_status_postback',
+                'current'          => '_onpub_current',
 
+                'play'             => '_onpub_play',
                 'next'             => '_onpub_next',
             },
             $collection => { # collection related commands
