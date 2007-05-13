@@ -1,7 +1,7 @@
 #!perl
 #
-# This file is part of Audio::MPD.
-# Copyright (c) 2007 Jerome Quelin <jquelin@cpan.org>
+# This file is part of POE::Component::Client::MPD.
+# Copyright (c) 2007 Jerome Quelin, all rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
