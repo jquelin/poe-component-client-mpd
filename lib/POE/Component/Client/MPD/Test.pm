@@ -27,12 +27,10 @@ use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
-
 use base qw[ Exporter ];
 our @EXPORT = qw[ customize_test_mpd_configuration start_test_mpd stop_test_mpd ];
 
 #our ($VERSION) = '$Rev: 5727 $' =~ /(\d+)/;
-
 
 Readonly my $ALIAS    => 'tester';
 Readonly my $TEMPLATE => "$Bin/mpd-test/mpd.conf.template";
@@ -185,9 +183,10 @@ sub _onpub_next_test {
     my $args  = $::tests[0][1];
     $k->post( 'mpd', $event, @$args );
 
-    return unless $::tests[0][2] == $DISCARD;
+    return if $::tests[0][2] == $SEND;
+    $k->delay_set( 'next_test', 1 ) if $::tests[0][2] == $SLEEP1;
+    $k->yield( 'next_test' )        if $::tests[0][2] == $DISCARD;
     shift @::tests;
-    $k->yield( 'next_test' );
 }
 
 
