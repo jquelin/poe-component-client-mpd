@@ -27,10 +27,19 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 8;
+our $nbtests = 9;
+my @songs = qw[ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg ];
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
-    [ 'stats', [], $SEND, \&check_stats ],
+
+#     [ 'updatedb', [],      $DISCARD, \&check_stats  ],
+#     [ 'pl.add',   \@songs, $DISCARD, \&check_stats  ],
+    [ 'stats',    [],      $SEND,    \&check_stats  ],
+
+#     [ 'play',   [], $DISCARD, undef          ],
+#     [ 'pause',  [], $DISCARD, undef          ],
+    [ 'status', [], $SEND,    \&check_status ],
+
 );
 
 
@@ -40,14 +49,7 @@ plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 
 
 sub check_stats {
-    #
-    # testing stats
-#     $mpd->updatedb;
-#     $mpd->playlist->add( 'title.ogg' );
-#     $mpd->playlist->add( 'dir1/title-artist-album.ogg' );
-#     $mpd->playlist->add( 'dir1/title-artist.ogg' );
     my $stats = $_[0]->data;
-#     use Data::Dumper; warn Dumper($_[0]);
     isa_ok( $stats, 'POE::Component::Client::MPD::Stats',
             'stats() returns a pococm::stats object' );
     is( $stats->artists,      1, 'one artist in the database' );
@@ -57,23 +59,16 @@ sub check_stats {
     is( $stats->db_playtime,  8, '8 seconds worth of music in the db' );
     isnt( $stats->uptime, undef, 'uptime is defined' );
     isnt( $stats->db_update,  0, 'database has been updated' );
-
-
 }
+
+sub check_status {
+    my $status = $_[0]->data;
+    isa_ok( $status, 'POE::Component::Client::MPD::Status',
+            'status return a pococm::status object' );
+}
+
+
 __END__
-
-plan tests => 16;
-my $mpd = Audio::MPD->new;
-my $song;
-
-
-#
-# testing status.
-$mpd->play;
-$mpd->pause;
-my $status = $mpd->status;
-isa_ok( $status, 'Audio::MPD::Status', 'status return an am::status object' );
-
 
 #
 # testing current song.
