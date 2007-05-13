@@ -31,15 +31,14 @@ use base qw[ Class::Accessor::Fast ];
 # currently known by mpd.
 #
 sub _onpub_all_files {
-    my ($kernel) = $_[KERNEL];
-    my $req = POE::Component::Client::MPD::Message->new( {
+    my $msg = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
         _answer   => $SEND,
         _commands => [ 'list filename' ],
         _cooking  => $STRIP_FIRST,
     } );
-    $kernel->yield( '_send', $req );
+    $_[KERNEL]->yield( '_send', $msg );
 }
 
 1;
