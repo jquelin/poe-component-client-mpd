@@ -3,6 +3,7 @@ Revision history for POE-Component-Client-MPD
 High-level changelog
 ====================
 
+0.2.x  pococm-commands
 0.1.x  pococm-conn cleaning + features, pococm-message
 0.0.x  imported stuff from audio::mpd + porting to poe
 
@@ -10,6 +11,15 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.2.0 Sun May 13 12:30:58 CEST 2007
+ - new module handling general commands: pococm-commands
+ - new events handled:
+    . output_enable()
+    . output_disable()
+ - serious pod cleaning
+ - improved test framework
+
+**
 
 0.1.2 Sat May 12 19:30:11 CEST 2007
  - pococm-conn implements all cookings ($AS_ITEMS, $AS_KV)
