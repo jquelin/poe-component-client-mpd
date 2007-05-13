@@ -15,6 +15,7 @@ lib/POE/Component/Client/MPD/Message.pm
 lib/POE/Component/Client/MPD/Playlist.pm
 lib/POE/Component/Client/MPD/Stats.pm
 lib/POE/Component/Client/MPD/Test.pm
+lib/POE/Component/Client/MPD/Time.pm
 Makefile.PL
 MANIFEST
 META.yml
@@ -23,6 +24,7 @@ t/00-load.t
 t/01-pod.t
 t/02-pod-coverage.t
 t/10-item.t
+t/11-time.t
 t/13-stats.t
 t/20-conn-failed.t
 t/21-conn-non_mpd.t
