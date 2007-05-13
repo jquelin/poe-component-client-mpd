@@ -62,50 +62,52 @@ sub spawn {
         args          => [ $args ],
         inline_states => {
             # private events
-            '_start'             => \&_onpriv_start,
-            '_send'              => \&_onpriv_send,
-            '_post_array2scalar' => \&_onpriv_post_array2scalar,
+            '_start'                   => \&_onpriv_start,
+            '_send'                    => \&_onpriv_send,
+            '_post_array2scalar'       => \&_onpriv_post_array2scalar,
             # protected events
-            '_mpd_data'    => \&_onprot_mpd_data,
-            '_mpd_error'   => \&_onprot_mpd_error,
-            '_mpd_version' => \&_onprot_mpd_version,
+            '_mpd_data'                => \&_onprot_mpd_data,
+            '_mpd_error'               => \&_onprot_mpd_error,
+            '_mpd_version'             => \&_onprot_mpd_version,
             # public events
-            'disconnect'   => \&_onpub_disconnect,
+            'disconnect'               => \&_onpub_disconnect,
         },
         object_states => [
             $commands   => { # general purpose commands
                 # -- MPD interaction: general commands
-                'updatedb'         => '_onpub_updatedb',
+                'updatedb'             => '_onpub_updatedb',
                 # -- MPD interaction: handling volume & output
-                'volume'           => '_onpub_volume',
-                'output_enable'    => '_onpub_output_enable',
-                'output_disable'   => '_onpub_output_disable',
+                'volume'               => '_onpub_volume',
+                'output_enable'        => '_onpub_output_enable',
+                'output_disable'       => '_onpub_output_disable',
                 # -- MPD interaction: retrieving info from current state
-                'stats'            => '_onpub_stats',
-                '_stats_postback'  => '_onpriv_stats_postback',
-                'status'           => '_onpub_status',
-                '_status_postback' => '_onpriv_status_postback',
-                'current'          => '_onpub_current',
+                'stats'                => '_onpub_stats',
+                '_stats_postback'      => '_onpriv_stats_postback',
+                'status'               => '_onpub_status',
+                '_status_postback'     => '_onpriv_status_postback',
+                'current'              => '_onpub_current',
                 # -- MPD interaction: altering settings
                 # -- MPD interaction: controlling playback
-                'play'             => '_onpub_play',
-                'playid'           => '_onpub_playid',
-                'pause'            => '_onpub_pause',
-                'stop'             => '_onpub_stop',
-                'next'             => '_onpub_next',
-                'prev'             => '_onpub_prev',
-                'seek'             => '_onpub_seek',
-                'seekid'           => '_onpub_seekid',
+                'play'                 => '_onpub_play',
+                'playid'               => '_onpub_playid',
+                'pause'                => '_onpub_pause',
+                'stop'                 => '_onpub_stop',
+                'next'                 => '_onpub_next',
+                'prev'                 => '_onpub_prev',
+                'seek'                 => '_onpub_seek',
+                '_seek_need_current'   => '_onpriv_seek_need_current',
+                'seekid'               => '_onpub_seekid',
+                '_seekid_need_current' => '_onpriv_seek_need_current',
             },
             $collection => { # collection related commands
-                'coll.all_files'    => '_onpub_all_files',
+                'coll.all_files'       => '_onpub_all_files',
             },
             $playlist   => { # playlist related commands
                 # -- Playlist: retrieving information
                 # -- Playlist: adding / removing songs
-                'pl.add'            => '_onpub_add',
-                'pl.delete'         => '_onpub_delete',
-                'pl.clear'          => '_onpub_clear',
+                'pl.add'               => '_onpub_add',
+                'pl.delete'            => '_onpub_delete',
+                'pl.clear'             => '_onpub_clear',
                 # -- Playlist: changing playlist order
                 # -- Playlist: managing playlists
             },
