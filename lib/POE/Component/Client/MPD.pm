@@ -72,7 +72,7 @@ sub spawn {
         },
         object_states => [
             $commands   => { # general purpose commands
-                'volume'         => 'volume',
+                'volume'         => '_onpub_volume',
                 'output_enable'  => '_onpub_output_enable',
                 'output_disable' => '_onpub_output_disable',
 
