@@ -5,6 +5,7 @@ COPYING
 DESIGN
 lib/POE/Component/Client/MPD.pm
 lib/POE/Component/Client/MPD/Collection.pm
+lib/POE/Component/Client/MPD/Commands.pm
 lib/POE/Component/Client/MPD/Connection.pm
 lib/POE/Component/Client/MPD/Item.pm
 lib/POE/Component/Client/MPD/Item/Directory.pm
