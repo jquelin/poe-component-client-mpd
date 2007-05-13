@@ -21,13 +21,14 @@ use strict;
 use warnings;
 
 use POE;
+use POE::Component::Client::MPD::Message;
 use base qw[ Class::Accessor::Fast ];
 
 # -- Playlist: retrieving information
 # -- Playlist: adding / removing songs
 
 #
-# event: pl:add( $path, $path, ... )
+# event: pl.add( $path, $path, ... )
 #
 # Add the songs identified by $path (relative to MPD's music directory) to
 # the current playlist.
@@ -40,19 +41,19 @@ sub _onpub_add {
         map( qq[add "$_"], @pathes ),
         'command_list_end',
     );
-
-    # send the commands to mpd.
-    my $args = {
-        from     => $_[SENDER]->ID,
-        state    => $_[STATE],
-        commands => \@commands
-    };
-    $_[KERNEL]->yield( '_send', $args );
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => \@commands,
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
 }
 
 
 #
-# event: pl:delete( $number, $number, ... )
+# event: pl.delete( $number, $number, ... )
 #
 # Remove song $number (starting from 0) from the current playlist.
 # No return event.
@@ -64,14 +65,14 @@ sub _onpub_delete {
         map( qq[delete $_], reverse sort {$a<=>$b} @numbers ),
         'command_list_end',
     );
-
-    # send the commands to mpd.
-    my $args = {
-        from     => $_[SENDER]->ID,
-        state    => $_[STATE],
-        commands => \@commands
-    };
-    $_[KERNEL]->yield( '_send', $args );
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => \@commands,
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
 }
 
 
