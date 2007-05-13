@@ -212,6 +212,27 @@ sub _onpub_playid {
 
 
 #
+# event: pause( [$sate] )
+#
+# Pause playback. If $state is 0 then the current track is unpaused, if
+# $state is 1 then the current track is paused.
+#
+# Note that if $state is not given, pause state will be toggled.
+#
+sub pause {
+    my $state = defined $_[ARG0] ? $_[ARG0] : '';
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "pause $state" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
 # event: next()
 #
 # Play next song in playlist.

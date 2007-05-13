@@ -87,6 +87,7 @@ sub spawn {
                 # -- MPD interaction: controlling playback
                 'play'             => '_onpub_play',
                 'playid'           => '_onpub_playid',
+                'pause'            => '_onpub_pause',
                 'next'             => '_onpub_next',
             },
             $collection => { # collection related commands
