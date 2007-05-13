@@ -120,6 +120,12 @@ sub _onpub_disconnect {
 sub _onprot_mpd_data {
     my $msg = $_[ARG0];
     return if $msg->_answer == $DISCARD;
+
+    if ( defined $msg->_post ) {
+        # need a post-treatment...
+        $_[KERNEL]->yield( $msg->_post, $msg );
+        return;
+    }
     $_[KERNEL]->post( $msg->_from, 'mpd_result', $msg );
 }
 
