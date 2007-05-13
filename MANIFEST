@@ -13,6 +13,7 @@ lib/POE/Component/Client/MPD/Item/Playlist.pm
 lib/POE/Component/Client/MPD/Item/Song.pm
 lib/POE/Component/Client/MPD/Message.pm
 lib/POE/Component/Client/MPD/Playlist.pm
+lib/POE/Component/Client/MPD/Stats.pm
 lib/POE/Component/Client/MPD/Test.pm
 Makefile.PL
 MANIFEST
@@ -22,10 +23,12 @@ t/00-load.t
 t/01-pod.t
 t/02-pod-coverage.t
 t/10-item.t
+t/13-stats.t
 t/20-conn-failed.t
 t/21-conn-non_mpd.t
 t/23-conn-dialog.t
 t/40-collection.t
+t/41-cmds-output.t
 t/mpd-test/mpd.conf.template
 t/mpd-test/music/dir1/title-artist-album.ogg
 t/mpd-test/music/dir1/title-artist.ogg
