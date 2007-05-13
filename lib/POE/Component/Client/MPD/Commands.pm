@@ -20,7 +20,9 @@ package POE::Component::Client::MPD::Commands;
 use strict;
 use warnings;
 
-use POE  qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD::Message;
+use POE::Component::Client::MPD::Stats;
 use base qw[ Class::Accessor::Fast ];
 
 # -- MPD interaction: general commands
@@ -109,10 +111,11 @@ sub _onpub_stats {
 # statistics of MPD.
 #
 sub _onpriv_stats_postback {
-    my $msg = $_[ARG0];
-    my $stats = POE::Component::Client::MPD::Stats->new( $msg->data );
+    my $msg   = $_[ARG0];
+    my %stats = @{ $msg->data };
+    my $stats = POE::Component::Client::MPD::Stats->new( \%stats );
     $msg->data($stats);
-    $_[KERNEL]->yield( '_send', $msg );
+    $_[KERNEL]->yield( '_mpd_data', $msg );
 }
 
 
