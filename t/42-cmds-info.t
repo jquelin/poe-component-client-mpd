@@ -36,9 +36,11 @@ our @tests   = (
 #     [ 'pl.add',   \@songs, $DISCARD, \&check_stats  ],
     [ 'stats',    [],      $SEND,    \&check_stats  ],
 
-#     [ 'play',   [], $DISCARD, undef          ],
-#     [ 'pause',  [], $DISCARD, undef          ],
-    [ 'status', [], $SEND,    \&check_status ],
+    [ 'play',     [],      $DISCARD, undef          ],
+    [ 'pause',    [],      $DISCARD, undef          ],
+    [ 'status',   [],      $SEND,    \&check_status ],
+
+    [ 'current',  [],      $SEND,    \&check_current ],
 
 );
 
@@ -67,13 +69,14 @@ sub check_status {
             'status return a pococm::status object' );
 }
 
+sub check_current {
+    my $song = $_[0]->data;
+#     isa_ok( $song, 'POE::Component::Client::MPD::Item::Song',
+#             'current return a POCOCM::Item::Song object' );
+}
 
 __END__
 
-#
-# testing current song.
-$song = $mpd->current;
-isa_ok( $song, 'Audio::MPD::Item::Song', 'current return an Audio::MPD::Item::Song object' );
 
 
 #
