@@ -27,13 +27,13 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 9;
+our $nbtests = 10;
 my @songs = qw[ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg ];
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
 #     [ 'updatedb', [],      $DISCARD, \&check_stats  ],
-#     [ 'pl.add',   \@songs, $DISCARD, \&check_stats  ],
+    [ 'pl.add',   \@songs, $DISCARD, \&check_stats  ],
     [ 'stats',    [],      $SEND,    \&check_stats  ],
 
     [ 'play',     [],      $DISCARD, undef          ],
@@ -71,8 +71,8 @@ sub check_status {
 
 sub check_current {
     my $song = $_[0]->data;
-#     isa_ok( $song, 'POE::Component::Client::MPD::Item::Song',
-#             'current return a POCOCM::Item::Song object' );
+    isa_ok( $song, 'POE::Component::Client::MPD::Item::Song',
+            'current return a POCOCM::Item::Song object' );
 }
 
 __END__
