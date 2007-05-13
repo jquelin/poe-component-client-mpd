@@ -14,6 +14,7 @@ WriteMakefile(
     PL_FILES            => {},
     PREREQ_PM => {
 		'Class::Accessor' => 0,
+		'List::MoreUtils' => 0,
 		'POE'             => 0,
 		'Readonly'        => 0,
         'Test::More'      => 0,

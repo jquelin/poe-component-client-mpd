@@ -18,6 +18,7 @@ my $builder = Module::Build->new (
     },
     requires => {
         'Class::Accessor' => 0,
+        'List::MoreUtils' => 0,
         'POE'             => 0,
         'Readonly'        => 0,
         'perl'            => '5.8.0',
