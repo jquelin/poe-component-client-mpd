@@ -24,13 +24,16 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast Exporter ];
 __PACKAGE__->mk_accessors( qw[
-    data error request _answer _commands _cooking _from _post
+    data error request
+    _answer _commands _cooking _from _request
+    _post _pre_event _pre_from _pre_data
 ] );
 
 
 # constants for _answer
 Readonly our $SEND    => 0;
 Readonly our $DISCARD => 1;
+Readonly our $SLEEP1  => 2; # for test purposes
 
 # constants for _cooking
 Readonly our $RAW         => 0; # data is to be returned raw
@@ -38,7 +41,7 @@ Readonly our $AS_ITEMS    => 1; # data is to be returned as pococm-item
 Readonly our $AS_KV       => 2; # data is to be returned as kv (hash)
 Readonly our $STRIP_FIRST => 3; # data should have its first field stripped
 
-our @EXPORT = qw[ $SEND $DISCARD
+our @EXPORT = qw[ $SEND $DISCARD $SLEEP1
                   $RAW $AS_ITEMS $AS_KV $STRIP_FIRST ];
 
 #our ($VERSION) = '$Rev: 5645 $' =~ /(\d+)/;
