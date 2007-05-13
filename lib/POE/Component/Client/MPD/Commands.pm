@@ -233,10 +233,26 @@ sub pause {
 
 
 #
+# event: stop()
+#
+# Stop playback
+#
+sub _onpub_stop {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ 'stop' ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
 # event: next()
 #
 # Play next song in playlist.
-# No return event.
 #
 sub _onpub_next {
     my $msg = POE::Component::Client::MPD::Message->new( {

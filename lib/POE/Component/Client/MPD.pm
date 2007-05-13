@@ -88,6 +88,7 @@ sub spawn {
                 'play'             => '_onpub_play',
                 'playid'           => '_onpub_playid',
                 'pause'            => '_onpub_pause',
+                'stop'             => '_onpub_stop',
                 'next'             => '_onpub_next',
             },
             $collection => { # collection related commands
