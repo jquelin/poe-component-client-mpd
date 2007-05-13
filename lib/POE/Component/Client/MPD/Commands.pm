@@ -165,6 +165,7 @@ sub _onpub_current {
         _answer   => $SEND,
         _commands => [ 'currentsong' ],
         _cooking  => $AS_ITEMS,
+        _post     => '_post_array2scalar',
     } );
     $_[KERNEL]->yield( '_send', $msg );
 }
