@@ -121,11 +121,14 @@ sub _onprot_mpd_data {
     my $msg = $_[ARG0];
     return if $msg->_answer == $DISCARD;
 
+    # check for post-callback.
     if ( defined $msg->_post ) {
-        # need a post-treatment...
-        $_[KERNEL]->yield( $msg->_post, $msg );
+        $_[KERNEL]->yield( $msg->_post, $msg ); # need a post-treatment...
+        $msg->_post( undef );                   # remove postback.
         return;
     }
+
+    # send result.
     $_[KERNEL]->post( $msg->_from, 'mpd_result', $msg );
 }
 
