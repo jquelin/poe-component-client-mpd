@@ -1,0 +1,59 @@
+#!perl
+#
+# This file is part of POE::Component::Client::MPD.
+# Copyright (c) 2007 Jerome Quelin, all rights reserved.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+#
+
+use strict;
+use warnings;
+
+use POE::Component::Client::MPD::Status;
+use Test::More tests => 14;
+
+
+my %kv = (
+    volume         => 66,
+    repeat         => 1,
+    random         => 0,
+    playlist       => 24,
+    playlistlength => 21,
+    xfade          => 14,
+    state          => 'play',
+    song           => 10,
+    songid         => 11,
+    time           => '45:214',
+    bitrate        => 127,
+    audio          => '44100:16:2',
+    error          => 'problems opening audio device',
+);
+
+my $s = POE::Component::Client::MPD::Status->new( \%kv );
+isa_ok( $s,       'POE::Component::Client::MPD::Status', 'object creation' );
+isa_ok( $s->time, 'POE::Component::Client::MPD::Time',   'accessor: time' );
+is( $s->volume,         66,                              'accessor: volume' );
+is( $s->repeat,         1,                               'accessor: repeat' );
+is( $s->random,         0,                               'accessor: random' );
+is( $s->playlist,       24,                              'accessor: playlist' );
+is( $s->playlistlength, 21,                              'accessor: playlistlength' );
+is( $s->xfade,          14,                              'accessor: xfade' );
+is( $s->state,          'play',                          'accessor: state' );
+is( $s->song,           10,                              'accessor: song' );
+is( $s->songid,         11,                              'accessor: songid' );
+is( $s->bitrate,        127,                             'accessor: bitrate' );
+is( $s->audio,          '44100:16:2',                    'accessor: audio' );
+is( $s->error,          'problems opening audio device', 'accessor: error' );
