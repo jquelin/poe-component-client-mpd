@@ -98,8 +98,13 @@ sub spawn {
                 'coll.all_files'    => '_onpub_all_files',
             },
             $playlist   => { # playlist related commands
+                # -- Playlist: retrieving information
+                # -- Playlist: adding / removing songs
                 'pl.add'            => '_onpub_add',
                 'pl.delete'         => '_onpub_delete',
+                'pl.clear'          => '_onpub_clear',
+                # -- Playlist: changing playlist order
+                # -- Playlist: managing playlists
             },
         ],
     );

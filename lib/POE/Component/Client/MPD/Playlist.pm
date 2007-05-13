@@ -76,6 +76,24 @@ sub _onpub_delete {
 }
 
 
+#
+# event: clear()
+#
+# Remove all the songs from the current playlist.
+#
+sub _onpub_updatedb {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ 'clear' ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+
 # -- Playlist: changing playlist order
 # -- Playlist: managing playlists
 
