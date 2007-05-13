@@ -20,6 +20,7 @@ package POE::Component::Client::MPD;
 use strict;
 use warnings;
 
+use List::MoreUtils qw[ firstidx ];
 use POE;
 use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Commands;
@@ -139,22 +140,34 @@ sub _onpub_disconnect {
 # Received when mpd finished to send back some data.
 #
 sub _onprot_mpd_data {
-    my $msg = $_[ARG0];
+    my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
     return if $msg->_answer == $DISCARD;
 
     # check for post-callback.
+    # need to be before pre-callback, since a pre-event may need to have
+    # a post-callback.
     if ( defined $msg->_post ) {
-        $_[KERNEL]->yield( $msg->_post, $msg ); # need a post-treatment...
-        $msg->_post( undef );                   # remove postback.
+        $k->yield( $msg->_post, $msg ); # need a post-treatment...
+        $msg->_post( undef );           # remove postback.
+        return;
+    }
+
+    # check for pre-callback.
+    my $preidx = firstidx { $msg->_request eq $_->_pre_event } @{ $h->{pre_messages} };
+    if ( $preidx != -1 ) {
+        my $pre = splice @{ $h->{pre_messages} }, $preidx, 1;
+        $k->yield( $pre->_pre_from, $pre, $msg );  # call post pre-event
+        $pre->_pre_from ( undef );                 # remove pre-callback
+        $pre->_pre_event( undef );                 # remove pre-event
         return;
     }
 
     # send result.
-    $_[KERNEL]->post( $msg->_from, 'mpd_result', $msg );
+    $k->post( $msg->_from, 'mpd_result', $msg );
 }
 
 sub _onprot_mpd_error {
-    warn "mpd error\n";
+    warn "mpd error:" . $_[ARG0]->error . "\n";
 }
 
 
@@ -197,6 +210,7 @@ sub _onpriv_start {
 
     $h->{password} = delete $params{password};
     $h->{_socket}  = POE::Component::Client::MPD::Connection->spawn(\%params);
+    $h->{pre_messages} = [];
 }
 
 
@@ -227,7 +241,13 @@ sub _connected {
 # $msg is a pococm-message partially filled.
 #
 sub _onpriv_send {
-    $_[KERNEL]->post( $_[HEAP]->{_socket}, 'send', $_[ARG0] );
+    my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
+    if ( defined $msg->_pre_event ) {
+        $k->yield( $msg->_pre_event );        # fire wanted pre-event
+        push @{ $h->{pre_messages} }, $msg;   # store message
+        return;
+    }
+    $k->post( $_[HEAP]->{_socket}, 'send', $msg );
 }
 
 
