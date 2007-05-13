@@ -219,7 +219,7 @@ sub _onpub_playid {
 #
 # Note that if $state is not given, pause state will be toggled.
 #
-sub pause {
+sub _onpub_pause {
     my $state = defined $_[ARG0] ? $_[ARG0] : '';
     my $msg = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
@@ -271,7 +271,7 @@ sub _onpub_next {
 #
 # Play previous song in playlist.
 #
-sub _onpub_next {
+sub _onpub_prev {
     my $msg = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
