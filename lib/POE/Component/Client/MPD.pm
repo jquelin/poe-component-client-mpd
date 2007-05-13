@@ -107,6 +107,7 @@ sub _onpub_disconnect {
 #
 sub _onprot_mpd_data {
     my $msg = $_[ARG0];
+    return if $msg->_answer == $DISCARD;
     $_[KERNEL]->post( $msg->_from, 'mpd_result', $msg );
 }
 

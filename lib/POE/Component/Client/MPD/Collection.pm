@@ -35,6 +35,7 @@ sub _onpub_all_files {
     my $req = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
+        _answer   => $SEND,
         _commands => [ 'list filename' ],
         _cooking  => $STRIP_FIRST,
     } );
