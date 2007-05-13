@@ -31,6 +31,23 @@ __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
 our $VERSION = '0.1.2';
 
 
+#
+# my $id = spawn( \%params )
+#
+# This method will create a POE session responsible for communicating
+# with mpd. It will return the poe id of the session newly created.
+#
+# You can tune the pococm by passing some arguments as a hash reference,
+# where the hash keys are:
+#   - host: the hostname of the mpd server. If none given, defaults to
+#     MPD_HOST env var. If this var isn't set, defaults to localhost.
+#   - port: the port of the mpd server. If none given, defaults to
+#     MPD_PORT env var. If this var isn't set, defaults to 6600.
+#   - password: the password to sent to mpd to authenticate the client.
+#     If none given, defaults to C<MPD_PASSWORD> env var. If this var
+#     isn't set, defaults to empty string.
+#   - alias: an optional string to alias the newly created POE session.
+#
 sub spawn {
     my ($type, $args) = @_;
 
@@ -96,6 +113,7 @@ sub _onprot_mpd_error {
     warn "mpd error\n";
 }
 
+
 #
 # Event: _mpd_version( $vers )
 #
@@ -136,6 +154,7 @@ sub _onpriv_start {
     $h->{password} = delete $params{password};
     $h->{_socket}  = POE::Component::Client::MPD::Connection->spawn(\%params);
 }
+
 
 =begin FIXME
 
@@ -181,13 +200,12 @@ POE::Component::Client::MPD - a full-blown mpd client library
 =head1 SYNOPSIS
 
     use POE qw[ Component::Client::MPD ];
-    POE::Component::Client::MPD->spawn(
-        { host     => 'localhost',
-          port     => 6600,
-          password => 's3kr3t',  # mpd password
-          alias    => 'mpd',     # poe alias
-        }
-    );
+    POE::Component::Client::MPD->spawn( {
+        host     => 'localhost',
+        port     => 6600,
+        password => 's3kr3t',  # mpd password
+        alias    => 'mpd',     # poe alias
+    } );
 
     # ... later on ...
     $_[KERNEL]->post( 'mpd', 'next' );
@@ -195,15 +213,12 @@ POE::Component::Client::MPD - a full-blown mpd client library
 
 =head1 DESCRIPTION
 
-POE::Component::Client::MPD is a perl mpd client, sitting on top of the POE
-framework.
+POCOCM gives a clear message-passing interface (sitting on top of POE)
+for talking to and controlling MPD (Music Player Daemon) servers. A
+connection to the MPD server is established as soon as a new POCOCM
+object is created.
 
-Audio::MPD gives a clear object-oriented interface for talking to and
-controlling MPD (Music Player Daemon) servers. A connection to the MPD
-server is established as soon as a new Audio::MPD object is created.
-Commands are then sent to the server as the class's methods are called.
-
-
+Commands are then sent to the server as messages are passed.
 
 
 =head1 PUBLIC PACKAGE METHODS
@@ -213,7 +228,7 @@ Commands are then sent to the server as the class's methods are called.
 This method will create a POE session responsible for communicating with mpd.
 It will return the poe id of the session newly created.
 
-You can tune the pococ by passing some arguments as a hash reference, where
+You can tune the pococm by passing some arguments as a hash reference, where
 the hash keys are:
 
 =over 4
