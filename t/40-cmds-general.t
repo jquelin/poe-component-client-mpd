@@ -22,12 +22,9 @@
 use strict;
 use warnings;
 
-sub POE::Kernel::TRACE_EVENTS () { 1 }
-use POE;
-use POE::Component::Client::MPD::Message;
+use POE qw[ Component::Client::MPD::Message ];
 use Readonly;
 use Test::More;
-
 
 our $nbtests = 3;
 our @tests   = (
@@ -47,7 +44,7 @@ our @tests   = (
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
-diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
 sub check_version {
