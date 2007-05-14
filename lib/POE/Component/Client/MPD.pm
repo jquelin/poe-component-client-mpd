@@ -124,7 +124,7 @@ sub spawn {
 #
 # event: disconnect()
 #
-# Request the pococm to be shutdown. No argument.
+# Request the pococm to be shutdown. Leave mpd running.
 #
 sub _onpub_disconnect {
     my ($k,$h) = @_[KERNEL, HEAP];
@@ -143,7 +143,6 @@ sub _onpub_disconnect {
 #
 sub _onprot_mpd_data {
     my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
-    return if $msg->_answer == $DISCARD;
 
     # check for post-callback.
     # need to be before pre-callback, since a pre-event may need to have
@@ -164,12 +163,16 @@ sub _onprot_mpd_data {
         return;
     }
 
+    return if $msg->_answer == $DISCARD;
+
     # send result.
     $k->post( $msg->_from, 'mpd_result', $msg );
 }
 
 sub _onprot_mpd_error {
-    warn "mpd error:" . $_[ARG0]->error . "\n";
+    # send error.
+    my $msg = $_[ARG0];
+    $_[KERNEL]->post( $msg->_from, 'mpd_error', $msg );
 }
 
 
