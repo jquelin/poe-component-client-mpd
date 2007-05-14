@@ -75,6 +75,9 @@ sub spawn {
         object_states => [
             $commands   => { # general purpose commands
                 # -- MPD interaction: general commands
+                'version'              => '_onpub_version',
+                'kill'                 => '_onpub_kill',
+                #'password'             => '_onpub_password',
                 'updatedb'             => '_onpub_updatedb',
                 # -- MPD interaction: handling volume & output
                 'volume'               => '_onpub_volume',

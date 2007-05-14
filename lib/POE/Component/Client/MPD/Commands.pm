@@ -26,7 +26,42 @@ use POE::Component::Client::MPD::Stats;
 use POE::Component::Client::MPD::Status;
 use base qw[ Class::Accessor::Fast ];
 
+
 # -- MPD interaction: general commands
+
+#
+# event: version()
+#
+# Fires back an event with the version number.
+#
+sub _onpub_version {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        data      => $_[HEAP]->{version}
+    } );
+    $_[KERNEL]->yield( '_mpd_data', $msg );
+}
+
+
+#
+# event: kill()
+#
+# Kill the mpd server, and request the pococm to be shutdown.
+#
+sub _onpub_kill {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ 'kill' ],
+        _cooking  => $RAW,
+        _post     => 'disconnect',  # shut down pococm behind us.
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
 
 #
 # event: updatedb( [$path] )
