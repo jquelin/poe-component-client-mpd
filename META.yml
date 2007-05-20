@@ -1,6 +1,6 @@
 ---
 name: POE-Component-Client-MPD
-version: 0.4.0
+version: 0.4.1
 author:
   - 'Jerome Quelin <jquelin@cpan.org>'
 abstract: a full-blown mpd client library
@@ -18,7 +18,7 @@ build_requires:
 provides:
   POE::Component::Client::MPD:
     file: lib/POE/Component/Client/MPD.pm
-    version: 0.4.0
+    version: 0.4.1
   POE::Component::Client::MPD::Collection:
     file: lib/POE/Component/Client/MPD/Collection.pm
   POE::Component::Client::MPD::Commands:
