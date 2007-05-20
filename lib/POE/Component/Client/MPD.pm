@@ -144,29 +144,9 @@ sub _onpub_disconnect {
 sub _onprot_mpd_data {
     my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
 
-    # check for post-callback.
-    # need to be before pre-callback, since a pre-event may need to have
-    # a post-callback.
-    if ( defined $msg->_post ) {
-        $k->yield( $msg->_post, $msg ); # need a post-treatment...
-        $msg->_post( undef );           # remove postback.
-        return;
-    }
-
-    # check for pre-callback.
-    my $preidx = firstidx { $msg->_request eq $_->_pre_event } @{ $h->{pre_messages} };
-    if ( $preidx != -1 ) {
-        my $pre = splice @{ $h->{pre_messages} }, $preidx, 1;
-        $k->yield( $pre->_pre_from, $pre, $msg );  # call post pre-event
-        $pre->_pre_from ( undef );                 # remove pre-callback
-        $pre->_pre_event( undef );                 # remove pre-event
-        return;
-    }
-
-    return if $msg->_answer == $DISCARD;
-
     TRANSFORM:
     {
+        # transform data if needed.
         my $transform = $msg->_transform;
         last TRANSFORM unless defined $msg->_transform;
 
@@ -189,6 +169,27 @@ sub _onprot_mpd_data {
         };
     }
 
+
+    # check for post-callback.
+    # need to be before pre-callback, since a pre-event may need to have
+    # a post-callback.
+    if ( defined $msg->_post ) {
+        $k->yield( $msg->_post, $msg ); # need a post-treatment...
+        $msg->_post( undef );           # remove postback.
+        return;
+    }
+
+    # check for pre-callback.
+    my $preidx = firstidx { $msg->_request eq $_->_pre_event } @{ $h->{pre_messages} };
+    if ( $preidx != -1 ) {
+        my $pre = splice @{ $h->{pre_messages} }, $preidx, 1;
+        $k->yield( $pre->_pre_from, $pre, $msg );  # call post pre-event
+        $pre->_pre_from ( undef );                 # remove pre-callback
+        $pre->_pre_event( undef );                 # remove pre-event
+        return;
+    }
+
+    return if $msg->_answer == $DISCARD;
 
     # send result.
     $k->post( $msg->_from, 'mpd_result', $msg );
