@@ -25,7 +25,7 @@ use Readonly;
 use base qw[ Class::Accessor::Fast Exporter ];
 __PACKAGE__->mk_accessors( qw[
     data error request
-    _answer _commands _cooking _from _request
+    _answer _commands _cooking _transform _from _request
     _post _pre_event _pre_from _pre_data
 ] );
 
@@ -41,8 +41,17 @@ Readonly our $AS_ITEMS    => 1; # data is to be returned as pococm-item
 Readonly our $AS_KV       => 2; # data is to be returned as kv (hash)
 Readonly our $STRIP_FIRST => 3; # data should have its first field stripped
 
-our @EXPORT = qw[ $SEND $DISCARD $SLEEP1
-                  $RAW $AS_ITEMS $AS_KV $STRIP_FIRST ];
+# constants for _transform
+Readonly our $AS_SCALAR => 0; # transform data from list to scalar
+Readonly our $AS_STATS  => 1; # transform data from kv to pococm-stats
+Readonly our $AS_STATUS => 2; # transform data from kv to pococm-status
+
+
+our @EXPORT = qw[
+    $SEND $DISCARD $SLEEP1
+    $RAW $AS_ITEMS $AS_KV $STRIP_FIRST
+    $AS_SCALAR $AS_STATS $AS_STATUS
+];
 
 #our ($VERSION) = '$Rev: 5645 $' =~ /(\d+)/;
 
