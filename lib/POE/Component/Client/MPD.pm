@@ -91,7 +91,8 @@ sub spawn {
                 'song'                 => '_onpub_song',
                 'songid'               => '_onpub_songid',
                 # -- MPD interaction: altering settings
-# #                 repeat
+                'repeat'               => '_onpub_repeat',
+                '_repeat_status'       => '_onpriv_repeat_status',
 # #                 random
 # #                 fade
                 # -- MPD interaction: controlling playback

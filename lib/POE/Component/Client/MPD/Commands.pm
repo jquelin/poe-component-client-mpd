@@ -282,6 +282,50 @@ sub _onpub_songid {
 
 
 # -- MPD interaction: altering settings
+
+#
+# event: repeat( [$repeat] )
+#
+# Set the repeat mode to $repeat (1 or 0). If $repeat is not specified then
+# the repeat mode is toggled.
+#
+sub _onpub_repeat {
+    # create stub message.
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _cooking  => $RAW,
+    } );
+
+    my $mode = $_[ARG0];
+    if ( not defined $mode )  {
+        $msg->_pre_from( '_repeat_status' );
+        $msg->_pre_event( 'status' );
+    } else {
+        $mode = $mode ? 1 : 0;   # force integer
+        $msg->_commands( [ "repeat $mode" ] );
+    }
+
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: _repeat_status( $msg, $status )
+#
+# Use $status to get current repeat mode, before sending real repeat $msg.
+#
+sub _onpriv_repeat_status {
+    my ($msg, $status) = @_[ARG0, ARG1];
+    my $mode = not $status->data->repeat;
+    $mode = $mode ? 1 : 0;   # force integer
+    $msg->_commands( [ "repeat $mode" ] );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+
 # -- MPD interaction: controlling playback
 
 #
