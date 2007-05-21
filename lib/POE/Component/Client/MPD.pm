@@ -78,7 +78,7 @@ sub spawn {
                 'kill'                 => '_onpub_kill',
                 #'password'             => '_onpub_password',
                 'updatedb'             => '_onpub_updatedb',
-# #                 urlhandlers
+                'urlhandlers'          => '_onpub_urlhandlers',
                 # -- MPD interaction: handling volume & output
                 'volume'               => '_onpub_volume',
                 'output_enable'        => '_onpub_output_enable',

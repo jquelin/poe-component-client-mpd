@@ -83,6 +83,23 @@ sub _onpub_updatedb {
 }
 
 
+#
+# event: urlhandlers()
+#
+# Return an array of supported URL schemes.
+#
+sub _onpub_urlhandlers {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ 'urlhandlers' ],
+        _cooking  => $STRIP_FIRST,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- MPD interaction: handling volume & output
 
 #
