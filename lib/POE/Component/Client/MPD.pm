@@ -76,7 +76,7 @@ sub spawn {
                 # -- MPD interaction: general commands
                 'version'              => '_onpub_version',
                 'kill'                 => '_onpub_kill',
-                #'password'             => '_onpub_password',
+# #                 'password'             => '_onpub_password',
                 'updatedb'             => '_onpub_updatedb',
                 'urlhandlers'          => '_onpub_urlhandlers',
                 # -- MPD interaction: handling volume & output
@@ -88,7 +88,7 @@ sub spawn {
                 'stats'                => '_onpub_stats',
                 'status'               => '_onpub_status',
                 'current'              => '_onpub_current',
-# #                 song
+                'song'                 => '_onpub_song',
 # #                 songid
                 # -- MPD interaction: altering settings
 # #                 repeat
