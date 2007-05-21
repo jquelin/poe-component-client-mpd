@@ -326,6 +326,26 @@ sub _onpriv_repeat_status {
 
 
 #
+# event: fade( [$seconds] )
+#
+# Enable crossfading and set the duration of crossfade between songs. If
+# $seconds is not specified or $seconds is 0, then crossfading is disabled.
+#
+sub _onpub_fade {
+    my $seconds = $_[ARG0];
+    $seconds ||= 0;
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "crossfade $seconds" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
 # event: random( [$random] )
 #
 # Set the random mode to $random (1 or 0). If $random is not specified then
