@@ -28,7 +28,7 @@ use Test::More;
 
 my $volume;
 
-our $nbtests = 4;
+our $nbtests = 8;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -42,6 +42,15 @@ our @tests   = (
     [ 'repeat', [],  $SLEEP1,  undef                 ],
     [ 'status', [],  $SEND,    \&check_repeat_is_off ],
 
+    # random
+    [ 'random', [1], $DISCARD, undef                 ],
+    [ 'status', [],  $SEND,    \&check_random_is_on  ],
+    [ 'random', [0], $DISCARD, undef                 ],
+    [ 'status', [],  $SEND,    \&check_random_is_off ],
+    [ 'random', [],  $SLEEP1,  undef                 ],
+    [ 'status', [],  $SEND,    \&check_random_is_on  ],
+    [ 'random', [],  $SLEEP1,  undef                 ],
+    [ 'status', [],  $SEND,    \&check_random_is_off ],
 );
 
 # are we able to test module?
@@ -52,4 +61,6 @@ exit;
 sub check_repeat_is_on  { is( $_[0]->data->repeat, 1, 'repeat is on' ); }
 sub check_repeat_is_off { is( $_[0]->data->repeat, 0, 'repeat is off' ); }
 
+sub check_random_is_on  { is( $_[0]->data->random, 1, 'random is on' ); }
+sub check_random_is_off { is( $_[0]->data->random, 0, 'random is off' ); }
 
