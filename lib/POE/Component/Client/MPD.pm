@@ -78,6 +78,7 @@ sub spawn {
                 'kill'                 => '_onpub_kill',
                 #'password'             => '_onpub_password',
                 'updatedb'             => '_onpub_updatedb',
+# #                 urlhandlers
                 # -- MPD interaction: handling volume & output
                 'volume'               => '_onpub_volume',
                 'output_enable'        => '_onpub_output_enable',
@@ -86,7 +87,12 @@ sub spawn {
                 'stats'                => '_onpub_stats',
                 'status'               => '_onpub_status',
                 'current'              => '_onpub_current',
+# #                 song
+# #                 songid
                 # -- MPD interaction: altering settings
+# #                 repeat
+# #                 random
+# #                 fade
                 # -- MPD interaction: controlling playback
                 'play'                 => '_onpub_play',
                 'playid'               => '_onpub_playid',
@@ -100,16 +106,48 @@ sub spawn {
                 '_seekid_need_current' => '_onpriv_seek_need_current',
             },
             $collection => { # collection related commands
+                # -- Collection: retrieving songs & directories
+# #                 all_items
+# #                 all_items_simple
+# #                 items_in_dir
+                # -- Collection: retrieving the whole collection
+# #                 all_songs
+# #                 all_albums
+# #                 all_artists
+# #                 all_titles
                 'coll.all_files'       => '_onpub_all_files',
+                # -- Collection: picking songs
+# #                 song
+# #                 songs_with_filename_partial
+                # -- Collection: songs, albums & artists relations
+# #                 albums_by_artist
+# #                 songs_by_artist
+# #                 songs_by_artist_partial
+# #                 songs_from_album
+# #                 songs_from_album_partial
+# #                 songs_with_title
+# #                 songs_with_title_partial
             },
             $playlist   => { # playlist related commands
                 # -- Playlist: retrieving information
+# #                 as_items
+# #                 items_changed_since
                 # -- Playlist: adding / removing songs
                 'pl.add'               => '_onpub_add',
                 'pl.delete'            => '_onpub_delete',
+# #                 deleteid
                 'pl.clear'             => '_onpub_clear',
+# #                 crop
                 # -- Playlist: changing playlist order
+# #                 shuffle
+# #                 swap
+# #                 swapid
+# #                 move
+# #                 moveid
                 # -- Playlist: managing playlists
+# #                 load
+# #                 save
+# #                 rm
             },
         ],
     );
