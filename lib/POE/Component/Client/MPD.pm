@@ -81,6 +81,7 @@ sub spawn {
                 'urlhandlers'          => '_onpub_urlhandlers',
                 # -- MPD interaction: handling volume & output
                 'volume'               => '_onpub_volume',
+                '_volume_status'       => '_onpriv_volume_status',
                 'output_enable'        => '_onpub_output_enable',
                 'output_disable'       => '_onpub_output_disable',
                 # -- MPD interaction: retrieving info from current state

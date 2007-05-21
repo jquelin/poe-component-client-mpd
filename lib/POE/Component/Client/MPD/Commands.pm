@@ -110,14 +110,39 @@ sub _onpub_urlhandlers {
 # by that value.
 #
 sub _onpub_volume {
-    my $volume = $_[ARG0]; # FIXME: +/- prefix
+    # create stub message.
     my $msg = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
         _answer   => $DISCARD,
-        _commands => [ "setvol $volume" ],
         _cooking  => $RAW,
     } );
+
+    my $volume = $_[ARG0];
+    if ( $volume =~ /^(-|\+)(\d+)/ )  {
+        $msg->_pre_from( '_volume_status' );
+        $msg->_pre_event( 'status' );
+        $msg->_pre_data( $volume );
+    } else {
+        $msg->_commands( [ "setvol $volume" ] );
+    }
+
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: _volume_status( $msg, $status )
+#
+# Use $status to get current volume, before sending real volume $msg.
+#
+sub _onpriv_volume_status {
+    my ($msg, $status) = @_[ARG0, ARG1];
+    my $curvol = $status->data->volume;
+    my $volume = $msg->_pre_data;
+    $volume =~ /^(-|\+)(\d+)/;
+    $volume = $1 eq '+' ? $curvol + $2 : $curvol - $2;
+    $msg->_commands( [ "setvol $volume" ] );
     $_[KERNEL]->yield( '_send', $msg );
 }
 
