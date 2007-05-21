@@ -36,6 +36,7 @@ t/40-cmds-kill.t
 t/40-collection.t
 t/41-cmds-output.t
 t/42-cmds-info.t
+t/43-cmds-settings.t
 t/44-cmds-playback.t
 t/mpd-test/mpd.conf.template
 t/mpd-test/music/dir1/title-artist-album.ogg
