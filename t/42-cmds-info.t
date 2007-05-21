@@ -27,24 +27,31 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 13;
+our $nbtests = 16;
 my @songs = qw[ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg ];
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
+    # stats
     [ 'updatedb', [],      $DISCARD, undef                ],
     [ 'pl.add',   \@songs, $DISCARD, undef                ],
     [ 'stats',    [],      $SEND,    \&check_stats        ],
 
+    # status
     [ 'play',     [],      $DISCARD, undef                ],
     [ 'pause',    [],      $DISCARD, undef                ],
     [ 'status',   [],      $SEND,    \&check_status       ],
 
+    # current
     [ 'current',  [],      $SEND,    \&check_current      ],
 
+    # song
     [ 'song',     [1],     $SEND,    \&check_song         ],
     [ 'song',     [],      $SEND,    \&check_song_current ],
 
+    # songid (use the same checkers as song)
+    [ 'songid',   [1],     $SEND,    \&check_song         ],
+    [ 'songid',   [],      $SEND,    \&check_song_current ],
 );
 
 
@@ -82,13 +89,13 @@ sub check_current {
 sub check_song {
     my $song = $_[0]->data;
     isa_ok( $song, 'POE::Component::Client::MPD::Item::Song',
-            'song returns a POCOCM::Item::Song object' );
-    is( $song->file, 'dir1/title-artist-album.ogg', 'song returns the wanted song' );
+            'song(id) returns a POCOCM::Item::Song object' );
+    is( $song->file, 'dir1/title-artist-album.ogg', 'song(id) returns the wanted song' );
 }
 
 sub check_song_current {
     my $song = $_[0]->data;
-    is( $song->file, 'title.ogg', 'song defaults to current song' );
+    is( $song->file, 'title.ogg', 'song(id) defaults to current song' );
 }
 
 
