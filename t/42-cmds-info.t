@@ -27,20 +27,23 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 10;
+our $nbtests = 13;
 my @songs = qw[ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg ];
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    [ 'updatedb', [],      $DISCARD, undef          ],
-    [ 'pl.add',   \@songs, $DISCARD, undef          ],
-    [ 'stats',    [],      $SEND,    \&check_stats  ],
+    [ 'updatedb', [],      $DISCARD, undef                ],
+    [ 'pl.add',   \@songs, $DISCARD, undef                ],
+    [ 'stats',    [],      $SEND,    \&check_stats        ],
 
-    [ 'play',     [],      $DISCARD, undef          ],
-    [ 'pause',    [],      $DISCARD, undef          ],
-    [ 'status',   [],      $SEND,    \&check_status ],
+    [ 'play',     [],      $DISCARD, undef                ],
+    [ 'pause',    [],      $DISCARD, undef                ],
+    [ 'status',   [],      $SEND,    \&check_status       ],
 
-    [ 'current',  [],      $SEND,    \&check_current ],
+    [ 'current',  [],      $SEND,    \&check_current      ],
+
+    [ 'song',     [1],     $SEND,    \&check_song         ],
+    [ 'song',     [],      $SEND,    \&check_song_current ],
 
 );
 
@@ -48,6 +51,7 @@ our @tests   = (
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+exit;
 
 
 sub check_stats {
@@ -74,6 +78,19 @@ sub check_current {
     isa_ok( $song, 'POE::Component::Client::MPD::Item::Song',
             'current return a POCOCM::Item::Song object' );
 }
+
+sub check_song {
+    my $song = $_[0]->data;
+    isa_ok( $song, 'POE::Component::Client::MPD::Item::Song',
+            'song returns a POCOCM::Item::Song object' );
+    is( $song->file, 'dir1/title-artist-album.ogg', 'song returns the wanted song' );
+}
+
+sub check_song_current {
+    my $song = $_[0]->data;
+    is( $song->file, 'title.ogg', 'song defaults to current song' );
+}
+
 
 __END__
 
