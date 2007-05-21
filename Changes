@@ -13,10 +13,17 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.4.2 Mon May 21 18:39:07 CEST 2007
+ - new events handled:
+    . urlhandlers
+    . volume
+    . repeat, random, fade
+    . song, songid
+ - which means that all commands are now handled! (except password of course)
+
 0.4.1 Sun May 20 12:21:08 CEST 2007
  - possibility to add transform to whole data instead of having to use post-callbacks
- - new events handled:
-    . kill, version
+ - new events handled: kill, version
  - improved non-regression test suite
 
 0.4.0 Sun May 13 18:19:07 CEST 2007
