@@ -89,7 +89,7 @@ sub spawn {
                 'status'               => '_onpub_status',
                 'current'              => '_onpub_current',
                 'song'                 => '_onpub_song',
-# #                 songid
+                'songid'               => '_onpub_songid',
                 # -- MPD interaction: altering settings
 # #                 repeat
 # #                 random

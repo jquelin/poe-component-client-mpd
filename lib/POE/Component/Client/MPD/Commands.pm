@@ -260,6 +260,27 @@ sub _onpub_song {
 }
 
 
+#
+# event: songid( [$songid] )
+#
+# Return a POCOCM::Item::Song representing the song id $songid.
+# If $songid is not supplied, returns the current song.
+#
+sub _onpub_songid {
+    my ($k,$song) = @_[KERNEL, ARG0];
+
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from      => $_[SENDER]->ID,
+        _request   => $_[STATE],
+        _answer    => $SEND,
+        _commands  => [ defined $song ? "playlistid $song" : 'currentsong' ],
+        _cooking   => $AS_ITEMS,
+        _transform => $AS_SCALAR,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- MPD interaction: altering settings
 # -- MPD interaction: controlling playback
 
