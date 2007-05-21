@@ -29,7 +29,7 @@ use Test::More;
 my $volume;
 my @songs = qw[ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg ];
 
-our $nbtests = 3;
+our $nbtests = 5;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -37,15 +37,15 @@ our @tests   = (
     [ 'status', [],   $SEND, sub { $volume = $_[0]->data->volume } ],
 
     # volume
-    [ 'volume', [10], $DISCARD, undef ],  # init to sthg we know
-    [ 'volume', [42], $DISCARD, undef ],
-    [ 'status', [],   $SEND,    \&check_volume_absolute ],
+    [ 'volume', [10], $DISCARD,  undef ],  # init to sthg we know
+    [ 'volume', [42], $DISCARD,  undef ],
+    [ 'status', [],   $SEND,     \&check_volume_absolute ],
 
-    #[ 'volume', ['+9'], $DISCARD, undef ],
-    #[ 'status', [],     $SEND,    \&check_volume_relative_pos ],
+    [ 'volume', ['+9'], $SLEEP1, undef ],
+    [ 'status', [],     $SEND,   \&check_volume_relative_pos ],
 
-    #[ 'volume', ['-4'], $DISCARD, undef ],
-    #[ 'status', [],     $SEND,    \&check_volume_relative_neg ],
+    [ 'volume', ['-4'], $SLEEP1, undef ],
+    [ 'status', [],     $SEND,   \&check_volume_relative_neg ],
 
     # restore previous volume - dirty hack.
     [ 'status', [],   $SEND, sub {$poe_kernel->post('mpd','volume',$volume) } ],
@@ -72,11 +72,11 @@ sub check_volume_absolute {
     is( $_[0]->data->volume, 42, 'setting volume' );
 }
 sub check_volume_relative_pos {
-    #is( $mpd->status->volume, 51, 'setting volume' );
+    is( $_[0]->data->volume, 51, 'increasing volume' );
 }
 
 sub check_volume_relative_neg {
-    #is( $mpd->status->volume, 47, 'decreasing volume' );
+    is( $_[0]->data->volume, 47, 'decreasing volume' );
 }
 
 sub check_output_disable {
