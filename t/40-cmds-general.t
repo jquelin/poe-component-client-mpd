@@ -26,19 +26,22 @@ use POE qw[ Component::Client::MPD::Message ];
 use Readonly;
 use Test::More;
 
-our $nbtests = 3;
+our $nbtests = 5;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
     # updatedb
-    [ 'updatedb', [],       $SLEEP1,  undef           ],
-    [ 'stats',    [],       $SEND,    \&check_update  ],
-    [ 'updatedb', ['dir1'], $DISCARD, undef           ],
-    [ 'stats',    [],       $SEND,    \&check_update  ],
+    [ 'updatedb',    [],       $SLEEP1,  undef               ],
+    [ 'stats',       [],       $SEND,    \&check_update      ],
+    [ 'updatedb',    ['dir1'], $DISCARD, undef               ],
+    [ 'stats',       [],       $SEND,    \&check_update      ],
 
     # version
     # needs to be *after* updatedb, so version messages can be treated.
-    [ 'version',  [],       $SEND,    \&check_version ],
+    [ 'version',     [],       $SEND,    \&check_version     ],
+
+    # urlhandlers
+    [ 'urlhandlers', [],       $SEND,    \&check_urlhandlers ],
 );
 
 
@@ -59,3 +62,8 @@ sub check_update  {
     isnt( $stats->db_update,  0, 'database has been updated' );
 }
 
+sub check_urlhandlers {
+    my @handlers = @{ $_[0]->data };
+    is( scalar @handlers,     1, 'only one url handler supported' );
+    is( $handlers[0], 'http://', 'only http is supported by now' );
+}
