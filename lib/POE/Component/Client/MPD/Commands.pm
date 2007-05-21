@@ -325,6 +325,47 @@ sub _onpriv_repeat_status {
 }
 
 
+#
+# event: random( [$random] )
+#
+# Set the random mode to $random (1 or 0). If $random is not specified then
+# the random mode is toggled.
+#
+sub _onpub_random {
+    # create stub message.
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _cooking  => $RAW,
+    } );
+
+    my $mode = $_[ARG0];
+    if ( not defined $mode )  {
+        $msg->_pre_from( '_random_status' );
+        $msg->_pre_event( 'status' );
+    } else {
+        $mode = $mode ? 1 : 0;   # force integer
+        $msg->_commands( [ "random $mode" ] );
+    }
+
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: _repeat_status( $msg, $status )
+#
+# Use $status to get current repeat mode, before sending real repeat $msg.
+#
+sub _onpriv_random_status {
+    my ($msg, $status) = @_[ARG0, ARG1];
+    my $mode = not $status->data->random;
+    $mode = $mode ? 1 : 0;   # force integer
+    $msg->_commands( [ "random $mode" ] );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
 
 # -- MPD interaction: controlling playback
 

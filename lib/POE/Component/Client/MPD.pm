@@ -93,7 +93,8 @@ sub spawn {
                 # -- MPD interaction: altering settings
                 'repeat'               => '_onpub_repeat',
                 '_repeat_status'       => '_onpriv_repeat_status',
-# #                 random
+                'random'               => '_onpub_random',
+                '_random_status'       => '_onpriv_random_status',
 # #                 fade
                 # -- MPD interaction: controlling playback
                 'play'                 => '_onpub_play',
