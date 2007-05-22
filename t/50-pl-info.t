@@ -27,7 +27,7 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 5;
+our $nbtests = 10;
 my @songs = qw[
     title.ogg dir1/title-artist-album.ogg
     dir1/title-artist.ogg dir2/album.ogg
@@ -35,11 +35,14 @@ my @songs = qw[
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    [ 'pl.clear', [],      $DISCARD, undef          ],
-    [ 'pl.add',   \@songs, $DISCARD, undef          ],
+    [ 'pl.clear', [],      $DISCARD, undef ],
+    [ 'pl.add',   \@songs, $DISCARD, undef ],
 
     # pl.as_items
-    [ 'pl.as_items', [],   $SEND, \&check_as_items ],
+    [ 'pl.as_items',            [],  $SEND, \&check_as_items      ],
+
+    # pl.items_changed_since
+    [ 'pl.items_changed_since', [0], $SEND, \&check_items_changed ],
 
 );
 
@@ -56,3 +59,10 @@ sub check_as_items {
     is( $items[0]->title, 'ok-title', 'first song reported first' );
 }
 
+sub check_items_changed {
+    my @items = @{ $_[0]->data };
+    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+            'items_changed_since() returns POCOCM::Item::Song objects' )
+        for @items;
+    is( $items[0]->title, 'ok-title', 'first song reported first' );
+}
