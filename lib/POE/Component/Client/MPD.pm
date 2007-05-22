@@ -138,7 +138,7 @@ sub spawn {
                 # -- Playlist: adding / removing songs
                 'pl.add'               => '_onpub_add',
                 'pl.delete'            => '_onpub_delete',
-# #                 deleteid
+                'pl.deleteid'          => '_onpub_deleteid',
                 'pl.clear'             => '_onpub_clear',
 # #                 crop
                 # -- Playlist: changing playlist order

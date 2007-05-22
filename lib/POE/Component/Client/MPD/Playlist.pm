@@ -115,6 +115,30 @@ sub _onpub_delete {
 
 
 #
+# event: pl.deleteid( $songid, $songid, ... )
+#
+# Remove the specified $songid (as assigned by mpd when inserted in playlist)
+# from the current playlist.
+#
+sub _onpub_deleteid {
+    my @songids  = @_[ARG0 .. $#_];    # args of the poe event
+    my @commands = (                   # build the commands
+        'command_list_begin',
+        map( qq[deleteid $_], @songids ),
+        'command_list_end',
+    );
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => \@commands,
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
 # event: clear()
 #
 # Remove all the songs from the current playlist.
