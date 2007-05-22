@@ -32,7 +32,7 @@ my @songs = qw[
     dir1/title-artist.ogg dir2/album.ogg
 ];
 my ($nb);
-our $nbtests = 3;
+our $nbtests = 4;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -54,6 +54,10 @@ our @tests   = (
     [ 'pl.add',   \@songs,         $DISCARD, undef       ],
     [ 'status',   [],              $SEND,    \&check_add ],
 
+    # pl.clear
+    [ 'pl.add',   \@songs, $DISCARD, undef         ],
+    [ 'pl.clear', [],      $DISCARD, undef         ],
+    [ 'status',   [],      $SEND,    \&check_clear ],
 );
 
 
@@ -66,4 +70,5 @@ sub get_nb      { $nb = $_[0]->data->playlistlength }
 sub check_add   { is( $_[0]->data->playlistlength, $nb+5, 'add() songs' ); }
 sub check_del   { is( $_[0]->data->playlistlength, $nb-2, 'delete() songs' ); }
 sub check_delid { is( $_[0]->data->playlistlength, $nb-1, 'deleteid() songs' ); }
+sub check_clear { is( $_[0]->data->playlistlength, 0, 'clear() leaves 0 songs' ); }
 
