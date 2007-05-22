@@ -3,6 +3,7 @@ Revision history for POE-Component-Client-MPD
 High-level changelog
 ====================
 
+0.5.x  pococm-playlist implementation
 0.4.x  pre-events, data transform, more pococm-commands implemented
 0.3.x  post-events, helper classes, more pococm-commands implemented
 0.2.x  pococm-commands
@@ -13,13 +14,19 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.5.0 Tue May 22 18:16:01 CEST 2007
+ - new events handled: pl.as_items, pl.items_changed_since
+
+**
+
 0.4.2 Mon May 21 18:39:07 CEST 2007
  - new events handled:
     . urlhandlers
     . volume
     . repeat, random, fade
     . song, songid
- - which means that all commands are now handled! (except password of course)
+ - which means that all general commands are now handled!
+   (except password of course)
 
 0.4.1 Sun May 20 12:21:08 CEST 2007
  - possibility to add transform to whole data instead of having to use post-callbacks
