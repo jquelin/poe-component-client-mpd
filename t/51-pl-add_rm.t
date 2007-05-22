@@ -31,19 +31,28 @@ my @songs = qw[
     title.ogg dir1/title-artist-album.ogg
     dir1/title-artist.ogg dir2/album.ogg
 ];
-my $nb;
-our $nbtests = 1;
+my ($nb);
+our $nbtests = 3;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    [ 'pl.clear', [],      $DISCARD, undef ],
+    # pl.delete / pl.deleteid
+    # should come first to be sure songid #0 is really here.
+    [ 'pl.clear',    [],      $DISCARD, undef         ],
+    [ 'pl.add',      \@songs, $DISCARD, undef         ],
+    [ 'status',      [],      $SEND,    \&get_nb      ],
+    [ 'pl.delete',   [1,2],   $DISCARD, undef         ],
+    [ 'status',      [],      $SEND,    \&check_del   ],
+    [ 'status',      [],      $SEND,    \&get_nb      ],
+    [ 'pl.deleteid', [0],     $DISCARD, undef         ],
+    [ 'status',      [],      $SEND,    \&check_delid ],
 
     # pl.add
-    [ 'status', [],              $SEND,    \&get_nb    ],
-    [ 'pl.add', [ 'title.ogg' ], $DISCARD, undef       ],
-    [ 'pl.add', \@songs,         $DISCARD, undef       ],
-    [ 'status', [],              $SEND,    \&check_add ],
-
+    [ 'pl.clear', [],              $DISCARD, undef       ],
+    [ 'status',   [],              $SEND,    \&get_nb    ],
+    [ 'pl.add',   [ 'title.ogg' ], $DISCARD, undef       ],
+    [ 'pl.add',   \@songs,         $DISCARD, undef       ],
+    [ 'status',   [],              $SEND,    \&check_add ],
 
 );
 
@@ -53,7 +62,8 @@ eval 'use POE::Component::Client::MPD::Test';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
-sub get_nb    { $nb = $_[0]->data->playlistlength }
-sub check_add { is( $_[0]->data->playlistlength, $nb+5, 'add() songs' ); }
-
+sub get_nb      { $nb = $_[0]->data->playlistlength }
+sub check_add   { is( $_[0]->data->playlistlength, $nb+5, 'add() songs' ); }
+sub check_del   { is( $_[0]->data->playlistlength, $nb-2, 'delete() songs' ); }
+sub check_delid { is( $_[0]->data->playlistlength, $nb-1, 'deleteid() songs' ); }
 
