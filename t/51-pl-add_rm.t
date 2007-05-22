@@ -32,7 +32,7 @@ my @songs = qw[
     dir1/title-artist.ogg dir2/album.ogg
 ];
 my ($nb);
-our $nbtests = 4;
+our $nbtests = 5;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -58,17 +58,25 @@ our @tests   = (
     [ 'pl.add',   \@songs, $DISCARD, undef         ],
     [ 'pl.clear', [],      $DISCARD, undef         ],
     [ 'status',   [],      $SEND,    \&check_clear ],
+
+    # pl.crop
+    [ 'pl.add',  \@songs, $DISCARD, undef        ],
+    [ 'play',    [1],     $DISCARD, undef        ], # to set song
+    [ 'stop',    [],      $DISCARD, undef        ],
+    [ 'pl.crop', [],      $SLEEP1,  undef        ],
+    [ 'status',   [],     $SEND,    \&check_crop ],
+
 );
 
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+diag($@),plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
 sub get_nb      { $nb = $_[0]->data->playlistlength }
 sub check_add   { is( $_[0]->data->playlistlength, $nb+5, 'add() songs' ); }
 sub check_del   { is( $_[0]->data->playlistlength, $nb-2, 'delete() songs' ); }
 sub check_delid { is( $_[0]->data->playlistlength, $nb-1, 'deleteid() songs' ); }
-sub check_clear { is( $_[0]->data->playlistlength, 0, 'clear() leaves 0 songs' ); }
-
+sub check_clear { is( $_[0]->data->playlistlength, 0, 'clear() leaves 0 song' ); }
+sub check_crop  { is( $_[0]->data->playlistlength, 1, 'crop() leaves only 1 song' ); }
