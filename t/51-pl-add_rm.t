@@ -71,7 +71,7 @@ our @tests   = (
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
-diag($@),plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
 sub get_nb      { $nb = $_[0]->data->playlistlength }
