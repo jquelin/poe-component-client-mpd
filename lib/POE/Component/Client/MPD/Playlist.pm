@@ -25,6 +25,25 @@ use POE::Component::Client::MPD::Message;
 use base qw[ Class::Accessor::Fast ];
 
 # -- Playlist: retrieving information
+
+#
+# event: pl.as_items()
+#
+# Return an array of C<POCOCM::Item::Song>s, one for each of the
+# songs in the current playlist.
+#
+sub _onpub_as_items {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ 'playlistinfo' ],
+        _cooking  => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- Playlist: adding / removing songs
 
 #
