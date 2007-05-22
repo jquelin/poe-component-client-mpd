@@ -133,8 +133,8 @@ sub spawn {
             },
             $playlist   => { # playlist related commands
                 # -- Playlist: retrieving information
-                'pl.as_items'           => '_onpub_as_items',
-# #                 items_changed_since
+                'pl.as_items'            => '_onpub_as_items',
+                'pl.items_changed_since' => '_onpub_items_changed_since',
                 # -- Playlist: adding / removing songs
                 'pl.add'               => '_onpub_add',
                 'pl.delete'            => '_onpub_delete',
