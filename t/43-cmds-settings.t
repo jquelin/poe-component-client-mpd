@@ -26,8 +26,6 @@ use POE qw[ Component::Client::MPD::Message ];
 use Readonly;
 use Test::More;
 
-my $volume;
-
 our $nbtests = 10;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]

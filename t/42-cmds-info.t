@@ -97,28 +97,3 @@ sub check_song_current {
     my $song = $_[0]->data;
     is( $song->file, 'title.ogg', 'song(id) defaults to current song' );
 }
-
-
-__END__
-
-
-
-#
-# testing song.
-$song = $mpd->song(1);
-isa_ok( $song, 'Audio::MPD::Item::Song', 'song() returns an Audio::MPD::Item::Song object' );
-is( $song->file, 'dir1/title-artist-album.ogg', 'song() returns the wanted song' );
-$song = $mpd->song; # default to current song
-is( $song->file, 'title.ogg', 'song() defaults to current song' );
-
-
-#
-# testing songid.
-$song = $mpd->songid(1);
-isa_ok( $song, 'Audio::MPD::Item::Song', 'songid() returns an Audio::MPD::Item::Song object' );
-is( $song->file, 'dir1/title-artist-album.ogg', 'songid() returns the wanted song' );
-$song = $mpd->songid; # default to current song
-is( $song->file, 'title.ogg', 'songid() defaults to current song' );
-
-
-exit;
