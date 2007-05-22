@@ -140,7 +140,8 @@ sub spawn {
                 'pl.delete'            => '_onpub_delete',
                 'pl.deleteid'          => '_onpub_deleteid',
                 'pl.clear'             => '_onpub_clear',
-# #                 crop
+                'pl.crop'              => '_onpub_crop',
+                '_crop_status'         => '_onpriv_crop_status',
                 # -- Playlist: changing playlist order
 # #                 shuffle
 # #                 swap
