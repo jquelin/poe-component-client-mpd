@@ -146,8 +146,8 @@ sub spawn {
                 'pl.shuffle'           => '_onpub_shuffle',
                 'pl.swap'              => '_onpub_swap',
                 'pl.swapid'            => '_onpub_swapid',
-# #                 move
-# #                 moveid
+                'pl.move'              => '_onpub_move',
+                'pl.moveid'            => '_onpub_moveid',
                 # -- Playlist: managing playlists
 # #                 load
 # #                 save

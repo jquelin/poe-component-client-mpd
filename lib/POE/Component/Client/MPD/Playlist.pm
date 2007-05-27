@@ -248,6 +248,44 @@ sub _onpub_swapid {
 }
 
 
+#
+# event: pl.move( $song, $newpos );
+#
+# Move song number $song to the position $newpos.
+#
+sub _onpub_move {
+    my ($song, $pos) = @_[ARG0, ARG1];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "move $song $pos" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: pl.moveid( $songid, $newpos );
+#
+# Move song id $songid to the position $newpos.
+#
+sub _onpub_move {
+    my ($songid, $pos) = @_[ARG0, ARG1];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "moveid $songid $pos" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+
+
 # -- Playlist: managing playlists
 
 1;
