@@ -28,7 +28,7 @@ use Test::More;
 
 
 my $plvers;
-our $nbtests = 3;
+our $nbtests = 5;
 my @songs = qw[
     title.ogg
     dir1/title-artist-album.ogg
@@ -40,19 +40,26 @@ our @tests   = (
 
     # pl.swapid
     # test should come first to know the song id
-    [ 'pl.clear',    [],       $DISCARD, undef        ],
-    [ 'pl.add',      \@songs,  $DISCARD, undef        ],
-    [ 'pl.swapid',   [0,2],    $DISCARD, undef        ],
-    [ 'pl.as_items', [],       $SEND,    \&check_swap ],
-    [ 'pl.swapid',   [0,2],    $DISCARD, undef        ],
+    [ 'pl.clear',    [],       $DISCARD, undef          ],
+    [ 'pl.add',      \@songs,  $DISCARD, undef          ],
+    [ 'pl.swapid',   [0,2],    $DISCARD, undef          ],
+    [ 'pl.as_items', [],       $SEND,    \&check_2ndpos ],
+    [ 'pl.swapid',   [0,2],    $DISCARD, undef          ],
 
     # pl.moveid
     # test should come second to know the song id
+    [ 'pl.moveid',   [0,2],    $DISCARD, undef          ],
+    [ 'pl.as_items', [],       $SEND,    \&check_2ndpos ],
+    [ 'pl.moveid',   [0,0],    $DISCARD, undef          ],
 
     # pl.swap
-    [ 'pl.swap',     [0,2],    $DISCARD, undef        ],
-    [ 'pl.as_items', [],       $SEND,    \&check_swap ],
-    [ 'pl.swap',     [0,2],    $DISCARD, undef        ],
+    [ 'pl.swap',     [0,2],    $DISCARD, undef          ],
+    [ 'pl.as_items', [],       $SEND,    \&check_2ndpos ],
+    [ 'pl.swap',     [0,2],    $DISCARD, undef          ],
+
+    # pl.move
+    [ 'pl.move',     [0,2],    $DISCARD, undef          ],
+    [ 'pl.as_items', [],       $SEND,    \&check_2ndpos ],
 
     # pl.shuffle
     [ 'status',      [],       $SEND,    sub { $plvers=$_[0]->data->playlist; } ],
@@ -71,7 +78,7 @@ sub check_shuffle {
     is( $_[0]->data->playlist, $plvers+1, 'shuffle() changes playlist version' );
 }
 
-sub check_swap {
+sub check_2ndpos {
     my @items = @{ $_[0]->data };
-    is( $items[2]->title, 'ok-title', 'swap[id()] changes songs' );
+    is( $items[2]->title, 'ok-title', 'swap[id()] / swap[id()] changes songs' );
 }
