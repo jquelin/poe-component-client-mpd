@@ -271,7 +271,7 @@ sub _onpub_move {
 #
 # Move song id $songid to the position $newpos.
 #
-sub _onpub_move {
+sub _onpub_moveid {
     my ($songid, $pos) = @_[ARG0, ARG1];
     my $msg = POE::Component::Client::MPD::Message->new( {
         _from     => $_[SENDER]->ID,
@@ -282,8 +282,6 @@ sub _onpub_move {
     } );
     $_[KERNEL]->yield( '_send', $msg );
 }
-
-
 
 
 # -- Playlist: managing playlists
