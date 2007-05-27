@@ -1,7 +1,6 @@
 bin/client.pl
 Build.PL
 Changes
-COPYING
 DESIGN
 lib/POE/Component/Client/MPD.pm
 lib/POE/Component/Client/MPD/Collection.pm
@@ -17,6 +16,7 @@ lib/POE/Component/Client/MPD/Stats.pm
 lib/POE/Component/Client/MPD/Status.pm
 lib/POE/Component/Client/MPD/Test.pm
 lib/POE/Component/Client/MPD/Time.pm
+LICENSE
 Makefile.PL
 MANIFEST
 META.yml
