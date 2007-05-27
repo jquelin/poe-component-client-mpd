@@ -14,6 +14,11 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.5.2 Sun May 27 16:12:51 CEST 2007
+ - changing license to perl
+ - new events handled: pl.shuffle, pl.swap, pl.swapid, pl.move, pl.moveid
+ - all playlist changing order implemented (with tests)
+
 0.5.1 Tue May 22 19:20:55 CEST 2007
  - new events handled: pl.deleteid, pl.crop
  - all playlist insertion / removal implemented (with tests)

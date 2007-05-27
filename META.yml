@@ -1,12 +1,12 @@
 ---
 name: POE-Component-Client-MPD
-version: 0.5.1
+version: 0.5.2
 author:
   - 'Jerome Quelin <jquelin@cpan.org>'
 abstract: a full-blown mpd client library
-license: gpl
+license: perl
 resources:
-  license: http://www.opensource.org/licenses/gpl-license.php
+  license: http://dev.perl.org/licenses/
 requires:
   Class::Accessor: 0
   List::MoreUtils: 0
@@ -18,7 +18,7 @@ build_requires:
 provides:
   POE::Component::Client::MPD:
     file: lib/POE/Component/Client/MPD.pm
-    version: 0.5.1
+    version: 0.5.2
   POE::Component::Client::MPD::Collection:
     file: lib/POE/Component/Client/MPD/Collection.pm
   POE::Component::Client::MPD::Commands:
