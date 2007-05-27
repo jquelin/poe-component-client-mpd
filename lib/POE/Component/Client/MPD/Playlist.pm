@@ -212,6 +212,42 @@ sub _onpub_shuffle {
 }
 
 
+#
+# event: pl.swap( $song1, song2 )
+#
+# Swap positions of song number $song1 and $song2 in the current playlist.
+#
+sub _onpub_swap {
+    my ($from, $to) = @_[ARG0, ARG1];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "swap $from $to" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: pl.swapid( $songid1, songid2 )
+#
+# Swap positions of song id $songid1 and $songid2 in the current playlist.
+#
+sub _onpub_swapid {
+    my ($from, $to) = @_[ARG0, ARG1];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "swapid $from $to" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- Playlist: managing playlists
 
 1;

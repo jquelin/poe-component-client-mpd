@@ -144,8 +144,8 @@ sub spawn {
                 '_crop_status'         => '_onpriv_crop_status',
                 # -- Playlist: changing playlist order
                 'pl.shuffle'           => '_onpub_shuffle',
-# #                 swap
-# #                 swapid
+                'pl.swap'              => '_onpub_swap',
+                'pl.swapid'            => '_onpub_swapid',
 # #                 move
 # #                 moveid
                 # -- Playlist: managing playlists

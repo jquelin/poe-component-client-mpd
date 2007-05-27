@@ -28,7 +28,7 @@ use Test::More;
 
 
 my $plvers;
-our $nbtests = 1;
+our $nbtests = 3;
 my @songs = qw[
     title.ogg
     dir1/title-artist-album.ogg
@@ -38,13 +38,26 @@ my @songs = qw[
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    [ 'pl.clear', [],      $DISCARD, undef ],
-    [ 'pl.add',   \@songs, $DISCARD, undef ],
+    # pl.swapid
+    # test should come first to know the song id
+    [ 'pl.clear',    [],       $DISCARD, undef        ],
+    [ 'pl.add',      \@songs,  $DISCARD, undef        ],
+    [ 'pl.swapid',   [0,2],    $DISCARD, undef        ],
+    [ 'pl.as_items', [],       $SEND,    \&check_swap ],
+    [ 'pl.swapid',   [0,2],    $DISCARD, undef        ],
 
-    # pl.as_items
-    [ 'status',      [], $SEND,    sub { $plvers=$_[0]->data->playlist; } ],
-    [ 'pl.shuffle',  [], $DISCARD, undef                                  ],
-    [ 'status',      [], $SEND,    \&check_shuffle                        ],
+    # pl.moveid
+    # test should come second to know the song id
+
+    # pl.swap
+    [ 'pl.swap',     [0,2],    $DISCARD, undef        ],
+    [ 'pl.as_items', [],       $SEND,    \&check_swap ],
+    [ 'pl.swap',     [0,2],    $DISCARD, undef        ],
+
+    # pl.shuffle
+    [ 'status',      [],       $SEND,    sub { $plvers=$_[0]->data->playlist; } ],
+    [ 'pl.shuffle',  [],       $DISCARD, undef                                  ],
+    [ 'status',      [],       $SEND,    \&check_shuffle                        ],
 
 
 );
@@ -56,4 +69,9 @@ exit;
 
 sub check_shuffle {
     is( $_[0]->data->playlist, $plvers+1, 'shuffle() changes playlist version' );
+}
+
+sub check_swap {
+    my @items = @{ $_[0]->data };
+    is( $items[2]->title, 'ok-title', 'swap[id()] changes songs' );
 }
