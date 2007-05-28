@@ -42,6 +42,7 @@ t/50-pl-info.t
 t/51-pl-add_rm.t
 t/52-pl-change.t
 t/53-pl-manage.t
+t/60-coll-retrieve.t
 t/mpd-test/mpd.conf.template
 t/mpd-test/music/dir1/title-artist-album.ogg
 t/mpd-test/music/dir1/title-artist.ogg
