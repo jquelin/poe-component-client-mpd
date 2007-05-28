@@ -104,7 +104,7 @@ sub spawn {
                 # -- Collection: retrieving songs & directories
                 'coll.all_items'        => '_onpub_all_items',
                 'coll.all_items_simple' => '_onpub_all_items_simple',
-# #                 items_in_dir
+                'coll.items_in_dir'     => '_onpub_items_in_dir',
                 # -- Collection: retrieving the whole collection
 # #                 all_songs
 # #                 all_albums

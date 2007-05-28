@@ -68,6 +68,28 @@ sub _onpub_all_items_simple {
 }
 
 
+#
+# event: coll.items_in_dir( [$path] )
+#
+# Return the items in the given $path. If no $path supplied, do it on mpd's
+# root directory.
+# Note that this sub does not work recusrively on all directories.
+#
+sub _onpub_items_in_dir {
+    my $path = $_[ARG0];
+    $path ||= '';
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ qq[lsinfo "$path"] ],
+        _cooking  => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+
 # -- Collection: retrieving the whole collection
 
 #

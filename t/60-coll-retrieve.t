@@ -16,7 +16,7 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 20;
+our $nbtests = 26;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -28,6 +28,9 @@ our @tests   = (
     [ 'coll.all_items_simple', [],       $SEND, \&check_all_items_simple1 ],
     [ 'coll.all_items_simple', ['dir1'], $SEND, \&check_all_items_simple2 ],
 
+    # coll.items_in_dir
+    [ 'coll.items_in_dir', [],       $SEND, \&check_items_in_dir1 ],
+    [ 'coll.items_in_dir', ['dir1'], $SEND, \&check_items_in_dir2 ],
 );
 
 
@@ -65,3 +68,14 @@ sub check_all_items_simple2 {
     is( $list[1]->artist, undef, 'all_items_simple does not return full tags' );
 }
 
+sub check_items_in_dir1 {
+    my @list = @{ $_[0]->data };
+    is( scalar @list, 4, 'items_in_dir defaults to root' );
+    isa_ok( $_, 'POE::Component::Client::MPD::Item',
+            'items_in_dir return POCOCMI objects' ) for @list;
+}
+
+sub check_items_in_dir2 {
+    my @list = @{ $_[0]->data };
+    is( scalar @list, 2, 'items_in_dir can take a param' );
+}
