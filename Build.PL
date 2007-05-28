@@ -17,8 +17,9 @@ my $builder = Module::Build->new (
     dist_author         => 'Jerome Quelin <jquelin@cpan.org>',
     license             => 'perl',
     dist_version_from   => 'lib/POE/Component/Client/MPD.pm',
-    add_to_cleanup => [ 'POE-Component-Client-MPD-*',
-                        map { ( '*/' x $_ ) . '*~' } 0..6 ],
+    add_to_cleanup => [
+        'POE-Component-Client-MPD-*', 'MANIFEST.bak',
+        map { ( '*/' x $_ ) . '*~' } 0..6 ],
     script_files => [ ],
     build_requires => {
         'Test::More'  => 0,

@@ -28,7 +28,7 @@ WriteMakefile(
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => [
-		'POE-Component-Client-MPD-*',
+		'POE-Component-Client-MPD-*', 'MANIFEST.bak'
 		map { ( '*/' x $_ ) . '*~' } 0..6
-		] },
+	] },
 );
