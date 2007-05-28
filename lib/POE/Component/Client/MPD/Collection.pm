@@ -17,10 +17,33 @@ use base qw[ Class::Accessor::Fast ];
 
 
 # -- Collection: retrieving songs & directories
+
+#
+# event: coll.all_items( [$path] )
+#
+# Return *all* POCOCM::Items (both songs & directories) currently known
+# by mpd.
+# If $path is supplied (relative to mpd root), restrict the retrieval to
+# songs and dirs in this directory.
+#
+sub _onpub_all_items {
+    my $path = $_[ARG0];
+    $path ||= '';
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ qq[listallinfo "$path"] ],
+        _cooking  => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- Collection: retrieving the whole collection
 
 #
-# event: pl.all_files()
+# event: coll.all_files()
 #
 # Return a mpd_result event with the list of all filenames (strings)
 # currently known by mpd.
