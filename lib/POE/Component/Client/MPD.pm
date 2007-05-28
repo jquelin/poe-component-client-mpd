@@ -143,7 +143,7 @@ sub spawn {
                 # -- Playlist: managing playlists
                 'pl.load'              => '_onpub_load',
                 'pl.save'              => '_onpub_save',
-# #                 rm
+                'pl.rm'                => '_onpub_rm',
             },
         ],
     );

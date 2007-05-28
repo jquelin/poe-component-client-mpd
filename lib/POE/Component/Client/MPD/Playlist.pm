@@ -289,7 +289,7 @@ sub _onpub_load {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
         _answer   => $DISCARD,
-        _commands => [ "load $playlist" ],
+        _commands => [ qq[load "$playlist"] ],
         _cooking  => $RAW,
     } );
     $_[KERNEL]->yield( '_send', $msg );
@@ -308,11 +308,30 @@ sub _onpub_save {
         _from     => $_[SENDER]->ID,
         _request  => $_[STATE],
         _answer   => $DISCARD,
-        _commands => [ "save $playlist" ],
+        _commands => [ qq[save "$playlist"] ],
         _cooking  => $RAW,
     } );
     $_[KERNEL]->yield( '_send', $msg );
 }
+
+
+#
+# event: pl.save( $playlist );
+#
+# Delete playlist named $playlist from MPD's playlist directory.
+#
+sub _onpub_rm {
+    my ($playlist) = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ qq[rm "$playlist"] ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
 
 
 1;

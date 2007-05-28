@@ -17,7 +17,7 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 3;
+our $nbtests = 4;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -28,6 +28,10 @@ our @tests   = (
     # pl.save
     [ 'pl.save',     ['test-jq'], $DISCARD, undef        ],
     [ 'status',      [],          $SEND,    \&check_save ],
+
+    # pl.rm
+    [ 'pl.rm',       ['test-jq'], $DISCARD, undef      ],
+    [ 'status',      [],          $SEND,    \&check_rm ],
 );
 
 # are we able to test module?
@@ -43,4 +47,8 @@ sub check_load {
 
 sub check_save {
     ok( -f "$Bin/mpd-test/playlists/test-jq.m3u", 'pl.save() creates a playlist' );
+}
+
+sub check_rm {
+    ok( ! -f "$Bin/mpd-test/playlists/test-jq.m3u", 'rm() removes a playlist' );
 }
