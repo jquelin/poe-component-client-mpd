@@ -3,6 +3,7 @@ Revision history for POE-Component-Client-MPD
 High-level changelog
 ====================
 
+0.6.x  pococm-coll implementation
 0.5.x  pococm-playlist implementation
 0.4.x  pre-events, data transform, more pococm-commands implemented
 0.3.x  post-events, helper classes, more pococm-commands implemented
@@ -13,6 +14,12 @@ High-level changelog
 
 Low-level changelog
 ===================
+
+0.6.0 Mon May 28 13:51:54 CEST 2007
+ - new events handled: coll.all_items, coll.all_items_simple, coll.items_in_dir
+ - all songs & directories retrieval in collection implemented (with tests)
+
+**
 
 0.5.3 Mon May 28 11:14:45 CEST 2007
  - new events handled: pl.load, pl.save, pl.rm

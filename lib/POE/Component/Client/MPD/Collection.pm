@@ -18,7 +18,6 @@ use base qw[ Class::Accessor::Fast ];
 
 # -- Collection: retrieving songs & directories
 
-
 #
 # event: coll.all_items( [$path] )
 #
