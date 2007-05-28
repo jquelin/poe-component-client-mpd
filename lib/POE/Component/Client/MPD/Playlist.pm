@@ -278,6 +278,24 @@ sub _onpub_moveid {
 
 # -- Playlist: managing playlists
 
+#
+# event: pl.load( $playlist );
+#
+# Load list of songs from specified $playlist file.
+#
+sub _onpub_load {
+    my ($playlist) = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "load $playlist" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 1;
 
 __END__

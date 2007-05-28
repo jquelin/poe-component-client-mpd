@@ -141,7 +141,7 @@ sub spawn {
                 'pl.move'              => '_onpub_move',
                 'pl.moveid'            => '_onpub_moveid',
                 # -- Playlist: managing playlists
-# #                 load
+                'pl.load'              => '_onpub_load',
 # #                 save
 # #                 rm
             },
