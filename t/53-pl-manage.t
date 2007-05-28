@@ -12,11 +12,12 @@ use strict;
 use warnings;
 
 use POE qw[ Component::Client::MPD::Message ];
+use FindBin qw[ $Bin ];
 use Readonly;
 use Test::More;
 
 
-our $nbtests = 5;
+our $nbtests = 3;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -24,6 +25,9 @@ our @tests   = (
     [ 'pl.load',     ['test'], $DISCARD, undef        ],
     [ 'pl.as_items', [],       $SEND,    \&check_load ],
 
+    # pl.save
+    [ 'pl.save',     ['test-jq'], $DISCARD, undef        ],
+    [ 'status',      [],          $SEND,    \&check_save ],
 );
 
 # are we able to test module?
@@ -33,6 +37,10 @@ exit;
 
 sub check_load {
     my @items = @{ $_[0]->data };
-    is( scalar @items, 1, 'load() adds songs' );
-    is( $items[0]->title, 'ok-title', 'load() adds the correct songs' );
+    is( scalar @items, 1, 'pl.load() adds songs' );
+    is( $items[0]->title, 'ok-title', 'pl.load() adds the correct songs' );
+}
+
+sub check_save {
+    ok( -f "$Bin/mpd-test/playlists/test-jq.m3u", 'pl.save() creates a playlist' );
 }

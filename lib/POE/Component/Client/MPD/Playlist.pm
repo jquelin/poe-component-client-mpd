@@ -296,6 +296,25 @@ sub _onpub_load {
 }
 
 
+#
+# event: pl.save( $playlist );
+#
+# Save the current playlist to a file called $playlist in MPD's
+# playlist directory.
+#
+sub _onpub_save {
+    my ($playlist) = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $DISCARD,
+        _commands => [ "save $playlist" ],
+        _cooking  => $RAW,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 1;
 
 __END__
