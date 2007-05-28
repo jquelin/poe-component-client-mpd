@@ -16,13 +16,18 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 10;
+our $nbtests = 20;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
     # coll.all_items
     [ 'coll.all_items', [],       $SEND, \&check_all_items1 ],
     [ 'coll.all_items', ['dir1'], $SEND, \&check_all_items2 ],
+
+    # coll.all_items_simple
+    [ 'coll.all_items_simple', [],       $SEND, \&check_all_items_simple1 ],
+    [ 'coll.all_items_simple', ['dir1'], $SEND, \&check_all_items_simple2 ],
+
 );
 
 
@@ -36,7 +41,7 @@ sub check_all_items1 {
     my @list = @{ $_[0]->data };
     is( scalar @list, 6, 'all_items return all 6 items' );
     isa_ok( $_, 'POE::Component::Client::MPD::Item',
-            'all_items return AMI objects' ) for @list;
+            'all_items return POCOCMI objects' ) for @list;
 }
 
 sub check_all_items2 {
@@ -44,5 +49,19 @@ sub check_all_items2 {
     is( scalar @list, 3, 'all_items can be restricted to a subdir' );
     is( $list[0]->directory, 'dir1', 'all_items return a subdir first' );
     is( $list[1]->artist, 'dir1-artist', 'all_items can be restricted to a subdir' );
+}
+
+sub check_all_items_simple1 {
+    my @list = @{ $_[0]->data };
+    is( scalar @list, 6, 'all_items_simple return all 6 items' );
+    isa_ok( $_, 'POE::Component::Client::MPD::Item',
+            'all_items_simple return POCOCMI objects' ) for @list;
+}
+
+sub check_all_items_simple2 {
+    my @list = @{ $_[0]->data };
+    is( scalar @list, 3, 'all_items_simple can be restricted to a subdir' );
+    is( $list[0]->directory, 'dir1', 'all_items_simple return a subdir first' );
+    is( $list[1]->artist, undef, 'all_items_simple does not return full tags' );
 }
 

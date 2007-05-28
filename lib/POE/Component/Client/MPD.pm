@@ -102,8 +102,8 @@ sub spawn {
             },
             $collection => { # collection related commands
                 # -- Collection: retrieving songs & directories
-                'coll.all_items'       => '_onpub_all_items',
-# #                 all_items_simple
+                'coll.all_items'        => '_onpub_all_items',
+                'coll.all_items_simple' => '_onpub_all_items_simple',
 # #                 items_in_dir
                 # -- Collection: retrieving the whole collection
 # #                 all_songs

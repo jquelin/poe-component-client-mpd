@@ -18,6 +18,7 @@ use base qw[ Class::Accessor::Fast ];
 
 # -- Collection: retrieving songs & directories
 
+
 #
 # event: coll.all_items( [$path] )
 #
@@ -34,6 +35,33 @@ sub _onpub_all_items {
         _request  => $_[STATE],
         _answer   => $SEND,
         _commands => [ qq[listallinfo "$path"] ],
+        _cooking  => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
+# event: coll.all_items_simple( [$path] )
+#
+# Return *all* POCOCM::Items (both songs & directories) currently known
+# by mpd.
+#
+# If $path is supplied (relative to mpd root), restrict the retrieval to
+# songs and dirs in this directory.
+#
+# /!\ Warning: the POCOCM::Item::Song objects will only have their tag
+# file filled. Any other tag will be empty, so don't use this sub for any
+# other thing than a quick scan!
+#
+sub _onpub_all_items_simple {
+    my $path = $_[ARG0];
+    $path ||= '';
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ qq[listall "$path"] ],
         _cooking  => $AS_ITEMS,
     } );
     $_[KERNEL]->yield( '_send', $msg );
