@@ -14,6 +14,10 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.5.3 Mon May 28 11:14:45 CEST 2007
+ - new events handled: pl.load, pl.save, pl.rm
+ - all playlist file management implemented (with tests)
+
 0.5.2 Sun May 27 16:12:51 CEST 2007
  - changing license to perl
  - new events handled: pl.shuffle, pl.swap, pl.swapid, pl.move, pl.moveid
