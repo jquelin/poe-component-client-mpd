@@ -109,8 +109,8 @@ sub spawn {
 # #                 all_songs
                 'coll.all_albums'       => '_onpub_all_albums',
                 'coll.all_artists'      => '_onpub_all_artists',
-# #                 all_titles
-                'coll.all_files'       => '_onpub_all_files',
+                'coll.all_titles'       => '_onpub_all_titles',
+                'coll.all_files'        => '_onpub_all_files',
                 # -- Collection: picking songs
 # #                 song
 # #                 songs_with_filename_partial

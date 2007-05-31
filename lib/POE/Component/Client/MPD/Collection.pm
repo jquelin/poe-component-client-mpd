@@ -128,6 +128,23 @@ sub _onpub_all_artists {
 
 
 #
+# event: coll.all_titles( )
+#
+# Return the list of all titles (strings) currently known by mpd.
+#
+sub _onpub_all_titles {
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from     => $_[SENDER]->ID,
+        _request  => $_[STATE],
+        _answer   => $SEND,
+        _commands => [ 'list title' ],
+        _cooking  => $STRIP_FIRST,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+#
 # event: coll.all_files()
 #
 # Return a mpd_result event with the list of all filenames (strings)
