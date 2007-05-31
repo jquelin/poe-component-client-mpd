@@ -203,6 +203,26 @@ sub _onpub_songs_with_filename_partial {
 
 # -- Collection: songs, albums & artists relations
 
+#
+# event: coll.albums_by_artist($artist);
+#
+# Return all albums (strings) performed by $artist or where $artist
+# participated.
+#
+sub _onpub_albums_by_artist {
+    my $artist = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from      => $_[SENDER]->ID,
+        _request   => $_[STATE],
+        _answer    => $SEND,
+        _commands  => [ qq[list album "$artist"] ],
+        _cooking   => $STRIP_FIRST,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
+
 1;
 
 __END__
