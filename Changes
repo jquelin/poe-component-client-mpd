@@ -15,6 +15,14 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.6.3 Thu May 31 12:52:07 CEST 2007
+ - new events handled:
+        coll.albums_by_artist,
+        coll.songs_by_artist, coll.songs_by_artist_partial,
+        coll.songs_from_album, coll.songs_from_album_partial,
+        coll.songs_with_title, coll.songs_with_title_partial
+ - all collection relationship events implemented (with tests)
+
 0.6.2 Thu May 31 11:22:38 CEST 2007
  - new events handled: coll.song, coll.songs_with_filename_partial
  - all events to pick songs implemented (with tests)
