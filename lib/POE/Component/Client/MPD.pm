@@ -108,7 +108,7 @@ sub spawn {
                 # -- Collection: retrieving the whole collection
 # #                 all_songs
                 'coll.all_albums'       => '_onpub_all_albums',
-# #                 all_artists
+                'coll.all_artists'      => '_onpub_all_artists',
 # #                 all_titles
                 'coll.all_files'       => '_onpub_all_files',
                 # -- Collection: picking songs

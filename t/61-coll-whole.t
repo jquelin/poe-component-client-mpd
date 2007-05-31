@@ -16,12 +16,15 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 2;
+our $nbtests = 4;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
     # coll.all_albums
     [ 'coll.all_albums', [],       $SEND, \&check_all_albums ],
+
+    # coll.all_artists
+    [ 'coll.all_artists', [],      $SEND, \&check_all_artists ],
 );
 
 
@@ -35,4 +38,10 @@ sub check_all_albums {
     my @list = @{ $_[0]->data };
     is( scalar @list, 1, 'all_albums return the albums' );
     is( $list[0], 'our album', 'all_albums return strings' );
+}
+
+sub check_all_artists {
+    my @list = @{ $_[0]->data };
+    is( scalar @list, 1, 'all_artists return the artists' );
+    is( $list[0], 'dir1-artist', 'all_artists return strings' );
 }
