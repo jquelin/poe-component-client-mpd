@@ -11,7 +11,7 @@ lib/POE/Component/Client/MPD/Playlist.pm
 lib/POE/Component/Client/MPD/Test.pm
 LICENSE
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 META.yml
 README
 t/00-load.t
