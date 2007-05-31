@@ -15,7 +15,7 @@ use POE qw[ Component::Client::MPD::Message ];
 use Readonly;
 use Test::More;
 
-our $nbtests = 4;
+our $nbtests = 10;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -24,6 +24,9 @@ our @tests   = (
 
     # coll.songs_by_artist
     [ 'coll.songs_by_artist',  ['dir1-artist'], $SEND, \&check_songs_by_artist ],
+
+    # coll.songs_by_artist_partial
+    [ 'coll.songs_by_artist_partial',  ['artist'], $SEND, \&check_songs_by_artist_partial ],
 );
 
 
@@ -46,4 +49,15 @@ sub check_songs_by_artist {
             'songs_by_artist return AMCI::Songs' ) for @list;
     is( $list[0]->artist, 'dir1-artist', 'songs_by_artist return correct objects' );
 }
+
+sub check_songs_by_artist_partial {
+    my @list = @{ $_[0]->data };
+    is( scalar @list, 2, 'songs_by_artist_partial return all the songs found' );
+    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+            'songs_by_artist_partial return AMCI::Songs' ) for @list;
+    like( $list[0]->artist, qr/artist/, 'songs_by_artist_partial return correct objects' );
+}
+
+
+
 
