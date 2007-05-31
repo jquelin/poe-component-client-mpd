@@ -222,6 +222,22 @@ sub _onpub_albums_by_artist {
 }
 
 
+#
+# event: coll.songs_by_artist($artist);
+#
+# Return all AMC::Item::Songs performed by $artist.
+#
+sub _onpub_songs_by_artist {
+    my $what = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from      => $_[SENDER]->ID,
+        _request   => $_[STATE],
+        _answer    => $SEND,
+        _commands  => [ qq[find artist "$what"] ],
+        _cooking   => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
 
 1;
 

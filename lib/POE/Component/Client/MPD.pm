@@ -116,7 +116,7 @@ sub spawn {
                 'coll.songs_with_filename_partial' => '_onpub_songs_with_filename_partial',
                 # -- Collection: songs, albums & artists relations
                 'coll.albums_by_artist' => '_onpub_albums_by_artist',
-# #                 songs_by_artist
+                'coll.songs_by_artist'  => '_onpub_songs_by_artist',
 # #                 songs_by_artist_partial
 # #                 songs_from_album
 # #                 songs_from_album_partial
