@@ -258,6 +258,23 @@ sub _onpub_songs_by_artist_partial {
 }
 
 
+#
+# event: coll.songs_from_album($album);
+#
+# Return all AMC::Item::Songs appearing in $album.
+#
+sub _onpub_songs_from_album {
+    my $what = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from      => $_[SENDER]->ID,
+        _request   => $_[STATE],
+        _answer    => $SEND,
+        _commands  => [ qq[find album "$what"] ],
+        _cooking   => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
 
 1;
 
