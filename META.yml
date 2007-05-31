@@ -1,6 +1,6 @@
 ---
 name: POE-Component-Client-MPD
-version: 0.6.3
+version: 0.7.0
 author:
   - 'Jerome Quelin <jquelin@cpan.org>'
 abstract: a full-blown mpd client library
@@ -8,6 +8,7 @@ license: perl
 resources:
   license: http://dev.perl.org/licenses/
 requires:
+  Audio::MPD::Common: 0
   Class::Accessor: 0
   List::MoreUtils: 0
   POE: 0
@@ -18,33 +19,19 @@ build_requires:
 provides:
   POE::Component::Client::MPD:
     file: lib/POE/Component/Client/MPD.pm
-    version: 0.6.3
+    version: 0.7.0
   POE::Component::Client::MPD::Collection:
     file: lib/POE/Component/Client/MPD/Collection.pm
   POE::Component::Client::MPD::Commands:
     file: lib/POE/Component/Client/MPD/Commands.pm
   POE::Component::Client::MPD::Connection:
     file: lib/POE/Component/Client/MPD/Connection.pm
-  POE::Component::Client::MPD::Item:
-    file: lib/POE/Component/Client/MPD/Item.pm
-  POE::Component::Client::MPD::Item::Directory:
-    file: lib/POE/Component/Client/MPD/Item/Directory.pm
-  POE::Component::Client::MPD::Item::Playlist:
-    file: lib/POE/Component/Client/MPD/Item/Playlist.pm
-  POE::Component::Client::MPD::Item::Song:
-    file: lib/POE/Component/Client/MPD/Item/Song.pm
   POE::Component::Client::MPD::Message:
     file: lib/POE/Component/Client/MPD/Message.pm
   POE::Component::Client::MPD::Playlist:
     file: lib/POE/Component/Client/MPD/Playlist.pm
-  POE::Component::Client::MPD::Stats:
-    file: lib/POE/Component/Client/MPD/Stats.pm
-  POE::Component::Client::MPD::Status:
-    file: lib/POE/Component/Client/MPD/Status.pm
   POE::Component::Client::MPD::Test:
     file: lib/POE/Component/Client/MPD/Test.pm
-  POE::Component::Client::MPD::Time:
-    file: lib/POE/Component/Client/MPD/Time.pm
 generated_by: Module::Build version 0.2806
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

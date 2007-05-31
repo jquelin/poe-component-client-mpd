@@ -3,6 +3,7 @@ Revision history for POE-Component-Client-MPD
 High-level changelog
 ====================
 
+0.7.x  using common classes in audio::mpd::common
 0.6.x  pococm-coll implementation
 0.5.x  pococm-playlist implementation
 0.4.x  pre-events, data transform, more pococm-commands implemented
@@ -14,6 +15,12 @@ High-level changelog
 
 Low-level changelog
 ===================
+
+0.7.0 Thu May 31 16:35:25 CEST 2007
+ - using common classes outsourced in audio::mpd::common, namely: item*,
+   stats, status and time.
+
+**
 
 0.6.3 Thu May 31 12:52:07 CEST 2007
  - new events handled:
