@@ -29,14 +29,14 @@ Readonly our $SLEEP1  => 2; # for test purposes
 
 # constants for _cooking
 Readonly our $RAW         => 0; # data is to be returned raw
-Readonly our $AS_ITEMS    => 1; # data is to be returned as pococm-item
+Readonly our $AS_ITEMS    => 1; # data is to be returned as amc-item
 Readonly our $AS_KV       => 2; # data is to be returned as kv (hash)
 Readonly our $STRIP_FIRST => 3; # data should have its first field stripped
 
 # constants for _transform
 Readonly our $AS_SCALAR => 0; # transform data from list to scalar
-Readonly our $AS_STATS  => 1; # transform data from kv to pococm-stats
-Readonly our $AS_STATUS => 2; # transform data from kv to pococm-status
+Readonly our $AS_STATS  => 1; # transform data from kv to amc-stats
+Readonly our $AS_STATUS => 2; # transform data from kv to amc-status
 
 
 our @EXPORT = qw[

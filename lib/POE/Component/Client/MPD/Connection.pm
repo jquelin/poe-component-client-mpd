@@ -232,18 +232,18 @@ sub _onpriv_ServerInput_data {
 
         $cooking == $AS_ITEMS and do {
             # Lots of POCOCM methods are sending commands and then parse the
-            # output to build a pococm-item.
+            # output to build an amc-item.
             my ($k,$v) = split /:\s+/, $input, 2;
             $k = lc $k;
 
             if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
-                # build a new pococm-item
+                # build a new amc-item
                 my $item = Audio::MPD::Common::Item->new( $k => $v );
                 push @{ $h->{incoming} }, $item;
                 last COOKING;
             }
 
-            # just complete the current pococm-item
+            # just complete the current amc-item
             $h->{incoming}[-1]->$k($v);
             last COOKING;
         };
