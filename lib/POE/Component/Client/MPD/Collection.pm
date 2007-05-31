@@ -91,7 +91,8 @@ sub _onpub_items_in_dir {
 
 # -- Collection: retrieving the whole collection
 
-#coll.all_songs
+
+# event: coll.all_songs( )
 
 #
 # event: coll.all_albums( )

@@ -23,7 +23,7 @@ use base qw[ Class::Accessor::Fast ];
 __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
 
 
-our $VERSION = '0.6.0';
+our $VERSION = '0.6.1';
 
 
 #
@@ -106,7 +106,7 @@ sub spawn {
                 'coll.all_items_simple' => '_onpub_all_items_simple',
                 'coll.items_in_dir'     => '_onpub_items_in_dir',
                 # -- Collection: retrieving the whole collection
-# #                 all_songs
+# #                 'coll.all_songs'        => '_onpub_all_songs',
                 'coll.all_albums'       => '_onpub_all_albums',
                 'coll.all_artists'      => '_onpub_all_artists',
                 'coll.all_titles'       => '_onpub_all_titles',

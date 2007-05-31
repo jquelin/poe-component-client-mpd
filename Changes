@@ -15,6 +15,10 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.6.1 Thu May 31 11:02:25 CEST 2007
+ - new events handled: coll.all_albums, coll.all_artists, coll.all_titles
+ - all events to retrieve the whole collection implemented (with tests)
+
 0.6.0 Mon May 28 13:51:54 CEST 2007
  - new events handled: coll.all_items, coll.all_items_simple, coll.items_in_dir
  - all songs & directories retrieval in collection implemented (with tests)
