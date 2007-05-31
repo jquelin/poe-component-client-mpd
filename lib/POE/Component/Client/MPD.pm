@@ -113,7 +113,7 @@ sub spawn {
                 'coll.all_files'        => '_onpub_all_files',
                 # -- Collection: picking songs
                 'coll.song'             => '_onpub_song',
-# #                 songs_with_filename_partial
+                'coll.songs_with_filename_partial' => '_onpub_songs_with_filename_partial',
                 # -- Collection: songs, albums & artists relations
 # #                 albums_by_artist
 # #                 songs_by_artist

@@ -16,13 +16,15 @@ use Readonly;
 use Test::More;
 
 my $path = 'dir1/title-artist-album.ogg';
-our $nbtests = 3;
+our $nbtests = 6;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
     # coll.song
     [ 'coll.song',  [$path], $SEND, \&check_song ],
 
+    # coll.songs_with_filename_partial
+    [ 'coll.songs_with_filename_partial', ['album'], $SEND, \&check_song_partial ]
 );
 
 
@@ -38,4 +40,12 @@ sub check_song {
     is( $song->file, $path, 'song return the correct song' );
     is( $song->title, 'foo-title', 'song return a full AMCI::Song' );
 }
+
+sub check_song_partial {
+    my @list = @{ $_[0]->data };
+    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+            'songs_with_filename_partial return AMCI::Song objects' ) for @list;
+    like( $list[0]->file, qr/album/, 'songs_with_filename_partial return the correct song' );
+}
+
 

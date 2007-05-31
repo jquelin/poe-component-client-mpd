@@ -183,6 +183,24 @@ sub _onpub_song {
 }
 
 
+#
+# event: coll.songs_with_filename_partial( $string );
+#
+# Return the AMC::Item::Songs containing $string in their path.
+#
+sub _onpub_songs_with_filename_partial {
+    my $what = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from      => $_[SENDER]->ID,
+        _request   => $_[STATE],
+        _answer    => $SEND,
+        _commands  => [ qq[search filename "$what"] ],
+        _cooking   => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 # -- Collection: songs, albums & artists relations
 
 1;
