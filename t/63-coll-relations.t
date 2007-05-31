@@ -57,7 +57,7 @@ sub check_albums_by_artist {
 sub check_songs_by_artist {
     my @list = @{ $_[0]->data };
     is( scalar @list, 2, 'songs_by_artist return all the songs found' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
             'songs_by_artist return AMCI::Songs' ) for @list;
     is( $list[0]->artist, 'dir1-artist', 'songs_by_artist return correct objects' );
 }
@@ -65,7 +65,7 @@ sub check_songs_by_artist {
 sub check_songs_by_artist_partial {
     my @list = @{ $_[0]->data };
     is( scalar @list, 2, 'songs_by_artist_partial return all the songs found' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
             'songs_by_artist_partial return AMCI::Songs' ) for @list;
     like( $list[0]->artist, qr/artist/, 'songs_by_artist_partial return correct objects' );
 }
@@ -74,7 +74,7 @@ sub check_songs_by_artist_partial {
 sub check_songs_from_album {
     my @list = @{ $_[0]->data };
     is( scalar @list, 2, 'songs_from_album return all the songs found' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
             'songs_from_album return AMCI::Songs' ) for @list;
     is( $list[0]->album, 'our album', 'songs_from_album_partial return correct objects' );
 }
@@ -82,7 +82,7 @@ sub check_songs_from_album {
 sub check_songs_from_album_partial {
     my @list = @{ $_[0]->data };
     is( scalar @list, 2, 'songs_from_album_partial return all the songs found' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
             'songs_from_album_partial return AMCI::Songs' ) for @list;
     like( $list[0]->album, qr/album/, 'songs_from_album_partial return correct objects' );
 }
@@ -90,7 +90,7 @@ sub check_songs_from_album_partial {
 sub check_songs_with_title {
     my @list = @{ $_[0]->data };
     is( scalar @list, 1, 'songs_with_title return all the songs found' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
             'songs_with_title return AMCI::Songs' ) for @list;
     is( $list[0]->title, 'ok-title', 'songs_with_title return correct objects' );
 }
@@ -98,7 +98,7 @@ sub check_songs_with_title {
 sub check_songs_with_title_partial {
     my @list = @{ $_[0]->data };
     is( scalar @list, 3, 'songs_with_title_partial return all the songs found' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
             'songs_with_title_partial return AMCI::Songs' ) for @list;
     like( $list[0]->title, qr/title/, 'songs_with_title_partial return correct objects' );
 }

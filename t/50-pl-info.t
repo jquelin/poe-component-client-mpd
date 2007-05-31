@@ -43,15 +43,15 @@ exit;
 
 sub check_as_items {
     my @items = @{ $_[0]->data };
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
-        'pl.as_items() returns POCOCM::Item::Song objects' ) for @items;
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
+        'pl.as_items() returns AMC::Item::Song objects' ) for @items;
     is( $items[0]->title, 'ok-title', 'first song reported first' );
 }
 
 sub check_items_changed {
     my @items = @{ $_[0]->data };
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
-            'items_changed_since() returns POCOCM::Item::Song objects' )
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
+            'items_changed_since() returns AMC::Item::Song objects' )
         for @items;
     is( $items[0]->title, 'ok-title', 'first song reported first' );
 }

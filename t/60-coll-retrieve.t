@@ -43,8 +43,8 @@ plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 sub check_all_items1 {
     my @list = @{ $_[0]->data };
     is( scalar @list, 6, 'all_items return all 6 items' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item',
-            'all_items return POCOCMI objects' ) for @list;
+    isa_ok( $_, 'Audio::MPD::Common::Item',
+            'all_items return AMC::Item objects' ) for @list;
 }
 
 sub check_all_items2 {
@@ -57,8 +57,8 @@ sub check_all_items2 {
 sub check_all_items_simple1 {
     my @list = @{ $_[0]->data };
     is( scalar @list, 6, 'all_items_simple return all 6 items' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item',
-            'all_items_simple return POCOCMI objects' ) for @list;
+    isa_ok( $_, 'Audio::MPD::Common::Item',
+            'all_items_simple return AMC::Item objects' ) for @list;
 }
 
 sub check_all_items_simple2 {
@@ -71,8 +71,8 @@ sub check_all_items_simple2 {
 sub check_items_in_dir1 {
     my @list = @{ $_[0]->data };
     is( scalar @list, 4, 'items_in_dir defaults to root' );
-    isa_ok( $_, 'POE::Component::Client::MPD::Item',
-            'items_in_dir return POCOCMI objects' ) for @list;
+    isa_ok( $_, 'Audio::MPD::Common::Item',
+            'items_in_dir return AMC::Item objects' ) for @list;
 }
 
 sub check_items_in_dir2 {

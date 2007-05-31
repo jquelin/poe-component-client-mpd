@@ -62,7 +62,7 @@ sub _check_bad_command {
     like($_[0]->error, qr/unknown command "bad"/, 'unknown command');
 }
 sub _check_data_as_items {
-    isa_ok( $_, 'POE::Component::Client::MPD::Item',
+    isa_ok( $_, 'Audio::MPD::Common::Item',
             '$AS_ITEMS cooks as items' ) for @{ $_[0]->data };
 }
 sub _check_data_as_kv {

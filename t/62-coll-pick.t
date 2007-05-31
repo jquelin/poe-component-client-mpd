@@ -36,14 +36,14 @@ exit;
 
 sub check_song {
     my $song = $_[0]->data;
-    isa_ok( $song, 'POE::Component::Client::MPD::Item::Song', 'song return an AMCI::Song object' );
+    isa_ok( $song, 'Audio::MPD::Common::Item::Song', 'song return an AMCI::Song object' );
     is( $song->file, $path, 'song return the correct song' );
     is( $song->title, 'foo-title', 'song return a full AMCI::Song' );
 }
 
 sub check_song_partial {
     my @list = @{ $_[0]->data };
-    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
             'songs_with_filename_partial return AMCI::Song objects' ) for @list;
     like( $list[0]->file, qr/album/, 'songs_with_filename_partial return the correct song' );
 }

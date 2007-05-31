@@ -52,8 +52,8 @@ exit;
 
 sub check_stats {
     my $stats = $_[0]->data;
-    isa_ok( $stats, 'POE::Component::Client::MPD::Stats',
-            'stats() returns a pococm::stats object' );
+    isa_ok( $stats, 'Audio::MPD::Common::Stats',
+            'stats() returns an amc::stats object' );
     is( $stats->artists,      1, 'one artist in the database' );
     is( $stats->albums,       1, 'one album in the database' );
     is( $stats->songs,        4, '4 songs in the database' );
@@ -65,20 +65,20 @@ sub check_stats {
 
 sub check_status {
     my $status = $_[0]->data;
-    isa_ok( $status, 'POE::Component::Client::MPD::Status',
-            'status return a pococm::status object' );
+    isa_ok( $status, 'Audio::MPD::Common::Status',
+            'status return an amc::status object' );
 }
 
 sub check_current {
     my $song = $_[0]->data;
-    isa_ok( $song, 'POE::Component::Client::MPD::Item::Song',
-            'current return a POCOCM::Item::Song object' );
+    isa_ok( $song, 'Audio::MPD::Common::Item::Song',
+            'current return an AMC::Item::Song object' );
 }
 
 sub check_song {
     my $song = $_[0]->data;
-    isa_ok( $song, 'POE::Component::Client::MPD::Item::Song',
-            'song(id) returns a POCOCM::Item::Song object' );
+    isa_ok( $song, 'Audio::MPD::Common::Item::Song',
+            'song(id) returns an AMC::Item::Song object' );
     is( $song->file, 'dir1/title-artist-album.ogg', 'song(id) returns the wanted song' );
 }
 
