@@ -14,8 +14,6 @@ use warnings;
 
 use POE;
 use POE::Component::Client::MPD::Message;
-use POE::Component::Client::MPD::Stats;
-use POE::Component::Client::MPD::Status;
 use base qw[ Class::Accessor::Fast ];
 
 

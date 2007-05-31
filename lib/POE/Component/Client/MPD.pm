@@ -12,6 +12,8 @@ package POE::Component::Client::MPD;
 use strict;
 use warnings;
 
+use Audio::MPD::Common::Stats;
+use Audio::MPD::Common::Status;
 use List::MoreUtils qw[ firstidx ];
 use POE;
 use POE::Component::Client::MPD::Collection;
@@ -191,13 +193,13 @@ sub _onprot_mpd_data {
         };
         $transform == $AS_STATS and do {
             my %stats = @{ $msg->data };
-            my $stats = POE::Component::Client::MPD::Stats->new( \%stats );
+            my $stats = Audio::MPD::Common::Stats->new( \%stats );
             $msg->data($stats);
             last TRANSFORM;
         };
         $transform == $AS_STATUS and do {
             my %status = @{ $msg->data };
-            my $status = POE::Component::Client::MPD::Status->new( \%status );
+            my $status = Audio::MPD::Common::Status->new( \%status );
             $msg->data($status);
             last TRANSFORM;
         };

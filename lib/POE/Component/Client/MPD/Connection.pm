@@ -12,8 +12,8 @@ package POE::Component::Client::MPD::Connection;
 use strict;
 use warnings;
 
+use Audio::MPD::Common::Item;
 use POE;
-use POE::Component::Client::MPD::Item;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::TCP;
 use Readonly;
@@ -238,7 +238,7 @@ sub _onpriv_ServerInput_data {
 
             if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
                 # build a new pococm-item
-                my $item = POE::Component::Client::MPD::Item->new( $k => $v );
+                my $item = Audio::MPD::Common::Item->new( $k => $v );
                 push @{ $h->{incoming} }, $item;
                 last COOKING;
             }
