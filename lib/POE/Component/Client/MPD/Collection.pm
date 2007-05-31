@@ -311,6 +311,25 @@ sub _onpub_songs_with_title {
     $_[KERNEL]->yield( '_send', $msg );
 }
 
+
+#
+# event: coll.songs_with_title_partial($string);
+#
+# Return all AMC::Item::Songs where $string is part of the title.
+#
+sub _onpub_songs_with_title_partial {
+    my $what = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from      => $_[SENDER]->ID,
+        _request   => $_[STATE],
+        _answer    => $SEND,
+        _commands  => [ qq[search title "$what"] ],
+        _cooking   => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
+
+
 1;
 
 __END__

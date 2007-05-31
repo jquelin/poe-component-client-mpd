@@ -15,7 +15,7 @@ use POE qw[ Component::Client::MPD::Message ];
 use Readonly;
 use Test::More;
 
-our $nbtests = 21;
+our $nbtests = 26;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -36,6 +36,9 @@ our @tests   = (
 
     # coll.songs_with_title
     [ 'coll.songs_with_title',  ['ok-title'], $SEND, \&check_songs_with_title ],
+
+    # coll.songs_with_title_partial
+    [ 'coll.songs_with_title_partial',  ['title'], $SEND, \&check_songs_with_title_partial ],
 );
 
 
@@ -92,5 +95,11 @@ sub check_songs_with_title {
     is( $list[0]->title, 'ok-title', 'songs_with_title return correct objects' );
 }
 
-
+sub check_songs_with_title_partial {
+    my @list = @{ $_[0]->data };
+    is( scalar @list, 3, 'songs_with_title_partial return all the songs found' );
+    isa_ok( $_, 'POE::Component::Client::MPD::Item::Song',
+            'songs_with_title_partial return AMCI::Songs' ) for @list;
+    like( $list[0]->title, qr/title/, 'songs_with_title_partial return correct objects' );
+}
 
