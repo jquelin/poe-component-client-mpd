@@ -20,15 +20,16 @@ WriteMakefile(
     ABSTRACT_FROM       => 'lib/POE/Component/Client/MPD.pm',
     PL_FILES            => {},
     PREREQ_PM => {
-		'Class::Accessor' => 0,
-		'List::MoreUtils' => 0,
-		'POE'             => 0,
-		'Readonly'        => 0,
-        'Test::More'      => 0,
+        'Audio::MPD::Common' => 0,
+        'Class::Accessor'    => 0,
+        'List::MoreUtils'    => 0,
+        'POE'                => 0,
+        'Readonly'           => 0,
+        'Test::More'         => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => [
-		'POE-Component-Client-MPD-*', 'MANIFEST.bak'
+		'POE-Component-Client-MPD-*', 'MANIFEST.bak',
 		map { ( '*/' x $_ ) . '*~' } 0..6
 	] },
 );

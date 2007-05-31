@@ -25,11 +25,12 @@ my $builder = Module::Build->new (
         'Test::More'  => 0,
     },
     requires => {
-        'Class::Accessor' => 0,
-        'List::MoreUtils' => 0,
-        'POE'             => 0,
-        'Readonly'        => 0,
-        'perl'            => '5.8.0',
+        'Audio::MPD::Common' => 0,
+        'Class::Accessor'    => 0,
+        'List::MoreUtils'    => 0,
+        'POE'                => 0,
+        'Readonly'           => 0,
+        'perl'               => '5.8.0',
     },
 );
 
