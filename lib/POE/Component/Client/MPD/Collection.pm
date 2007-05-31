@@ -294,6 +294,22 @@ sub _onpub_songs_from_album_partial {
 }
 
 
+#
+# event: coll.songs_with_title($title);
+#
+# Return all AMC::Item::Songs which title is exactly $title.
+#
+sub _onpub_songs_with_title {
+    my $what = $_[ARG0];
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from      => $_[SENDER]->ID,
+        _request   => $_[STATE],
+        _answer    => $SEND,
+        _commands  => [ qq[find title "$what"] ],
+        _cooking   => $AS_ITEMS,
+    } );
+    $_[KERNEL]->yield( '_send', $msg );
+}
 
 1;
 

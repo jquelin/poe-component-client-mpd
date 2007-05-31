@@ -120,7 +120,7 @@ sub spawn {
                 'coll.songs_by_artist_partial' => '_onpub_songs_by_artist_partial',
                 'coll.songs_from_album' => '_onpub_songs_from_album',
                 'coll.songs_from_album_partial' => '_onpub_songs_from_album_partial',
-# #                 songs_with_title
+                'coll.songs_with_title' => '_onpub_songs_with_title',
 # #                 songs_with_title_partial
             },
             $playlist   => { # playlist related commands
