@@ -107,7 +107,7 @@ sub spawn {
                 'coll.items_in_dir'     => '_onpub_items_in_dir',
                 # -- Collection: retrieving the whole collection
 # #                 all_songs
-# #                 all_albums
+                'coll.all_albums'       => '_onpub_all_albums',
 # #                 all_artists
 # #                 all_titles
                 'coll.all_files'       => '_onpub_all_files',
