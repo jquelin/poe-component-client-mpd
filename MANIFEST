@@ -22,7 +22,6 @@ t/21-conn-non_mpd.t
 t/23-conn-dialog.t
 t/40-cmds-general.t
 t/40-cmds-kill.t
-t/40-collection.t
 t/41-cmds-output.t
 t/42-cmds-info.t
 t/43-cmds-settings.t

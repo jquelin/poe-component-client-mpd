@@ -16,7 +16,7 @@ use Readonly;
 use Test::More;
 
 
-our $nbtests = 6;
+our $nbtests = 8;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
@@ -28,6 +28,10 @@ our @tests   = (
 
     # coll.all_titles
     [ 'coll.all_titles',  [], $SEND, \&check_all_titles ],
+
+    # coll.all_files
+    [ 'coll.all_files',   [], $SEND, \&check_all_files ],
+
 );
 
 
@@ -35,7 +39,6 @@ our @tests   = (
 eval 'use POE::Component::Client::MPD::Test';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
-
 
 sub check_all_albums {
     my @list = @{ $_[0]->data };
@@ -53,4 +56,11 @@ sub check_all_titles {
     my @list = @{ $_[0]->data };
     is( scalar @list, 3, 'all_titles return the titles' );
     like( $list[0], qr/-title$/, 'all_titles return strings' );
+}
+
+
+sub check_all_files {
+    my $list = $_[0]->data;
+    is( scalar @$list, 4, 'all_files return the pathes' );
+    like( $list->[0], qr/\.ogg$/, 'all_files return strings' );
 }
