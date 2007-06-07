@@ -25,7 +25,7 @@ use base qw[ Class::Accessor::Fast ];
 __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
 
 
-our $VERSION = '0.7.0';
+our $VERSION = '0.7.1';
 
 
 #

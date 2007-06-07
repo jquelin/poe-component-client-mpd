@@ -16,6 +16,9 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.7.1 Tue Jun  5 17:58:30 CEST 2007
+ - merged t/40-collection.t to t/61-coll-whole.t
+
 0.7.0 Thu May 31 16:35:25 CEST 2007
  - using common classes outsourced in audio::mpd::common, namely: item*,
    stats, status and time.
