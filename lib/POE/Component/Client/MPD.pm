@@ -23,7 +23,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast Exporter ];
 __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
-our @EXPORT_OK   = qw[ $MPD $COLLECTION $PLAYLIST ];
+our @EXPORT_OK   = qw[ $MPD $COLLECTION $PLAYLIST $_HUB ];
 our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
 
@@ -31,6 +31,7 @@ our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 Readonly our $MPD        => '_pococ_mpd_commands';
 Readonly our $COLLECTION => '_pococ_mpd_collection';
 Readonly our $PLAYLIST   => '_pococ_mpd_playlist';
+Readonly our $_HUB       => '_pococ_mpd_hub';
 
 
 our $VERSION = '0.7.1';
@@ -171,7 +172,8 @@ sub spawn {
 sub _onpub_default {
     my ($event, $params) = @_[ARG0, ARG1];
 
-    croak 'should not be there!' if $_[SENDER] == $_[SESSION];
+    croak "should not be there! caught $event from/to " . $_[SESSION]->ID
+        if $_[SENDER] == $_[SESSION];
 #     return unless exists $allowed{$event};
 
     my $msg = POE::Component::Client::MPD::Message->new( {
@@ -200,6 +202,7 @@ sub _onpub_default {
 sub _onpub_disconnect {
     my ($k,$h) = @_[KERNEL, HEAP];
     $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
+    $k->alias_remove( $_HUB );
     $k->post( $h->{_socket}, 'disconnect' );                # pococm-conn
 }
 
@@ -309,6 +312,7 @@ sub _onpriv_start {
     # set an alias (for easier communication) if requested.
     $h->{alias} = delete $params{alias};
     $_[KERNEL]->alias_set($h->{alias}) if defined $h->{alias};
+    $_[KERNEL]->alias_set( $_HUB );
 
     $h->{password} = delete $params{password};
     $h->{_socket}  = POE::Component::Client::MPD::Connection->spawn(\%params);
