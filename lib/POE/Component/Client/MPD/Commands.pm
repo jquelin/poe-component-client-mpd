@@ -13,8 +13,36 @@ use strict;
 use warnings;
 
 use POE;
+use POE::Component::Client::MPD qw[ :all ];
 use POE::Component::Client::MPD::Message;
+use Readonly;
+
 use base qw[ Class::Accessor::Fast ];
+
+Readonly my @EVENTS => qw[ ];
+
+sub _spawn {
+    my $session = POE::Session->create(
+        inline_states => {
+            '_start'      => sub { warn "started: $MPD\n"; $_[KERNEL]->alias_set( $MPD ) },
+            '_stop'       => sub { warn "stopped: $MPD\n";  },
+            '_default'    => \&POE::Component::Client::MPD::_onpub_default,
+            '_dispatch'   => \&_onpriv_dispatch,
+            'disconnect'  => \&_onpub_disconnect,
+            map { $_ => \&{"_onpub_$_"} } @EVENTS,
+        },
+    );
+
+    return $session->ID;
+}
+
+sub _onpriv_dispatch {
+    my $msg = $_[ARG0];
+    my $event = $msg->_dispatch;
+    $event =~ s/^[^.]\.//;
+    warn "dispatching $event\n";
+    $_[KERNEL]->yield( "_onpub_$event", $msg );
+}
 
 
 # -- MPD interaction: general commands
