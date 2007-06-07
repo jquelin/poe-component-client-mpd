@@ -18,9 +18,19 @@ use List::MoreUtils qw[ firstidx ];
 use POE;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
+use Readonly;
 
-use base qw[ Class::Accessor::Fast ];
+use base qw[ Class::Accessor::Fast Exporter ];
 __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
+our @EXPORT_OK   = qw[ $MPD $COLLECTION $PLAYLIST ];
+our %EXPORT_TAGS = ( all => \@EXPORT_OK );
+
+
+# exportable variables
+Readonly our $MPD        => '_pococ_mpd_commands';
+Readonly our $COLLECTION => '_pococ_mpd_collection';
+Readonly our $PLAYLIST   => '_pococ_mpd_playlist';
+
 
 our $VERSION = '0.7.1';
 
