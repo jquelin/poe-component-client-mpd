@@ -14,6 +14,7 @@ use warnings;
 
 use Audio::MPD::Common::Stats;
 use Audio::MPD::Common::Status;
+use Carp;
 use List::MoreUtils qw[ firstidx ];
 use POE;
 use POE::Component::Client::MPD::Connection;
@@ -162,6 +163,27 @@ sub spawn {
     );
 
     return $session->ID;
+}
+
+
+sub _onpub_default {
+    my ($event, $params) = @_[ARG0, ARG1];
+
+    croak 'should not be there!' if $_[SENDER] == $_[SESSION];
+#     return unless exists $allowed{$event};
+
+    my $msg = POE::Component::Client::MPD::Message->new( {
+        _from       => $_[SENDER]->ID,
+        _request    => $event,  # /!\ $_[STATE] eq 'default'
+        _params     => $params,
+        _dispatch   => $event,
+        #_answer    => <to be set by handler>
+        #_commands  => <to be set by handler>
+        #_cooking   => <to be set by handler>
+        #_transform => <to be set by handler>
+        #_post      => <to be set by handler>
+    } );
+    $_[KERNEL]->yield( '_dispatch', $msg );
 }
 
 
