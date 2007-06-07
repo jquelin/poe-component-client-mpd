@@ -17,8 +17,8 @@ use Readonly;
 use base qw[ Class::Accessor::Fast Exporter ];
 __PACKAGE__->mk_accessors( qw[
     data error request
-    _answer _commands _cooking _transform _from _request
-    _post _pre_event _pre_from _pre_data
+    _answer _commands _cooking _transform _from _request _dispatch _params
+    _post _pre_event _pre_from _pre_data _post_to _post_event
 ] );
 
 
