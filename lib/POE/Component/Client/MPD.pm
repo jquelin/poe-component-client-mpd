@@ -247,9 +247,10 @@ sub _onprot_mpd_data {
     # check for post-callback.
     # need to be before pre-callback, since a pre-event may need to have
     # a post-callback.
-    if ( defined $msg->_post ) {
-        $k->yield( $msg->_post, $msg ); # need a post-treatment...
-        $msg->_post( undef );           # remove postback.
+    if ( defined $msg->_post_event ) {
+        $msg->_dispatch( $msg->_post_event );
+        $msg->_post_event( undef );           # remove postback.
+        $k->post( $msg->_post_to, '_dispatch', $msg ); # need a post-treatment...
         return;
     }
 
