@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ ];
+Readonly my @EVENTS => qw[ status ];
 
 sub _spawn {
     my $object = __PACKAGE__->new;
@@ -228,15 +228,12 @@ sub _onpub_stats {
 # Return a hash with the current status of MPD.
 #
 sub _onpub_status {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from      => $_[SENDER]->ID,
-        _request   => $_[STATE],
-        _answer    => $SEND,
-        _commands  => [ 'status' ],
-        _cooking   => $AS_KV,
-        _transform => $AS_STATUS,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ 'status' ] );
+    $msg->_cooking  ( $AS_KV );
+    $msg->_transform( $AS_STATUS );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
