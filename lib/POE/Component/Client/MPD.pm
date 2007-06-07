@@ -16,14 +16,11 @@ use Audio::MPD::Common::Stats;
 use Audio::MPD::Common::Status;
 use List::MoreUtils qw[ firstidx ];
 use POE;
-use POE::Component::Client::MPD::Collection;
-use POE::Component::Client::MPD::Commands;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
-use POE::Component::Client::MPD::Playlist;
+
 use base qw[ Class::Accessor::Fast ];
 __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
-
 
 our $VERSION = '0.7.1';
 
@@ -47,6 +44,10 @@ our $VERSION = '0.7.1';
 #
 sub spawn {
     my ($type, $args) = @_;
+
+    require POE::Component::Client::MPD::Collection;
+    require POE::Component::Client::MPD::Commands;
+    require POE::Component::Client::MPD::Playlist;
 
     my $collection = POE::Component::Client::MPD::Collection->new;
     my $commands   = POE::Component::Client::MPD::Commands->new;
