@@ -22,6 +22,7 @@ use base qw[ Class::Accessor::Fast ];
 Readonly my @EVENTS => qw[ ];
 
 sub _spawn {
+    my $object = __PACKAGE__->new;
     my $session = POE::Session->create(
         inline_states => {
             '_start'      => sub { warn "started: $MPD\n"; $_[KERNEL]->alias_set( $MPD ) },
@@ -29,8 +30,8 @@ sub _spawn {
             '_default'    => \&POE::Component::Client::MPD::_onpub_default,
             '_dispatch'   => \&_onpriv_dispatch,
             'disconnect'  => \&_onpub_disconnect,
-            map { $_ => \&{"_onpub_$_"} } @EVENTS,
         },
+        object_states => [ $object => [ map { "_onpub_$_" } @EVENTS ] ]
     );
 
     return $session->ID;
