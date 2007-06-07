@@ -162,6 +162,8 @@ sub spawn {
         ],
     );
 
+    POE::Component::Client::MPD::Commands->_spawn;
+
     return $session->ID;
 }
 
