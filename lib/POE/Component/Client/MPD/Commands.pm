@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ status ];
+Readonly my @EVENTS => qw[ status volume ];
 
 sub _spawn {
     my $object = __PACKAGE__->new;
@@ -41,7 +41,7 @@ sub _onpriv_dispatch {
     my $msg = $_[ARG0];
     my $event = $msg->_dispatch;
     $event =~ s/^[^.]\.//;
-    warn "dispatching $event\n";
+#     warn "dispatching $event\n";
     $_[KERNEL]->yield( "_onpub_$event", $msg );
 }
 
@@ -129,24 +129,31 @@ sub _onpub_urlhandlers {
 # by that value.
 #
 sub _onpub_volume {
-    # create stub message.
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _cooking  => $RAW,
-    } );
+    my ($k, $msg) = @_[KERNEL, ARG0];
+    my $volume;
 
-    my $volume = $_[ARG0];
-    if ( $volume =~ /^(-|\+)(\d+)/ )  {
-        $msg->_pre_from( '_volume_status' );
-        $msg->_pre_event( 'status' );
-        $msg->_pre_data( $volume );
+    if ( $msg->_params->[0] =~ /^(-|\+)(\d+)/ ) {
+        my ($op, $delta) = ($1, $2);
+        if ( not defined $msg->data ) {
+            # no status yet - fire an event
+            $msg->_dispatch  ( 'status' );
+            $msg->_post_to   ( $MPD );
+            $msg->_post_event( 'volume' );
+            $k->yield( '_dispatch', $msg );
+            return;
+        }
+
+        # already got a status result
+        my $curvol = $msg->data->volume;
+        $volume = $op eq '+' ? $curvol + $delta : $curvol - $delta;
     } else {
-        $msg->_commands( [ "setvol $volume" ] );
+        $volume = $msg->_params->[0];
     }
 
-    $_[KERNEL]->yield( '_send', $msg );
+    $msg->_cooking  ( $RAW );
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ "setvol $volume" ] );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
