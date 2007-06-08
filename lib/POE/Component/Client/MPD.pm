@@ -173,7 +173,10 @@ sub spawn {
 sub _onpub_default {
     my ($event, $params) = @_[ARG0, ARG1];
 
-    croak "should not be there! caught $event from/to " . $_[SESSION]->ID
+    my $from = $_[SENDER]->ID;
+    my $to   = $_[SESSION]->ID;
+#     warn "caught $event ($from -> $to)\n";
+    die "should not be there! caught $event ($from -> $to)"
         if $_[SENDER] == $_[SESSION];
 #     return unless exists $allowed{$event};
 
