@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ add ];
+Readonly my @EVENTS => qw[ clear ];
 
 
 sub _spawn {
@@ -167,14 +167,11 @@ sub _onpub_deleteid {
 # Remove all the songs from the current playlist.
 #
 sub _onpub_clear {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ 'clear' ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ 'clear' ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
