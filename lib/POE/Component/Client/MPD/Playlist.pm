@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ clear ];
+Readonly my @EVENTS => qw[ add clear ];
 
 
 sub _spawn {
@@ -96,20 +96,19 @@ sub _onpub_items_changed_since {
 # No return event.
 #
 sub _onpub_add {
-    my @pathes   = @_[ARG0 .. $#_];    # args of the poe event
-    my @commands = (                   # build the commands
+    my $msg = $_[ARG0];
+
+    my $args   = $msg->_params;
+    my @pathes = @$args;         # args of the poe event
+    my @commands = (             # build the commands
         'command_list_begin',
         map( qq[add "$_"], @pathes ),
         'command_list_end',
     );
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => \@commands,
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( \@commands );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
