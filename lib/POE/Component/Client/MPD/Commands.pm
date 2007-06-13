@@ -23,6 +23,7 @@ Readonly my @EVENTS => qw[
     updatedb
     volume output_enable output_disable
     stats status current song songid
+    repeat
     play pause stop
 ];
 
@@ -282,38 +283,28 @@ sub _onpub_songid {
 # the repeat mode is toggled.
 #
 sub _onpub_repeat {
-    # create stub message.
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _cooking  => $RAW,
-    } );
+    my ($k, $msg) = @_[KERNEL, ARG0];
 
-    my $mode = $_[ARG0];
-    if ( not defined $mode )  {
-        $msg->_pre_from( '_repeat_status' );
-        $msg->_pre_event( 'status' );
-    } else {
+    my $mode = $msg->_params->[0];
+    if ( defined $mode )  {
         $mode = $mode ? 1 : 0;   # force integer
-        $msg->_commands( [ "repeat $mode" ] );
+    } else {
+        if ( not defined $msg->data ) {
+            # no status yet - fire an event
+            $msg->_dispatch  ( 'status' );
+            $msg->_post_to   ( $MPD );
+            $msg->_post_event( 'repeat' );
+            $k->post( $MPD, '_dispatch', $msg );
+            return;
+        }
+
+        $mode = $msg->data->repeat ? 0 : 1; # negate current value
     }
 
-    $_[KERNEL]->yield( '_send', $msg );
-}
-
-
-#
-# event: _repeat_status( $msg, $status )
-#
-# Use $status to get current repeat mode, before sending real repeat $msg.
-#
-sub _onpriv_repeat_status {
-    my ($msg, $status) = @_[ARG0, ARG1];
-    my $mode = not $status->data->repeat;
-    $mode = $mode ? 1 : 0;   # force integer
+    $msg->_cooking ( $RAW );
+    $msg->_answer  ( $DISCARD );
     $msg->_commands( [ "repeat $mode" ] );
-    $_[KERNEL]->yield( '_send', $msg );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
