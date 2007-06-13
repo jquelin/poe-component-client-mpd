@@ -317,10 +317,9 @@ sub _onpub_repeat {
 sub _onpub_fade {
     my $msg     = $_[ARG0];
     my $seconds = $msg->_params->[0] || 0;
-    $msg->_answer   ( $SEND );
+    $msg->_answer   ( $DISCARD );
     $msg->_commands ( [ "crossfade $seconds" ] );
-    $msg->_cooking  ( $DISCARD );
-    $msg->_transform( $RAW );
+    $msg->_cooking  ( $RAW );
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
