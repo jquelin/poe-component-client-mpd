@@ -115,29 +115,6 @@ sub spawn {
 #                 'seekid'               => '_onpub_seekid',
 #                 '_seekid_need_current' => '_onpriv_seek_need_current',
             },
-            $collection => { # collection related commands
-                # -- Collection: retrieving songs & directories
-                'coll.all_items'        => '_onpub_all_items',
-                'coll.all_items_simple' => '_onpub_all_items_simple',
-                'coll.items_in_dir'     => '_onpub_items_in_dir',
-                # -- Collection: retrieving the whole collection
-# #                 'coll.all_songs'        => '_onpub_all_songs',
-                'coll.all_albums'       => '_onpub_all_albums',
-                'coll.all_artists'      => '_onpub_all_artists',
-                'coll.all_titles'       => '_onpub_all_titles',
-                'coll.all_files'        => '_onpub_all_files',
-                # -- Collection: picking songs
-                'coll.song'             => '_onpub_song',
-                'coll.songs_with_filename_partial' => '_onpub_songs_with_filename_partial',
-                # -- Collection: songs, albums & artists relations
-                'coll.albums_by_artist' => '_onpub_albums_by_artist',
-                'coll.songs_by_artist'  => '_onpub_songs_by_artist',
-                'coll.songs_by_artist_partial' => '_onpub_songs_by_artist_partial',
-                'coll.songs_from_album' => '_onpub_songs_from_album',
-                'coll.songs_from_album_partial' => '_onpub_songs_from_album_partial',
-                'coll.songs_with_title' => '_onpub_songs_with_title',
-                'coll.songs_with_title_partial' => '_onpub_songs_with_title_partial',
-            },
         ],
     );
 
