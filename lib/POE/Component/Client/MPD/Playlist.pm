@@ -22,7 +22,7 @@ use base qw[ Class::Accessor::Fast ];
 Readonly my @EVENTS => qw[
     as_items items_changed_since
     add delete deleteid clear crop
-    swap swapid moveid
+    swap swapid move moveid
 ];
 
 
@@ -262,15 +262,13 @@ sub _onpub_swapid {
 # Move song number $song to the position $newpos.
 #
 sub _onpub_move {
-    my ($song, $pos) = @_[ARG0, ARG1];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ "move $song $pos" ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my ($song, $pos) = @{ $msg->_params }[0,1];
+
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ "move $song $pos" ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
