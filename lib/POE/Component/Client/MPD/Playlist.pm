@@ -23,6 +23,7 @@ Readonly my @EVENTS => qw[
     as_items items_changed_since
     add delete deleteid clear crop
     shuffle swap swapid move moveid
+    load
 ];
 
 
@@ -293,15 +294,13 @@ sub _onpub_moveid {
 # Load list of songs from specified $playlist file.
 #
 sub _onpub_load {
-    my ($playlist) = $_[ARG0];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ qq[load "$playlist"] ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $playlist = $msg->_params->[0];
+
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ qq[load "$playlist"] ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
