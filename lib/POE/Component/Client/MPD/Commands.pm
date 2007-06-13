@@ -23,7 +23,7 @@ Readonly my @EVENTS => qw[
     updatedb
     volume output_enable output_disable
     stats status current song songid
-    repeat random
+    repeat random fade
     play pause stop
 ];
 
@@ -315,16 +315,13 @@ sub _onpub_repeat {
 # $seconds is not specified or $seconds is 0, then crossfading is disabled.
 #
 sub _onpub_fade {
-    my $seconds = $_[ARG0];
-    $seconds ||= 0;
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ "crossfade $seconds" ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg     = $_[ARG0];
+    my $seconds = $msg->_params->[0] || 0;
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ "crossfade $seconds" ] );
+    $msg->_cooking  ( $DISCARD );
+    $msg->_transform( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
