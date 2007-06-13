@@ -12,8 +12,39 @@ package POE::Component::Client::MPD::Collection;
 use strict;
 use warnings;
 
-use POE  qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
+use Readonly;
+
 use base qw[ Class::Accessor::Fast ];
+
+Readonly my @EVENTS => qw[
+];
+
+sub _spawn {
+    my $object = __PACKAGE__->new;
+    my $session = POE::Session->create(
+        inline_states => {
+            '_start'      => sub { warn "started: $MPD (" . $_[SESSION]->ID . ")\n"; $_[KERNEL]->alias_set( $MPD ) },
+            '_stop'       => sub { warn "stopped: $MPD\n";  },
+            '_default'    => \&POE::Component::Client::MPD::_onpub_default,
+            '_dispatch'   => \&_onpriv_dispatch,
+            'disconnect'  => \&_onpub_disconnect,
+        },
+        object_states => [ $object => [ map { "_onpub_$_" } @EVENTS ] ]
+    );
+
+    return $session->ID;
+}
+
+sub _onpriv_dispatch {
+    my $msg = $_[ARG0];
+    my $event = $msg->_dispatch;
+    $event =~ s/^[^.]\.//;
+#     warn "dispatching $event\n";
+    $_[KERNEL]->yield( "_onpub_$event", $msg );
+}
 
 
 # -- Collection: retrieving songs & directories
