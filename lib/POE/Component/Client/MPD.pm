@@ -141,6 +141,7 @@ sub spawn {
         ],
     );
 
+    POE::Component::Client::MPD::Collection->_spawn;
     POE::Component::Client::MPD::Commands->_spawn;
     POE::Component::Client::MPD::Playlist->_spawn;
 
