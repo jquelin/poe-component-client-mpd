@@ -24,7 +24,7 @@ Readonly my @EVENTS => qw[
     volume output_enable output_disable
     stats status current song songid
     repeat random fade
-    play playid pause stop next prev seek
+    play playid pause stop next prev seek seekid
 ];
 
 sub _spawn {
@@ -489,37 +489,27 @@ sub _onpub_seek {
 # then the perl module will try and seek to $time in the current song.
 #
 sub _onpub_seekid {
-    my ($time, $song) = @_[ARG0, ARG1];
+    my ($k, $msg) = @_[KERNEL, ARG0];
+
+    my ($time, $songid) = @{ $msg->_params }[0,1];
     $time ||= 0; $time = int $time;
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _cooking  => $RAW,
-    } );
+    if ( not defined $songid )  {
+        if ( not defined $msg->data ) {
+            # no status yet - fire an event
+            $msg->_dispatch  ( 'status' );
+            $msg->_post_to   ( $MPD );
+            $msg->_post_event( 'seek' );
+            $k->post( $MPD, '_dispatch', $msg );
+            return;
+        }
 
-    if ( defined $song ) {
-        $msg->_commands( [ "seekid $song $time" ] );
-    } else {
-        $msg->_pre_from( '_seekid_need_current' );
-        $msg->_pre_event( 'status' );
-        $msg->_pre_data( $time );
+        $songid = $msg->data->songid;
     }
-    $_[KERNEL]->yield( '_send', $msg );
-}
 
-
-#
-# event: _seekid_need_current( $msg, $current )
-#
-# Use $current to get current song, before sending real seekid $msg.
-#
-sub _onpriv_seekid_need_current {
-    my ($msg, $current) = @_[ARG0, ARG1];
-    my $song = $current->data->song;
-    my $time = $msg->_pre_data;
-    $msg->_commands( [ "seekid $song $time" ] );
-    $_[KERNEL]->yield( '_send', $msg );
+    $msg->_cooking ( $RAW );
+    $msg->_answer  ( $DISCARD );
+    $msg->_commands( [ "seekid $songid $time" ] );
+    $k->post( $_HUB, '_send', $msg );
 }
 
 
