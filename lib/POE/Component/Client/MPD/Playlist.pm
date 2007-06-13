@@ -19,7 +19,11 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ add as_items clear crop delete deleteid items_changed_since ];
+Readonly my @EVENTS => qw[
+    as_items items_changed_since
+    add delete deleteid clear crop
+    swapid
+];
 
 
 sub _spawn {
@@ -244,15 +248,13 @@ sub _onpub_swap {
 # Swap positions of song id $songid1 and $songid2 in the current playlist.
 #
 sub _onpub_swapid {
-    my ($from, $to) = @_[ARG0, ARG1];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ "swapid $from $to" ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my ($from, $to) = @{ $msg->_params }[0,1];
+
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ "swapid $from $to"  ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
