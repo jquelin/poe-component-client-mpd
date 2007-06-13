@@ -23,7 +23,7 @@ Readonly my @EVENTS => qw[
     updatedb
     volume output_enable output_disable
     stats status current song songid
-    repeat
+    repeat random
     play pause stop
 ];
 
@@ -335,39 +335,30 @@ sub _onpub_fade {
 # the random mode is toggled.
 #
 sub _onpub_random {
-    # create stub message.
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _cooking  => $RAW,
-    } );
+    my ($k, $msg) = @_[KERNEL, ARG0];
 
-    my $mode = $_[ARG0];
-    if ( not defined $mode )  {
-        $msg->_pre_from( '_random_status' );
-        $msg->_pre_event( 'status' );
-    } else {
+    my $mode = $msg->_params->[0];
+    if ( defined $mode )  {
         $mode = $mode ? 1 : 0;   # force integer
-        $msg->_commands( [ "random $mode" ] );
+    } else {
+        if ( not defined $msg->data ) {
+            # no status yet - fire an event
+            $msg->_dispatch  ( 'status' );
+            $msg->_post_to   ( $MPD );
+            $msg->_post_event( 'random' );
+            $k->post( $MPD, '_dispatch', $msg );
+            return;
+        }
+
+        $mode = $msg->data->repeat ? 0 : 1; # negate current value
     }
 
-    $_[KERNEL]->yield( '_send', $msg );
-}
-
-
-#
-# event: _repeat_status( $msg, $status )
-#
-# Use $status to get current repeat mode, before sending real repeat $msg.
-#
-sub _onpriv_random_status {
-    my ($msg, $status) = @_[ARG0, ARG1];
-    my $mode = not $status->data->random;
-    $mode = $mode ? 1 : 0;   # force integer
+    $msg->_cooking ( $RAW );
+    $msg->_answer  ( $DISCARD );
     $msg->_commands( [ "random $mode" ] );
-    $_[KERNEL]->yield( '_send', $msg );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
+
 
 
 # -- MPD interaction: controlling playback
