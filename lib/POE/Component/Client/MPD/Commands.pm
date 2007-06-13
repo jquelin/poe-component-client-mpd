@@ -20,7 +20,7 @@ use Readonly;
 use base qw[ Class::Accessor::Fast ];
 
 Readonly my @EVENTS => qw[
-    volume output_disable
+    volume output_enable output_disable
     status
     play stop
 ];
@@ -167,15 +167,13 @@ sub _onpub_volume {
 # Enable the specified audio output. $output is the ID of the audio output.
 #
 sub _onpub_output_enable {
-    my $output = $_[ARG0];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ "enableoutput $output" ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg    = $_[ARG0];
+    my $output = $msg->_params->[0];
+
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ "enableoutput $output" ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
