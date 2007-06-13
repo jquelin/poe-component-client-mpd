@@ -20,7 +20,7 @@ use Readonly;
 use base qw[ Class::Accessor::Fast ];
 
 Readonly my @EVENTS => qw[
-    all_items all_items_simple
+    all_items all_items_simple items_in_dir
 ];
 
 sub _spawn {
@@ -101,16 +101,13 @@ sub _onpub_all_items_simple {
 # Note that this sub does not work recusrively on all directories.
 #
 sub _onpub_items_in_dir {
-    my $path = $_[ARG0];
-    $path ||= '';
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $SEND,
-        _commands => [ qq[lsinfo "$path"] ],
-        _cooking  => $AS_ITEMS,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $path = $msg->_params->[0] || '';
+
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ qq[lsinfo "$path"] ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
