@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ add clear delete deleteid ];
+Readonly my @EVENTS => qw[ add clear crop delete deleteid ];
 
 
 sub _spawn {
@@ -178,35 +178,30 @@ sub _onpub_clear {
 #  Remove all of the songs from the current playlist *except* the current one.
 #
 sub _onpub_crop {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from      => $_[SENDER]->ID,
-        _request   => $_[STATE],
-        _answer    => $DISCARD,
-        _cooking   => $RAW,
-        _pre_from  => '_crop_status',
-        _pre_event => 'status',
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
-}
+    my ($k, $msg) = @_[KERNEL, ARG0];
 
+    if ( not defined $msg->data ) {
+        # no status yet - fire an event
+        $msg->_dispatch  ( 'status' );
+        $msg->_post_to   ( $PLAYLIST );
+        $msg->_post_event( 'crop' );
+        $k->post( $MPD, '_dispatch', $msg );
+        return;
+    }
 
-#
-# event: _crop_status( $msg, $status)
-#
-# Use $status to get current song, before sending real crop $msg.
-#
-sub _onpriv_crop_status {
-    my ($msg, $status) = @_[ARG0, ARG1];
-    my $cur = $status->data->song;
-    my $len = $status->data->playlistlength - 1;
-
+    # now we know what to remove
+    my $cur = $msg->data->song;
+    my $len = $msg->data->playlistlength - 1;
     my @commands = (
         'command_list_begin',
         map( { $_  != $cur ? "delete $_" : '' } reverse 0..$len ),
         'command_list_end'
     );
-    $msg->_commands( \@commands );
-    $_[KERNEL]->yield( '_send', $msg );
+
+    $msg->_cooking  ( $RAW );
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( \@commands );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
