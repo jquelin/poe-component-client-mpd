@@ -24,8 +24,8 @@ Readonly my @EVENTS => qw[
     all_albums all_artists all_titles all_files
     song songs_with_filename_partial
     albums_by_artist
-        songs_by_artist songs_by_artist_partial
-        songs_from_album
+        songs_by_artist  songs_by_artist_partial
+        songs_from_album songs_from_album_partial
 ];
 
 sub _spawn {
@@ -281,15 +281,12 @@ sub _onpub_songs_from_album {
 # Return all AMC::Item::Songs appearing in album containing $string.
 #
 sub _onpub_songs_from_album_partial {
-    my $what = $_[ARG0];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from      => $_[SENDER]->ID,
-        _request   => $_[STATE],
-        _answer    => $SEND,
-        _commands  => [ qq[search album "$what"] ],
-        _cooking   => $AS_ITEMS,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $what = $msg->_params->[0];
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ qq[search album "$what"] ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
