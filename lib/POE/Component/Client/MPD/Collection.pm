@@ -26,7 +26,7 @@ Readonly my @EVENTS => qw[
     albums_by_artist
         songs_by_artist  songs_by_artist_partial
         songs_from_album songs_from_album_partial
-        songs_with_title
+        songs_with_title songs_with_title_partial
 ];
 
 sub _spawn {
@@ -312,15 +312,12 @@ sub _onpub_songs_with_title {
 # Return all AMC::Item::Songs where $string is part of the title.
 #
 sub _onpub_songs_with_title_partial {
-    my $what = $_[ARG0];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from      => $_[SENDER]->ID,
-        _request   => $_[STATE],
-        _answer    => $SEND,
-        _commands  => [ qq[search title "$what"] ],
-        _cooking   => $AS_ITEMS,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $what = $msg->_params->[0];
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ qq[search title "$what"] ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
