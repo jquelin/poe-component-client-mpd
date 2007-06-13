@@ -347,7 +347,7 @@ sub _onpub_random {
             return;
         }
 
-        $mode = $msg->data->repeat ? 0 : 1; # negate current value
+        $mode = $msg->data->random ? 0 : 1; # negate current value
     }
 
     $msg->_cooking ( $RAW );
