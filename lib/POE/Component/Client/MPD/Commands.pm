@@ -22,7 +22,7 @@ use base qw[ Class::Accessor::Fast ];
 Readonly my @EVENTS => qw[
     volume output_enable output_disable
     status
-    play stop
+    play pause stop
 ];
 
 sub _spawn {
@@ -440,15 +440,12 @@ sub _onpub_playid {
 # Note that if $state is not given, pause state will be toggled.
 #
 sub _onpub_pause {
-    my $state = defined $_[ARG0] ? $_[ARG0] : '';
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ "pause $state" ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+    my $state = defined $msg->_params->[0] ? $msg->_params->[0] : '';
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ "pause $state" ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
