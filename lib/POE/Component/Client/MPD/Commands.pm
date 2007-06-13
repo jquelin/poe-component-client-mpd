@@ -22,7 +22,7 @@ use base qw[ Class::Accessor::Fast ];
 Readonly my @EVENTS => qw[
     updatedb
     volume output_enable output_disable
-    stats status
+    stats status current
     play pause stop
 ];
 
@@ -230,15 +230,12 @@ sub _onpub_status {
 # Return a POCOCM::Item::Song representing the song currently playing.
 #
 sub _onpub_current {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from      => $_[SENDER]->ID,
-        _request   => $_[STATE],
-        _answer    => $SEND,
-        _commands  => [ 'currentsong' ],
-        _cooking   => $AS_ITEMS,
-        _transform => $AS_SCALAR,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ 'currentsong' ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_transform( $AS_SCALAR );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
