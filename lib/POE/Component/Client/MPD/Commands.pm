@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ status volume ];
+Readonly my @EVENTS => qw[ play status volume ];
 
 sub _spawn {
     my $object = __PACKAGE__->new;
@@ -419,15 +419,12 @@ sub _onpriv_random_status {
 # resume playing.
 #
 sub _onpub_play {
-    my $number = defined $_[ARG0] ? $_[ARG0] : '';
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ "play $number" ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+    my $number = defined $msg->_params->[0] ? $msg->_params->[0] : '';
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ "play $number" ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
