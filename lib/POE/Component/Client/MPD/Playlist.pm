@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ add clear crop delete deleteid ];
+Readonly my @EVENTS => qw[ add as_items clear crop delete deleteid ];
 
 
 sub _spawn {
@@ -56,14 +56,12 @@ sub _onpriv_dispatch {
 # songs in the current playlist.
 #
 sub _onpub_as_items {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $SEND,
-        _commands => [ 'playlistinfo' ],
-        _cooking  => $AS_ITEMS,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ 'playlistinfo' ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
