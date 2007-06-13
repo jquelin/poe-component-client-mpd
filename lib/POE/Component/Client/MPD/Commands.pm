@@ -22,7 +22,7 @@ use base qw[ Class::Accessor::Fast ];
 Readonly my @EVENTS => qw[
     updatedb
     volume output_enable output_disable
-    status
+    stats status
     play pause stop
 ];
 
@@ -200,15 +200,12 @@ sub _onpub_output_disable {
 # Return a hash with the current statistics of MPD.
 #
 sub _onpub_stats {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from      => $_[SENDER]->ID,
-        _request   => $_[STATE],
-        _answer    => $SEND,
-        _commands  => [ 'stats' ],
-        _cooking   => $AS_KV,
-        _transform => $AS_STATS,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ 'stats' ] );
+    $msg->_cooking  ( $AS_KV );
+    $msg->_transform( $AS_STATS );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
