@@ -20,6 +20,7 @@ use Readonly;
 use base qw[ Class::Accessor::Fast ];
 
 Readonly my @EVENTS => qw[
+    updatedb
     volume output_enable output_disable
     status
     play pause stop
@@ -94,15 +95,13 @@ sub _onpub_kill {
 # its whole collection.
 #
 sub _onpub_updatedb {
-    my $path = defined $_[ARG0] ? $_[ARG0] : '';
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ "update $path" ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $path = defined $msg->_params->[0] ? $msg->_params->[0] : '';
+
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ qq[update "$path"] ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
