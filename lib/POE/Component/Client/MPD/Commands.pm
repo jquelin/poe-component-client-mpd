@@ -31,8 +31,7 @@ sub _spawn {
     my $object = __PACKAGE__->new;
     my $session = POE::Session->create(
         inline_states => {
-            '_start'      => sub { warn "started: $MPD (" . $_[SESSION]->ID . ")\n"; $_[KERNEL]->alias_set( $MPD ) },
-            '_stop'       => sub { warn "stopped: $MPD\n";  },
+            '_start'      => sub { $_[KERNEL]->alias_set( $MPD ) },
             '_default'    => \&POE::Component::Client::MPD::_onpub_default,
             '_dispatch'   => \&_onpriv_dispatch,
             'disconnect'  => \&_onpub_disconnect,
