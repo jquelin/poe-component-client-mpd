@@ -138,28 +138,6 @@ sub spawn {
                 'coll.songs_with_title' => '_onpub_songs_with_title',
                 'coll.songs_with_title_partial' => '_onpub_songs_with_title_partial',
             },
-            $playlist   => { # playlist related commands
-                # -- Playlist: retrieving information
-                'pl.as_items'            => '_onpub_as_items',
-                'pl.items_changed_since' => '_onpub_items_changed_since',
-                # -- Playlist: adding / removing songs
-                'pl.add'               => '_onpub_add',
-                'pl.delete'            => '_onpub_delete',
-                'pl.deleteid'          => '_onpub_deleteid',
-                'pl.clear'             => '_onpub_clear',
-                'pl.crop'              => '_onpub_crop',
-                '_crop_status'         => '_onpriv_crop_status',
-                # -- Playlist: changing playlist order
-                'pl.shuffle'           => '_onpub_shuffle',
-                'pl.swap'              => '_onpub_swap',
-                'pl.swapid'            => '_onpub_swapid',
-                'pl.move'              => '_onpub_move',
-                'pl.moveid'            => '_onpub_moveid',
-                # -- Playlist: managing playlists
-                'pl.load'              => '_onpub_load',
-                'pl.save'              => '_onpub_save',
-                'pl.rm'                => '_onpub_rm',
-            },
         ],
     );
 
