@@ -20,14 +20,15 @@ use Readonly;
 use base qw[ Class::Accessor::Fast ];
 
 Readonly my @EVENTS => qw[
+    all_items
 ];
 
 sub _spawn {
     my $object = __PACKAGE__->new;
     my $session = POE::Session->create(
         inline_states => {
-            '_start'      => sub { warn "started: $MPD (" . $_[SESSION]->ID . ")\n"; $_[KERNEL]->alias_set( $MPD ) },
-            '_stop'       => sub { warn "stopped: $MPD\n";  },
+            '_start'      => sub { warn "started: $COLLECTION (" . $_[SESSION]->ID . ")\n"; $_[KERNEL]->alias_set( $COLLECTION ) },
+            '_stop'       => sub { warn "stopped: $COLLECTION\n";  },
             '_default'    => \&POE::Component::Client::MPD::_onpub_default,
             '_dispatch'   => \&_onpriv_dispatch,
             'disconnect'  => \&_onpub_disconnect,
@@ -58,16 +59,13 @@ sub _onpriv_dispatch {
 # songs and dirs in this directory.
 #
 sub _onpub_all_items {
-    my $path = $_[ARG0];
-    $path ||= '';
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $SEND,
-        _commands => [ qq[listallinfo "$path"] ],
-        _cooking  => $AS_ITEMS,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $path = $msg->_params->[0] || '';
+
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ qq[listallinfo "$path"] ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
