@@ -19,7 +19,11 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ play status stop volume ];
+Readonly my @EVENTS => qw[
+    volume output_disable
+    status
+    play stop
+];
 
 sub _spawn {
     my $object = __PACKAGE__->new;
@@ -158,22 +162,6 @@ sub _onpub_volume {
 
 
 #
-# event: _volume_status( $msg, $status )
-#
-# Use $status to get current volume, before sending real volume $msg.
-#
-sub _onpriv_volume_status {
-    my ($msg, $status) = @_[ARG0, ARG1];
-    my $curvol = $status->data->volume;
-    my $volume = $msg->_pre_data;
-    $volume =~ /^(-|\+)(\d+)/;
-    $volume = $1 eq '+' ? $curvol + $2 : $curvol - $2;
-    $msg->_commands( [ "setvol $volume" ] );
-    $_[KERNEL]->yield( '_send', $msg );
-}
-
-
-#
 # event: output_enable( $output )
 #
 # Enable the specified audio output. $output is the ID of the audio output.
@@ -197,15 +185,13 @@ sub _onpub_output_enable {
 # Disable the specified audio output. $output is the ID of the audio output.
 #
 sub _onpub_output_disable {
-    my $output = $_[ARG0];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ "disableoutput $output" ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg    = $_[ARG0];
+    my $output = $msg->_params->[0];
+
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ "disableoutput $output" ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
