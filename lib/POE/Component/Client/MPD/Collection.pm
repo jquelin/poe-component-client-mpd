@@ -21,7 +21,7 @@ use base qw[ Class::Accessor::Fast ];
 
 Readonly my @EVENTS => qw[
     all_items all_items_simple items_in_dir
-    all_albums
+    all_albums all_artists
 ];
 
 sub _spawn {
@@ -138,14 +138,11 @@ sub _onpub_all_albums {
 # Return the list of all artists (strings) currently known by mpd.
 #
 sub _onpub_all_artists {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $SEND,
-        _commands => [ 'list artist' ],
-        _cooking  => $STRIP_FIRST,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ 'list artist' ] );
+    $msg->_cooking  ( $STRIP_FIRST );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
