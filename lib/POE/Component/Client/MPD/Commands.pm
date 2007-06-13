@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ play status volume ];
+Readonly my @EVENTS => qw[ play status stop volume ];
 
 sub _spawn {
     my $object = __PACKAGE__->new;
@@ -474,14 +474,11 @@ sub _onpub_pause {
 # Stop playback
 #
 sub _onpub_stop {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ 'stop' ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ 'stop' ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
