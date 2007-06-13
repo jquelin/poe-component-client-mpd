@@ -19,7 +19,7 @@ use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-Readonly my @EVENTS => qw[ add as_items clear crop delete deleteid ];
+Readonly my @EVENTS => qw[ add as_items clear crop delete deleteid items_changed_since ];
 
 
 sub _spawn {
@@ -72,15 +72,13 @@ sub _onpub_as_items {
 # the playlist since playlist $plversion.
 #
 sub _onpub_items_changed_since {
-    my $plid = $_[ARG0];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $SEND,
-        _commands => [ "plchanges $plid" ],
-        _cooking  => $AS_ITEMS,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $plid = $msg->_params->[0];
+
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ "plchanges $plid" ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
