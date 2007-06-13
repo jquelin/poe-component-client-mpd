@@ -22,6 +22,7 @@ use base qw[ Class::Accessor::Fast ];
 Readonly my @EVENTS => qw[
     all_items all_items_simple items_in_dir
     all_albums all_artists all_titles all_files
+    song
 ];
 
 sub _spawn {
@@ -174,6 +175,7 @@ sub _onpub_all_files {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+
 # -- Collection: picking songs
 
 #
@@ -182,16 +184,13 @@ sub _onpub_all_files {
 # Return the AMC::Item::Song which correspond to $path.
 #
 sub _onpub_song {
-    my $what = $_[ARG0];
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from      => $_[SENDER]->ID,
-        _request   => $_[STATE],
-        _answer    => $SEND,
-        _commands  => [ qq[find filename "$what"] ],
-        _cooking   => $AS_ITEMS,
-        _transform => $AS_SCALAR,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $what = $msg->_params->[0];
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ qq[find filename "$what"] ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_transform( $AS_SCALAR );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
