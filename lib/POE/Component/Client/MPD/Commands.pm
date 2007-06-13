@@ -24,7 +24,7 @@ Readonly my @EVENTS => qw[
     volume output_enable output_disable
     stats status current song songid
     repeat random fade
-    play playid pause stop
+    play playid pause stop next
 ];
 
 sub _spawn {
@@ -429,14 +429,11 @@ sub _onpub_stop {
 # Play next song in playlist.
 #
 sub _onpub_next {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ 'next' ],
-        _cooking  => $RAW,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg = $_[ARG0];
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ 'next' ] );
+    $msg->_cooking  ( $RAW );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
