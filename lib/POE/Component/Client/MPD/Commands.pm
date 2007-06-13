@@ -22,7 +22,7 @@ use base qw[ Class::Accessor::Fast ];
 Readonly my @EVENTS => qw[
     updatedb
     volume output_enable output_disable
-    stats status current song
+    stats status current song songid
     play pause stop
 ];
 
@@ -263,17 +263,13 @@ sub _onpub_song {
 # If $songid is not supplied, returns the current song.
 #
 sub _onpub_songid {
-    my ($k,$song) = @_[KERNEL, ARG0];
-
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from      => $_[SENDER]->ID,
-        _request   => $_[STATE],
-        _answer    => $SEND,
-        _commands  => [ defined $song ? "playlistid $song" : 'currentsong' ],
-        _cooking   => $AS_ITEMS,
-        _transform => $AS_SCALAR,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+    my $song = $msg->_params->[0];
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ defined $song ? "playlistid $song" : 'currentsong' ] );
+    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_transform( $AS_SCALAR );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
