@@ -75,7 +75,7 @@ sub spawn {
             '_mpd_data'                => \&_onprot_mpd_data,
             '_mpd_error'               => \&_onprot_mpd_error,
             '_mpd_version'             => \&_onprot_mpd_version,
-            '_disconnect'              => \&_onpriv_disconnect,
+            '_disconnect'              => \&_onprot_disconnect,
             '_version'                 => \&_onprot_version,
         },
         object_states => [
@@ -159,7 +159,7 @@ sub _onpub_default {
 #
 # Request the pococm to be shutdown. Leave mpd running.
 #
-sub _onpriv_disconnect {
+sub _onprot_disconnect {
     my ($k,$h) = @_[KERNEL, HEAP];
     $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
     $k->alias_remove( $_HUB );
