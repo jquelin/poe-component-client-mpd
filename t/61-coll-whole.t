@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -20,17 +22,17 @@ our $nbtests = 8;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    # coll.all_albums
-    [ 'coll.all_albums',  [], $SEND, \&check_all_albums ],
+    # all_albums
+    [ $COLLECTION, 'all_albums',  [], $SEND, \&check_all_albums ],
 
-    # coll.all_artists
-    [ 'coll.all_artists', [], $SEND, \&check_all_artists ],
+    # all_artists
+    [ $COLLECTION, 'all_artists', [], $SEND, \&check_all_artists ],
 
-    # coll.all_titles
-    [ 'coll.all_titles',  [], $SEND, \&check_all_titles ],
+    # all_titles
+    [ $COLLECTION, 'all_titles',  [], $SEND, \&check_all_titles ],
 
-    # coll.all_files
-    [ 'coll.all_files',   [], $SEND, \&check_all_files ],
+    # all_files
+    [ $COLLECTION, 'all_files',   [], $SEND, \&check_all_files ],
 
 );
 

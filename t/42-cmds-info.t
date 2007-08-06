@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -22,31 +24,31 @@ our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
     # stats
-    [ 'updatedb', [],      $DISCARD, undef                ],
-    [ 'pl.add',   \@songs, $DISCARD, undef                ],
-    [ 'stats',    [],      $SEND,    \&check_stats        ],
+    [ $MPD,      'updatedb', [],      $DISCARD, undef                ],
+    [ $PLAYLIST, 'add',      \@songs, $DISCARD, undef                ],
+    [ $MPD,      'stats',    [],      $SEND,    \&check_stats        ],
 
     # status
-    [ 'play',     [],      $DISCARD, undef                ],
-    [ 'pause',    [],      $DISCARD, undef                ],
-    [ 'status',   [],      $SEND,    \&check_status       ],
+    [ $MPD, 'play',     [],      $DISCARD, undef                ],
+    [ $MPD, 'pause',    [],      $DISCARD, undef                ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_status       ],
 
     # current
-    [ 'current',  [],      $SEND,    \&check_current      ],
+    [ $MPD, 'current',  [],      $SEND,    \&check_current      ],
 
     # song
-    [ 'song',     [1],     $SEND,    \&check_song         ],
-    [ 'song',     [],      $SEND,    \&check_song_current ],
+    [ $MPD, 'song',     [1],     $SEND,    \&check_song         ],
+    [ $MPD, 'song',     [],      $SEND,    \&check_song_current ],
 
     # songid (use the same checkers as song)
-    [ 'songid',   [1],     $SEND,    \&check_song         ],
-    [ 'songid',   [],      $SEND,    \&check_song_current ],
+    [ $MPD, 'songid',   [1],     $SEND,    \&check_song         ],
+    [ $MPD, 'songid',   [],      $SEND,    \&check_song_current ],
 );
 
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+diag($@),plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
 

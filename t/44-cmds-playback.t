@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -24,72 +26,72 @@ my @songs = qw[
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    [ 'pl.clear', [],      $DISCARD, undef          ],
-    [ 'pl.add',   \@songs, $DISCARD, undef          ],
+    [ $PLAYLIST, 'clear', [],      $DISCARD, undef          ],
+    [ $PLAYLIST, 'add',   \@songs, $DISCARD, undef          ],
 
     # play
-    [ 'play',     [],      $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_play1   ],
-    [ 'play',     [2],     $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_play2   ],
+    [ $MPD, 'play',     [],      $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_play1   ],
+    [ $MPD, 'play',     [2],     $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_play2   ],
 
     # playid
-    [ 'play',     [0],     $DISCARD, undef           ],
-    [ 'pause',    [],      $DISCARD, undef           ],
-    [ 'playid',   [],      $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_playid1 ],
-    [ 'playid',   [1],     $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_playid2 ],
+    [ $MPD, 'play',     [0],     $DISCARD, undef           ],
+    [ $MPD, 'pause',    [],      $DISCARD, undef           ],
+    [ $MPD, 'playid',   [],      $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_playid1 ],
+    [ $MPD, 'playid',   [1],     $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_playid2 ],
 
     # pause
-    [ 'pause',    [1],     $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_pause1  ],
-    [ 'pause',    [0],     $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_pause2  ],
-    [ 'pause',    [],      $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_pause3  ],
-    [ 'pause',    [],      $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_pause4  ],
+    [ $MPD, 'pause',    [1],     $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_pause1  ],
+    [ $MPD, 'pause',    [0],     $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_pause2  ],
+    [ $MPD, 'pause',    [],      $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_pause3  ],
+    [ $MPD, 'pause',    [],      $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_pause4  ],
 
     # stop
-    [ 'stop',     [],      $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_stop    ],
+    [ $MPD, 'stop',     [],      $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_stop    ],
 
     # prev / next
-    [ 'play',     [1],     $DISCARD, undef           ],
-    [ 'pause',    [],      $DISCARD, undef           ],
-    [ 'next',     [],      $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_prev    ],
-    [ 'prev',     [],      $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_next    ],
+    [ $MPD, 'play',     [1],     $DISCARD, undef           ],
+    [ $MPD, 'pause',    [],      $DISCARD, undef           ],
+    [ $MPD, 'next',     [],      $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_prev    ],
+    [ $MPD, 'prev',     [],      $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_next    ],
 
     # seek
-    [ 'seek',     [1,2],   $DISCARD, undef           ],
-    [ 'pause',    [1],     $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_seek1   ],
-    [ 'seek',     [],      $DISCARD, undef           ],
-    [ 'pause',    [1],     $SLEEP1,  undef           ],
-    [ 'status',   [],      $SEND,    \&check_seek2   ],
-    [ 'seek',     [1],     $DISCARD, undef           ],
-    [ 'pause',    [1],     $SLEEP1,  undef           ],
-    [ 'status',   [],      $SEND,    \&check_seek3   ],
+    [ $MPD, 'seek',     [1,2],   $DISCARD, undef           ],
+    [ $MPD, 'pause',    [1],     $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_seek1   ],
+    [ $MPD, 'seek',     [],      $DISCARD, undef           ],
+    [ $MPD, 'pause',    [1],     $SLEEP1,  undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_seek2   ],
+    [ $MPD, 'seek',     [1],     $DISCARD, undef           ],
+    [ $MPD, 'pause',    [1],     $SLEEP1,  undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_seek3   ],
 
     # seekid
-    [ 'seekid',   [1,1],   $DISCARD, undef           ],
-    [ 'status',   [],      $SEND,    \&check_seekid1 ],
-    [ 'seekid',   [],      $DISCARD, undef           ],
-    [ 'pause',    [1],     $SLEEP1,  undef           ],
-    [ 'status',   [],      $SEND,    \&check_seekid2 ],
-    [ 'seekid',   [1],     $DISCARD, undef           ],
-    [ 'pause',    [1],     $SLEEP1,  undef           ],
-    [ 'status',   [],      $SEND,    \&check_seekid3 ],
+    [ $MPD, 'seekid',   [1,1],   $DISCARD, undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_seekid1 ],
+    [ $MPD, 'seekid',   [],      $DISCARD, undef           ],
+    [ $MPD, 'pause',    [1],     $SLEEP1,  undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_seekid2 ],
+    [ $MPD, 'seekid',   [1],     $DISCARD, undef           ],
+    [ $MPD, 'pause',    [1],     $SLEEP1,  undef           ],
+    [ $MPD, 'status',   [],      $SEND,    \&check_seekid3 ],
 );
 
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
-
+diag($@),plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+exit;
 
 sub check_play1   { is( $_[0]->data->state,  'play',  'play() starts playback' ); }
 sub check_play2   { is( $_[0]->data->song,   2,       'play() can start playback at a given song' ); }

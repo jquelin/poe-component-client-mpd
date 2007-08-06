@@ -14,7 +14,7 @@ use warnings;
 
 use FindBin qw[ $Bin ];
 use POE;
-use POE::Component::Client::MPD;
+use POE::Component::Client::MPD qw[ :all ];
 use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
@@ -166,18 +166,19 @@ sub _onpub_next_test {
 
     if ( scalar @::tests == 0 ) { # no more tests.
         $k->alias_remove($ALIAS);
-        $k->post( 'mpd', 'disconnect' );
+        $k->post( $MPD, 'disconnect' );
         return;
     }
 
     # post next event.
-    my $event = $::tests[0][0];
-    my $args  = $::tests[0][1];
-    $k->post( 'mpd', $event, @$args );
+    my $session = $::tests[0][0];
+    my $event   = $::tests[0][1];
+    my $args    = $::tests[0][2];
+    $k->post( $session, $event, @$args );
 
-    return if $::tests[0][2] == $SEND;
-    $k->delay_set( 'next_test', 1 ) if $::tests[0][2] == $SLEEP1;
-    $k->yield( 'next_test' )        if $::tests[0][2] == $DISCARD;
+    return if $::tests[0][3] == $SEND;
+    $k->delay_set( 'next_test', 1 ) if $::tests[0][3] == $SLEEP1;
+    $k->yield( 'next_test' )        if $::tests[0][3] == $DISCARD;
     shift @::tests;
 }
 
@@ -188,7 +189,7 @@ sub _onpub_next_test {
 # Called when mpd talks back, with $msg as a pococm-message param.
 #
 sub _onpub_mpd_result {
-    $::tests[0][3]->( $_[ARG0] );      # check if everything went fine
+    $::tests[0][4]->( $_[ARG0] );      # check if everything went fine
     shift @::tests;                    # remove test being played
     $_[KERNEL]->yield( 'next_test' );  # call next test
 }

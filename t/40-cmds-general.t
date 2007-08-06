@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -20,23 +22,23 @@ our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
     # updatedb
-    [ 'updatedb',    [],       $SLEEP1,  undef               ],
-    [ 'stats',       [],       $SEND,    \&check_update      ],
-    [ 'updatedb',    ['dir1'], $DISCARD, undef               ],
-    [ 'stats',       [],       $SEND,    \&check_update      ],
+    [ $MPD, 'updatedb',    [],       $SLEEP1,  undef               ],
+    [ $MPD, 'stats',       [],       $SEND,    \&check_update      ],
+    [ $MPD, 'updatedb',    ['dir1'], $DISCARD, undef               ],
+    [ $MPD, 'stats',       [],       $SEND,    \&check_update      ],
 
     # version
     # needs to be *after* updatedb, so version messages can be treated.
-    [ 'version',     [],       $SEND,    \&check_version     ],
+    [ $MPD, 'version',     [],       $SEND,    \&check_version     ],
 
     # urlhandlers
-    [ 'urlhandlers', [],       $SEND,    \&check_urlhandlers ],
+    [ $MPD, 'urlhandlers', [],       $SEND,    \&check_urlhandlers ],
 );
 
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
 sub check_version {

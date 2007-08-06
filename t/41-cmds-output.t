@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -23,33 +25,33 @@ our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
     # store current volume.
-    [ 'status', [],   $SEND, sub { $volume = $_[0]->data->volume } ],
+    [ $MPD, 'status', [],   $SEND, sub { $volume = $_[0]->data->volume } ],
 
     # volume
-    [ 'volume', [10], $DISCARD,  undef ],  # init to sthg we know
-    [ 'volume', [42], $DISCARD,  undef ],
-    [ 'status', [],   $SEND,     \&check_volume_absolute ],
+    [ $MPD, 'volume', [10], $DISCARD,  undef ],  # init to sthg we know
+    [ $MPD, 'volume', [42], $DISCARD,  undef ],
+    [ $MPD, 'status', [],   $SEND,     \&check_volume_absolute ],
 
-    [ 'volume', ['+9'], $SLEEP1, undef ],
-    [ 'status', [],     $SEND,   \&check_volume_relative_pos ],
+    [ $MPD, 'volume', ['+9'], $SLEEP1, undef ],
+    [ $MPD, 'status', [],     $SEND,   \&check_volume_relative_pos ],
 
-    [ 'volume', ['-4'], $SLEEP1, undef ],
-    [ 'status', [],     $SEND,   \&check_volume_relative_neg ],
+    [ $MPD, 'volume', ['-4'], $SLEEP1, undef ],
+    [ $MPD, 'status', [],     $SEND,   \&check_volume_relative_neg ],
 
     # restore previous volume - dirty hack.
-    [ 'status', [],   $SEND, sub {$poe_kernel->post('mpd','volume',$volume) } ],
+    [ $MPD, 'status', [],   $SEND, sub {$poe_kernel->post($MPD,'volume',$volume) } ],
 
     # output_disable.
-    [ 'pl.add',         \@songs, $DISCARD, undef                  ],
-    [ 'play',           [],      $DISCARD, undef                  ],
-    [ 'output_disable', [0],     $SLEEP1,  undef                  ],
-    [ 'status',         [],      $SEND,    \&check_output_disable ],
+    [ $PLAYLIST, 'add',       \@songs, $DISCARD, undef                  ],
+    [ $MPD, 'play',           [],      $DISCARD, undef                  ],
+    [ $MPD, 'output_disable', [0],     $SLEEP1,  undef                  ],
+    [ $MPD, 'status',         [],      $SEND,    \&check_output_disable ],
 
     # enable_output.
-    [ 'output_enable',  [0],     $SLEEP1,  undef                  ],
-    [ 'play',           [],      $DISCARD, undef                  ],
-    [ 'pause',          [],      $DISCARD, undef                  ],
-    [ 'status',         [],      $SEND,    \&check_output_enable  ],
+    [ $MPD, 'output_enable',  [0],     $SLEEP1,  undef                  ],
+    [ $MPD, 'play',           [],      $DISCARD, undef                  ],
+    [ $MPD, 'pause',          [],      $DISCARD, undef                  ],
+    [ $MPD, 'status',         [],      $SEND,    \&check_output_enable  ],
 );
 
 # are we able to test module?

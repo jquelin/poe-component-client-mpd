@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -24,21 +26,21 @@ my @songs = qw[
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    [ 'pl.clear', [],      $DISCARD, undef ],
-    [ 'pl.add',   \@songs, $DISCARD, undef ],
+    [ $PLAYLIST, 'clear', [],      $DISCARD, undef ],
+    [ $PLAYLIST, 'add',   \@songs, $DISCARD, undef ],
 
     # pl.as_items
-    [ 'pl.as_items',            [],  $SEND, \&check_as_items      ],
+    [ $PLAYLIST, 'as_items',            [],  $SEND, \&check_as_items      ],
 
     # pl.items_changed_since
-    [ 'pl.items_changed_since', [0], $SEND, \&check_items_changed ],
+    [ $PLAYLIST, 'items_changed_since', [0], $SEND, \&check_items_changed ],
 
 );
 
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
 sub check_as_items {

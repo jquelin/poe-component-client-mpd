@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -19,26 +21,26 @@ our $nbtests = 26;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    # coll.albums_by_artist
-    [ 'coll.albums_by_artist',  ['dir1-artist'], $SEND, \&check_albums_by_artist ],
+    # albums_by_artist
+    [ $COLLECTION, 'albums_by_artist',  ['dir1-artist'], $SEND, \&check_albums_by_artist ],
 
-    # coll.songs_by_artist
-    [ 'coll.songs_by_artist',  ['dir1-artist'], $SEND, \&check_songs_by_artist ],
+    # songs_by_artist
+    [ $COLLECTION, 'songs_by_artist',  ['dir1-artist'], $SEND, \&check_songs_by_artist ],
 
-    # coll.songs_by_artist_partial
-    [ 'coll.songs_by_artist_partial',  ['artist'], $SEND, \&check_songs_by_artist_partial ],
+    # songs_by_artist_partial
+    [ $COLLECTION, 'songs_by_artist_partial',  ['artist'], $SEND, \&check_songs_by_artist_partial ],
 
-    # coll.songs_from_album
-    [ 'coll.songs_from_album',  ['our album'], $SEND, \&check_songs_from_album ],
+    # songs_from_album
+    [ $COLLECTION, 'songs_from_album',  ['our album'], $SEND, \&check_songs_from_album ],
 
-    # coll.songs_from_album_partial
-    [ 'coll.songs_from_album_partial',  ['album'], $SEND, \&check_songs_from_album_partial ],
+    # songs_from_album_partial
+    [ $COLLECTION, 'songs_from_album_partial',  ['album'], $SEND, \&check_songs_from_album_partial ],
 
-    # coll.songs_with_title
-    [ 'coll.songs_with_title',  ['ok-title'], $SEND, \&check_songs_with_title ],
+    # songs_with_title
+    [ $COLLECTION, 'songs_with_title',  ['ok-title'], $SEND, \&check_songs_with_title ],
 
-    # coll.songs_with_title_partial
-    [ 'coll.songs_with_title_partial',  ['title'], $SEND, \&check_songs_with_title_partial ],
+    # songs_with_title_partial
+    [ $COLLECTION, 'songs_with_title_partial',  ['title'], $SEND, \&check_songs_with_title_partial ],
 );
 
 

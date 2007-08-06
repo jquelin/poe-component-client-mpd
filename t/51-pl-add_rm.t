@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -25,35 +27,35 @@ our $nbtests = 5;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    # pl.delete / pl.deleteid
+    # delete / deleteid
     # should come first to be sure songid #0 is really here.
-    [ 'pl.clear',    [],      $DISCARD, undef         ],
-    [ 'pl.add',      \@songs, $DISCARD, undef         ],
-    [ 'status',      [],      $SEND,    \&get_nb      ],
-    [ 'pl.delete',   [1,2],   $DISCARD, undef         ],
-    [ 'status',      [],      $SEND,    \&check_del   ],
-    [ 'status',      [],      $SEND,    \&get_nb      ],
-    [ 'pl.deleteid', [0],     $DISCARD, undef         ],
-    [ 'status',      [],      $SEND,    \&check_delid ],
+    [ $PLAYLIST, 'clear',    [],      $DISCARD, undef         ],
+    [ $PLAYLIST, 'add',      \@songs, $DISCARD, undef         ],
+    [ $MPD,      'status',   [],      $SEND,    \&get_nb      ],
+    [ $PLAYLIST, 'delete',   [1,2],   $DISCARD, undef         ],
+    [ $MPD,      'status',   [],      $SEND,    \&check_del   ],
+    [ $MPD,      'status',   [],      $SEND,    \&get_nb      ],
+    [ $PLAYLIST, 'deleteid', [0],     $DISCARD, undef         ],
+    [ $MPD,      'status',   [],      $SEND,    \&check_delid ],
 
-    # pl.add
-    [ 'pl.clear', [],              $DISCARD, undef       ],
-    [ 'status',   [],              $SEND,    \&get_nb    ],
-    [ 'pl.add',   [ 'title.ogg' ], $DISCARD, undef       ],
-    [ 'pl.add',   \@songs,         $DISCARD, undef       ],
-    [ 'status',   [],              $SEND,    \&check_add ],
+    # add
+    [ $PLAYLIST, 'clear',    [],              $DISCARD, undef       ],
+    [ $MPD,      'status',   [],              $SEND,    \&get_nb    ],
+    [ $PLAYLIST, 'add',      [ 'title.ogg' ], $DISCARD, undef       ],
+    [ $PLAYLIST, 'add',      \@songs,         $DISCARD, undef       ],
+    [ $MPD,      'status',   [],              $SEND,    \&check_add ],
 
-    # pl.clear
-    [ 'pl.add',   \@songs, $DISCARD, undef         ],
-    [ 'pl.clear', [],      $DISCARD, undef         ],
-    [ 'status',   [],      $SEND,    \&check_clear ],
+    # clear
+    [ $PLAYLIST, 'add',   \@songs, $DISCARD, undef         ],
+    [ $PLAYLIST, 'clear', [],      $DISCARD, undef         ],
+    [ $MPD,      'status',   [],      $SEND,    \&check_clear ],
 
-    # pl.crop
-    [ 'pl.add',  \@songs, $DISCARD, undef        ],
-    [ 'play',    [1],     $DISCARD, undef        ], # to set song
-    [ 'stop',    [],      $DISCARD, undef        ],
-    [ 'pl.crop', [],      $SLEEP1,  undef        ],
-    [ 'status',   [],     $SEND,    \&check_crop ],
+    # crop
+    [ $PLAYLIST, 'add',  \@songs, $DISCARD, undef        ],
+    [ $MPD,      'play',    [1],     $DISCARD, undef        ], # to set song
+    [ $MPD,      'stop',    [],      $DISCARD, undef        ],
+    [ $PLAYLIST, 'crop', [],      $SLEEP1,  undef        ],
+    [ $MPD,      'status',   [],     $SEND,    \&check_crop ],
 
 );
 

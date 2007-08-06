@@ -11,7 +11,8 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
 use Test::More;
 
 eval 'use POE::Component::Client::MPD::Test dont_start_poe => 1';
@@ -31,7 +32,7 @@ exit;
 sub _start {
     my $k = $_[KERNEL];
     $k->alias_set( 'tester' );      # refcount++
-    $k->post( 'mpd', 'kill' );
+    $k->post( $MPD, 'kill' );
     $k->delay_set( '_check', 1 );
 }
 

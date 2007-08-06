@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use FindBin qw[ $Bin ];
 use Readonly;
 use Test::More;
@@ -21,17 +23,17 @@ our $nbtests = 4;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    # pl.load
-    [ 'pl.load',     ['test'], $DISCARD, undef        ],
-    [ 'pl.as_items', [],       $SEND,    \&check_load ],
+    # load
+    [ $PLAYLIST, 'load',     ['test'], $DISCARD, undef        ],
+    [ $PLAYLIST, 'as_items', [],       $SEND,    \&check_load ],
 
-    # pl.save
-    [ 'pl.save',     ['test-jq'], $DISCARD, undef        ],
-    [ 'status',      [],          $SEND,    \&check_save ],
+    # save
+    [ $PLAYLIST, 'save',     ['test-jq'], $DISCARD, undef        ],
+    [ $MPD,      'status',   [],          $SEND,    \&check_save ],
 
-    # pl.rm
-    [ 'pl.rm',       ['test-jq'], $DISCARD, undef      ],
-    [ 'status',      [],          $SEND,    \&check_rm ],
+    # rm
+    [ $PLAYLIST, 'rm',       ['test-jq'], $DISCARD, undef      ],
+    [ $MPD,      'status',   [],          $SEND,    \&check_rm ],
 );
 
 # are we able to test module?

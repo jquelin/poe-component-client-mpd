@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -20,30 +22,30 @@ our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
     # repeat
-    [ 'repeat', [1],  $DISCARD, undef                 ],
-    [ 'status', [],   $SEND,    \&check_repeat_is_on  ],
-    [ 'repeat', [0],  $DISCARD, undef                 ],
-    [ 'status', [],   $SEND,    \&check_repeat_is_off ],
-    [ 'repeat', [],   $SLEEP1,  undef                 ],
-    [ 'status', [],   $SEND,    \&check_repeat_is_on  ],
-    [ 'repeat', [],   $SLEEP1,  undef                 ],
-    [ 'status', [],   $SEND,    \&check_repeat_is_off ],
+    [ $MPD, 'repeat', [1],  $DISCARD, undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_repeat_is_on  ],
+    [ $MPD, 'repeat', [0],  $DISCARD, undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_repeat_is_off ],
+    [ $MPD, 'repeat', [],   $SLEEP1,  undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_repeat_is_on  ],
+    [ $MPD, 'repeat', [],   $SLEEP1,  undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_repeat_is_off ],
 
     # random
-    [ 'random', [1],  $DISCARD, undef                 ],
-    [ 'status', [],   $SEND,    \&check_random_is_on  ],
-    [ 'random', [0],  $DISCARD, undef                 ],
-    [ 'status', [],   $SEND,    \&check_random_is_off ],
-    [ 'random', [],   $SLEEP1,  undef                 ],
-    [ 'status', [],   $SEND,    \&check_random_is_on  ],
-    [ 'random', [],   $SLEEP1,  undef                 ],
-    [ 'status', [],   $SEND,    \&check_random_is_off ],
+    [ $MPD, 'random', [1],  $DISCARD, undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_random_is_on  ],
+    [ $MPD, 'random', [0],  $DISCARD, undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_random_is_off ],
+    [ $MPD, 'random', [],   $SLEEP1,  undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_random_is_on  ],
+    [ $MPD, 'random', [],   $SLEEP1,  undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_random_is_off ],
 
     # fade
-    [ 'fade',   [15], $DISCARD, undef                 ],
-    [ 'status', [],   $SEND,    \&check_fade_is_on    ],
-    [ 'fade',   [],   $DISCARD, undef                 ],
-    [ 'status', [],   $SEND,    \&check_fade_is_off   ],
+    [ $MPD, 'fade',   [15], $DISCARD, undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_fade_is_on    ],
+    [ $MPD, 'fade',   [],   $DISCARD, undef                 ],
+    [ $MPD, 'status', [],   $SEND,    \&check_fade_is_off   ],
 );
 
 # are we able to test module?

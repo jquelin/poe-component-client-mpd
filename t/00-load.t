@@ -22,3 +22,4 @@ use_ok( 'POE::Component::Client::MPD::Collection' );
 use_ok( 'POE::Component::Client::MPD::Commands' );
 use_ok( 'POE::Component::Client::MPD::Playlist' );
 use_ok( 'POE::Component::Client::MPD::Connection' );
+exit;

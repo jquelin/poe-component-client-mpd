@@ -11,7 +11,9 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Message ];
+use POE;
+use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
@@ -20,24 +22,24 @@ our $nbtests = 26;
 our @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
 
-    # coll.all_items
-    [ 'coll.all_items', [],       $SEND, \&check_all_items1 ],
-    [ 'coll.all_items', ['dir1'], $SEND, \&check_all_items2 ],
+    # all_items
+    [ $COLLECTION, 'all_items', [],       $SEND, \&check_all_items1 ],
+    [ $COLLECTION, 'all_items', ['dir1'], $SEND, \&check_all_items2 ],
 
-    # coll.all_items_simple
-    [ 'coll.all_items_simple', [],       $SEND, \&check_all_items_simple1 ],
-    [ 'coll.all_items_simple', ['dir1'], $SEND, \&check_all_items_simple2 ],
+    # all_items_simple
+    [ $COLLECTION, 'all_items_simple', [],       $SEND, \&check_all_items_simple1 ],
+    [ $COLLECTION, 'all_items_simple', ['dir1'], $SEND, \&check_all_items_simple2 ],
 
-    # coll.items_in_dir
-    [ 'coll.items_in_dir', [],       $SEND, \&check_items_in_dir1 ],
-    [ 'coll.items_in_dir', ['dir1'], $SEND, \&check_items_in_dir2 ],
+    # items_in_dir
+    [ $COLLECTION, 'items_in_dir', [],       $SEND, \&check_items_in_dir1 ],
+    [ $COLLECTION, 'items_in_dir', ['dir1'], $SEND, \&check_items_in_dir2 ],
 );
 
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
-
+exit;
 
 
 sub check_all_items1 {
