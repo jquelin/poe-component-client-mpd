@@ -76,11 +76,12 @@ sub spawn {
             '_mpd_error'               => \&_onprot_mpd_error,
             '_mpd_version'             => \&_onprot_mpd_version,
             '_disconnect'              => \&_onpriv_disconnect,
+            '_version'                 => \&_onprot_version,
         },
         object_states => [
             $commands   => { # general purpose commands
                 # -- MPD interaction: general commands
-                'version'              => '_onpub_version',
+#                 'version'              => '_onpub_version',
 #                 'kill'                 => '_onpub_kill',
 # #                 'password'             => '_onpub_password',
 #                 'updatedb'             => '_onpub_updatedb',
@@ -165,6 +166,19 @@ sub _onpriv_disconnect {
     $k->post( $h->{_socket}, 'disconnect' );    # pococm-conn
     $k->post( $PLAYLIST,     '_disconnect' );    # pococm-playlist
     $k->post( $COLLECTION,   '_disconnect' );    # pococm-coll
+}
+
+
+#
+# event: _version()
+#
+# Fill in the mpd version, and fakes that we received some data to send
+# version back to requester.
+#
+sub _onprot_version {
+    my ($k,$h,$msg) = @_[KERNEL, HEAP, ARG0];
+    $msg->data( $_[HEAP]->{version} );
+    $k->yield( '_mpd_data', $msg );
 }
 
 
