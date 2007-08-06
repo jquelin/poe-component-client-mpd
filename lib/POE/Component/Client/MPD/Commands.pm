@@ -21,7 +21,7 @@ use base qw[ Class::Accessor::Fast ];
 
 Readonly my @EVENTS => qw[
     disconnect
-    kill updatedb
+    kill updatedb urlhandlers
     volume output_enable output_disable
     stats status current song songid
     repeat random fade
@@ -117,14 +117,12 @@ sub _onpub_updatedb {
 # Return an array of supported URL schemes.
 #
 sub _onpub_urlhandlers {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $SEND,
-        _commands => [ 'urlhandlers' ],
-        _cooking  => $STRIP_FIRST,
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my $msg  = $_[ARG0];
+
+    $msg->_answer   ( $SEND );
+    $msg->_commands ( [ 'urlhandlers' ] );
+    $msg->_cooking  ( $STRIP_FIRST );
+    $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
 
