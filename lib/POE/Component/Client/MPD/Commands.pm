@@ -20,7 +20,8 @@ use Readonly;
 use base qw[ Class::Accessor::Fast ];
 
 Readonly my @EVENTS => qw[
-    updatedb
+    disconnect
+    kill updatedb
     volume output_enable output_disable
     stats status current song songid
     repeat random fade
@@ -34,7 +35,6 @@ sub _spawn {
             '_start'      => sub { $_[KERNEL]->alias_set( $MPD ) },
             '_default'    => \&POE::Component::Client::MPD::_onpub_default,
             '_dispatch'   => \&_onpriv_dispatch,
-            'disconnect'  => \&_onpub_disconnect,
         },
         object_states => [ $object => [ map { "_onpub_$_" } @EVENTS ] ]
     );
@@ -52,6 +52,13 @@ sub _onpriv_dispatch {
 
 
 # -- MPD interaction: general commands
+
+sub _onpub_disconnect {
+    my $k = $_[KERNEL];
+    $k->alias_remove( $MPD );
+    $k->post( $_HUB, '_disconnect' );
+}
+
 
 #
 # event: version()
@@ -75,15 +82,14 @@ sub _onpub_version {
 # Kill the mpd server, and request the pococm to be shutdown.
 #
 sub _onpub_kill {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $DISCARD,
-        _commands => [ 'kill' ],
-        _cooking  => $RAW,
-        _post     => 'disconnect',  # shut down pococm behind us.
-    } );
-    $_[KERNEL]->yield( '_send', $msg );
+    my ($k, $msg) = @_[KERNEL, ARG0];
+
+    $msg->_post_to   ( $MPD );
+    $msg->_post_event( 'disconnect' );
+    $msg->_answer   ( $DISCARD );
+    $msg->_commands ( [ 'kill' ] );
+    $msg->_cooking  ( $RAW );
+    $k->post( $_HUB, '_send', $msg );
 }
 
 
