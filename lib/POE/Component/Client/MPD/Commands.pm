@@ -21,7 +21,7 @@ use base qw[ Class::Accessor::Fast ];
 
 Readonly my @EVENTS => qw[
     disconnect
-    kill updatedb urlhandlers
+    version kill updatedb urlhandlers
     volume output_enable output_disable
     stats status current song songid
     repeat random fade
@@ -66,13 +66,10 @@ sub _onpub_disconnect {
 # Fires back an event with the version number.
 #
 sub _onpub_version {
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        _from     => $_[SENDER]->ID,
-        _request  => $_[STATE],
-        _answer   => $SEND,
-        data      => $_[HEAP]->{version}
-    } );
-    $_[KERNEL]->yield( '_mpd_data', $msg );
+    my ($k, $msg) = @_[KERNEL, ARG0];
+    $msg->_answer   ( $SEND );
+    $msg->_cooking  ( $RAW );
+    $k->post( $_HUB, '_version', $msg );
 }
 
 
