@@ -34,7 +34,7 @@ Readonly our $PLAYLIST   => '_pococ_mpd_playlist';
 Readonly our $_HUB       => '_pococ_mpd_hub';
 
 
-our $VERSION = '0.7.1';
+our $VERSION = '0.8.0';
 
 
 #

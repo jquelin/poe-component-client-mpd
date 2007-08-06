@@ -3,6 +3,7 @@ Revision history for POE-Component-Client-MPD
 High-level changelog
 ====================
 
+0.8.x  new design with 3 public sessions
 0.7.x  using common classes in audio::mpd::common
 0.6.x  pococm-coll implementation
 0.5.x  pococm-playlist implementation
@@ -15,6 +16,15 @@ High-level changelog
 
 Low-level changelog
 ===================
+
+0.8.0 Mon Aug  6 16:48:44 CEST 2007
+ - new internal design, with a hub (pococ-mpd) and a connection (pococm-conn)
+   as well as 3 public interfaces: pococm-commands, pococm-playlist,
+   pococm-collection
+ - tests ported to new design
+ - this is the beginning, some things will change
+
+**
 
 0.7.1 Tue Jun  5 17:58:30 CEST 2007
  - merged t/40-collection.t to t/61-coll-whole.t
