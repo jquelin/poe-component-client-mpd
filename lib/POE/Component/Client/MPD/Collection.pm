@@ -36,7 +36,7 @@ sub _spawn {
             '_start'      => sub { $_[KERNEL]->alias_set( $COLLECTION ) },
             '_default'    => \&POE::Component::Client::MPD::_onpub_default,
             '_dispatch'   => \&_onpriv_dispatch,
-            'disconnect'  => \&_onpub_disconnect,
+            '_disconnect' => sub { $_[KERNEL]->alias_remove( $COLLECTION ) },
         },
         object_states => [ $object => [ map { "_onpub_$_" } @EVENTS ] ]
     );
