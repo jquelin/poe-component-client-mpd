@@ -75,14 +75,13 @@ sub spawn {
             '_mpd_data'                => \&_onprot_mpd_data,
             '_mpd_error'               => \&_onprot_mpd_error,
             '_mpd_version'             => \&_onprot_mpd_version,
-            # public events
-            'disconnect'               => \&_onpub_disconnect,
+            '_disconnect'              => \&_onpriv_disconnect,
         },
         object_states => [
             $commands   => { # general purpose commands
                 # -- MPD interaction: general commands
                 'version'              => '_onpub_version',
-                'kill'                 => '_onpub_kill',
+#                 'kill'                 => '_onpub_kill',
 # #                 'password'             => '_onpub_password',
 #                 'updatedb'             => '_onpub_updatedb',
                 'urlhandlers'          => '_onpub_urlhandlers',
@@ -152,23 +151,22 @@ sub _onpub_default {
 
 
 #--
-# public events
+# protected events.
 
 #
-# event: disconnect()
+# event: _disconnect()
 #
 # Request the pococm to be shutdown. Leave mpd running.
 #
-sub _onpub_disconnect {
+sub _onpriv_disconnect {
     my ($k,$h) = @_[KERNEL, HEAP];
     $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
     $k->alias_remove( $_HUB );
-    $k->post( $h->{_socket}, 'disconnect' );                # pococm-conn
+    $k->post( $h->{_socket}, 'disconnect' );    # pococm-conn
+    $k->post( $PLAYLIST,     '_disconnect' );    # pococm-playlist
+    $k->post( $COLLECTION,   '_disconnect' );    # pococm-coll
 }
 
-
-#--
-# protected events.
 
 #
 # Event: _mpd_data( $msg )
