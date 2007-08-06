@@ -6,18 +6,35 @@ it can be created with the following:
 
 
 upon creation, it will spawn two things:
- - a poe::session that will act as a dispatcher for your client
+ - a private session $_HUB that will act as an internal dispatcher
+ - a session $COMMANDS to send general commands
+ - a session $PLAYLIST to handle playlist events
+ - a session $COLLECTION to search through it
  - a private poe::component::client::tcp that will handle the communication
    with the mpd server
 
 you aren't allowed, under any circumstance, to try to communicate with the
-private component.
+private components.
 
 
-The poe session is acting as a dispatcher. it will receive all the messages
-and will reroute them to:
- - either a pococ-mpd-collection object,
- - or a pococ-mpd-playlist object
+here are some examples of how it works internally:
+
+moving an item in the playlist
+- you send a 'move' event to $PLAYLIST
+- caught by $_HUB::_onpub_default
+- create a pococm-message and yields a '_dispatch' event with the message
+- caught by $COLLECTION::_onpriv_dispatch
+- yelding a _onpub_move event with the message
+- caught by $COLLECTION::_onpub_move
+- completes the message and posts a _send event to $_HUB
+- caught by $_HUB::_onpriv_send
+- which sends the pococm-message to the tcp session
+- sending things over the wires
+- when answer comes, it sends back a _mpd_data event
+- caught by $_HUB::_onprot_mpd_data
+- transforming it to stats or whatever if needed
+- calling a post-event if needed, going back to _dispatch with the completed event
+- otherwise, returns data (or nothing if no answer awaited)
 
 
 
