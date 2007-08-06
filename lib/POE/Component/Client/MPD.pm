@@ -61,10 +61,6 @@ sub spawn {
     require POE::Component::Client::MPD::Commands;
     require POE::Component::Client::MPD::Playlist;
 
-    my $collection = POE::Component::Client::MPD::Collection->new;
-    my $commands   = POE::Component::Client::MPD::Commands->new;
-    my $playlist   = POE::Component::Client::MPD::Playlist->new;
-
     my $session = POE::Session->create(
         args          => [ $args ],
         inline_states => {
@@ -78,44 +74,6 @@ sub spawn {
             '_disconnect'              => \&_onprot_disconnect,
             '_version'                 => \&_onprot_version,
         },
-        object_states => [
-            $commands   => { # general purpose commands
-                # -- MPD interaction: general commands
-#                 'version'              => '_onpub_version',
-#                 'kill'                 => '_onpub_kill',
-# #                 'password'             => '_onpub_password',
-#                 'updatedb'             => '_onpub_updatedb',
-#                 'urlhandlers'          => '_onpub_urlhandlers',
-                # -- MPD interaction: handling volume & output
-#                 'volume'               => '_onpub_volume',
-#                 '_volume_status'       => '_onpriv_volume_status',
-#                 'output_enable'        => '_onpub_output_enable',
-#                 'output_disable'       => '_onpub_output_disable',
-                # -- MPD interaction: retrieving info from current state
-#                 'stats'                => '_onpub_stats',
-#                 'status'               => '_onpub_status',
-#                 'current'              => '_onpub_current',
-#                 'song'                 => '_onpub_song',
-#                 'songid'               => '_onpub_songid',
-                # -- MPD interaction: altering settings
-#                 'repeat'               => '_onpub_repeat',
-#                 '_repeat_status'       => '_onpriv_repeat_status',
-#                 'random'               => '_onpub_random',
-#                 '_random_status'       => '_onpriv_random_status',
-#                 'fade'                 => '_onpub_fade',
-                # -- MPD interaction: controlling playback
-#                 'play'                 => '_onpub_play',
-#                 'playid'               => '_onpub_playid',
-#                 'pause'                => '_onpub_pause',
-#                 'stop'                 => '_onpub_stop',
-#                 'next'                 => '_onpub_next',
-#                 'prev'                 => '_onpub_prev',
-#                 'seek'                 => '_onpub_seek',
-#                 '_seek_need_current'   => '_onpriv_seek_need_current',
-#                 'seekid'               => '_onpub_seekid',
-#                 '_seekid_need_current' => '_onpriv_seek_need_current',
-            },
-        ],
     );
 
     POE::Component::Client::MPD::Collection->_spawn;
