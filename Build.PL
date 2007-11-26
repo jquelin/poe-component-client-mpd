@@ -22,7 +22,13 @@ my $builder = Module::Build->new (
         map { ( '*/' x $_ ) . '*~' } 0..6 ],
     script_files => [ ],
     build_requires => {
-        'Test::More'  => 0,
+        'Audio::MPD::Common' => 0,
+        'Class::Accessor'    => 0,
+        'List::MoreUtils'    => 0,
+        'POE'                => 0,
+        'Readonly'           => 0,
+        'Test::More'         => 0,
+        'perl'               => '5.008',
     },
     requires => {
         'Audio::MPD::Common' => 0,
@@ -30,7 +36,11 @@ my $builder = Module::Build->new (
         'List::MoreUtils'    => 0,
         'POE'                => 0,
         'Readonly'           => 0,
-        'perl'               => '5.8.0',
+        'perl'               => '5.008',
+    },
+    recommends     => {
+        'Test::Pod'           => 0,
+        'Test::Pod::Coverage' => 0,
     },
 );
 
