@@ -17,6 +17,9 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.8.1 Mon Nov 26 12:47:19 CET 2007
+ - kwalitee/cpants release
+
 0.8.0 Mon Aug  6 16:48:44 CEST 2007
  - new internal design, with a hub (pococ-mpd) and a connection (pococm-conn)
    as well as 3 public interfaces: pococm-commands, pococm-playlist,
