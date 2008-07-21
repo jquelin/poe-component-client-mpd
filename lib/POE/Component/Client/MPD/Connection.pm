@@ -142,15 +142,9 @@ sub _onpriv_Connected {
 # the $syscall that failed, as well as $errno and $errstr.
 #
 sub _onpriv_ConnectError {
-    my ($syscall, $errno, $errstr) = @_[ARG0, ARG1, ARG2];
-
-    my $session = $_[HEAP]{session};
-    my $msg = POE::Component::Client::MPD::Message->new( {
-        error   => "$syscall: ($errno) $errstr",
-        request => 'connect',
-        _from   => $session,
-    } );
-    $_[KERNEL]->post( $session, '_mpd_error', $msg );
+    my ($k, $h, $syscall, $errno, $errstr) = @_[KERNEL, HEAP, ARG0, ARG1, ARG2];
+    $k->post($h->{session}, '_conn_connect_error', $syscall, $errno, $errstr);
+    $k->delay_add('reconnect' => 5); # auto-reconnect
 }
 
 
