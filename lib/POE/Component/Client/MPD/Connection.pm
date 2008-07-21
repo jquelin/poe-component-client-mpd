@@ -67,7 +67,6 @@ sub spawn {
             # private events
             _ServerInput_data         => \&_onpriv_ServerInput_data,
             _ServerInput_data_eot     => \&_onpriv_ServerInput_data_eot,
-            _ServerInput_mpd_version  => \&_onpriv_ServerInput_mpd_version,
             _ServerInput_error        => \&_onpriv_ServerInput_error,
         }
     );
@@ -292,18 +291,6 @@ sub _onpriv_ServerInput_data_eot {
     $msg->data( $h->{incoming} );           # complete message with data
     $k->post($session, '_mpd_data', $msg);  # signal poe session
     $h->{incoming} = [];                    # reset incoming data
-}
-
-
-#
-# event: _ServerInput_mpd_version($version)
-#
-# Called just after the connection, with mpd's $version.
-#
-sub _onpriv_ServerInput_mpd_version {
-    my $h = $_[HEAP];
-    my $session  = $h->{session};
-    $_[KERNEL]->post($session, '_mpd_version', $_[ARG0]);
 }
 
 
