@@ -167,8 +167,11 @@ sub _onpriv_Connected {
 #
 sub _onpriv_ConnectError {
     my ($k, $h, $syscall, $errno, $errstr) = @_[KERNEL, HEAP, ARG0, ARG1, ARG2];
-    $k->post($h->{session}, '_conn_connect_error', $syscall, $errno, $errstr);
-    $k->delay_add('reconnect' => 5); # auto-reconnect
+    $k->post(
+        $h->{session}, '_conn_connect_error_retriable',
+        "$syscall: ($errno) $errstr"
+    );
+    $k->delay_add('reconnect' => 5); # auto-reconnect in 5 seconds
 }
 
 
