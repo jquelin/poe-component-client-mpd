@@ -76,6 +76,34 @@ sub spawn {
 }
 
 
+#
+# -- SUBS
+#
+
+#--
+# private subs
+
+sub _parse_first_input_line {
+    my ($k, $h, $input) = @_;
+
+    if ( $input =~ /^OK MPD (.*)$/ ) {
+        $h->{is_mpd} = 1;  # remote server *is* a mpd sever
+        $k->post($h->{session}, '_conn_connected', $1);
+    } else {
+        # oops, it appears that it's not a mpd server...
+        $k->post(
+            $h->{session}, '_conn_connect_error_fatal',
+            "Not a mpd server - welcome string was: '$input'",
+        );
+    }
+}
+
+
+
+#
+# -- EVENTS HANDLERS
+#
+
 #--
 # protected events
 
@@ -168,26 +196,11 @@ sub _onpriv_Disconnected {
 # transmitted given as param.
 #
 sub _onpriv_ServerInput {
-    my ($h, $input) = @_[HEAP, ARG0];
+    my ($k, $h, $input) = @_[KERNEL, HEAP, ARG0];
 
     # did we check we were talking to a mpd server?
     if ( not $h->{is_mpd} ) {
-        # we did not had the chance to check if it's a mpd server: let's do it.
-        my $k = $_[KERNEL];
-
-        if ( $input =~ /^OK MPD (.*)$/ ) {
-            $h->{is_mpd} = $TRUE;  # remote server *is* a mpd sever
-            $k->yield( '_ServerInput_mpd_version', $1 );
-        } else {
-            # oops, it appears that it's not a mpd server...
-            my $error = POE::Component::Client::MPD::Message->new( {
-                error   => "Not a mpd server - welcome string was: $input",
-                request => 'connect',
-                _from   => $h->{session},
-            } );
-            $k->post( $h->{session}, '_mpd_error', $error );
-        }
-
+        _parse_first_input_line($k, $h, $input);
         return;
     }
 
