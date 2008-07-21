@@ -154,8 +154,10 @@ sub _onpriv_ConnectError {
 # Called whenever the tcp connection is broken / finished.
 #
 sub _onpriv_Disconnected {
-    return if $_[HEAP]->{on_disconnect} != $RECONNECT;
-    $_[KERNEL]->yield('reconnect'); # auto-reconnect
+    my ($k, $h) = @_[KERNEL, HEAP];
+    return if $h->{on_disconnect} != $RECONNECT;
+    $k->post( $h{session}, '_conn_disconnected');
+    $k->yield('reconnect'); # auto-reconnect
 }
 
 
