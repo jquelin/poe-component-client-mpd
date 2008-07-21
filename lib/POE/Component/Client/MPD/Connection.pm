@@ -9,6 +9,8 @@
 
 package POE::Component::Client::MPD::Connection;
 
+use 5.010;
+
 use strict;
 use warnings;
 
@@ -210,19 +212,11 @@ sub _onpriv_ServerInput {
         return;
     }
 
-
-    # table of dispatch: check input against regex, and fire event
-    # if it did match.
-    my @dispatch = (
-        [ qr/^OK$/,        '_ServerInput_data_eot' ],
-        [ qr/^ACK (.*)/,   '_ServerInput_error'    ],
-        [ qr/^/,           '_ServerInput_data'     ],
-    );
-
-    foreach my $d (@dispatch) {
-        next unless $input =~ $d->[0];
-        $_[KERNEL]->yield( $d->[1], $input, $1 );
-        last;
+    # table of dispatch: check input against regex, and process it.
+    given ($input) {
+        when ( /^OK$/ )      { _got_data_eot($input); }
+        when ( /^ACK (.*)/ ) { _got_error($1); }
+        default              { _got_data($input); }
     }
 }
 
