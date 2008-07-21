@@ -26,7 +26,7 @@ Readonly my $IGNORE    => 0;
 Readonly my $RECONNECT => 1;
 
 #
-# my $id = POE::Component::Client::MPD::Connection->spawn( \%params )
+# my $id = POE::Component::Client::MPD::Connection->spawn(\%params);
 #
 # This method will create a POE::Component::TCP session responsible for
 # low-level communication with mpd. It will return the poe id of the
@@ -38,7 +38,8 @@ Readonly my $RECONNECT => 1;
 #   - id:   poe session id of the peer to dialog with
 #
 # Those args are not supposed to be empty - ie, there's no defaut, and you
-# will get an error if you don't follow this requirement! :-)
+# will get an error if you don't follow this requirement! Yes, this is a
+# private class, and you're not supposed to use it beyond pococm. :-)
 #
 sub spawn {
     my ($type, $args) = @_;
@@ -90,7 +91,7 @@ sub _onprot_disconnect {
 
 
 #
-# event: send( $message )
+# event: send($message)
 #
 # Request pococm-conn to send the commands of $message over the wires.
 # Note that $message is a pococm-message object, and that the ->_commands
@@ -108,7 +109,7 @@ sub _onprot_send {
 # private events
 
 #
-# event: Started( $id )
+# event: Started($id)
 #
 # Called whenever the session is started, but before the tcp connection is
 # established. Receives the session $id of the poe-session that will be our
