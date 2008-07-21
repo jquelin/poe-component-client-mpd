@@ -19,9 +19,6 @@ use POE::Component::Client::TCP;
 use Readonly;
 
 
-Readonly my $FALSE => 0;
-Readonly my $TRUE  => 1;
-
 Readonly my $IGNORE    => 0;
 Readonly my $RECONNECT => 1;
 
@@ -158,7 +155,7 @@ sub _onpriv_Connected {
     my $h = $_[HEAP];
     $h->{fifo}     = [];     # reset current messages
     $h->{incoming} = [];     # reset incoming data
-    $h->{is_mpd}   = $FALSE; # is remote server a mpd sever?
+    $h->{is_mpd}   = 0;      # is remote server a mpd sever?
 }
 
 
