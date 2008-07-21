@@ -129,7 +129,7 @@ sub _onpriv_Started {
 #
 sub _onpriv_Connected {
     my $h = $_[HEAP];
-    $h->{fifo}     = [];     # current messages
+    $h->{fifo}     = [];     # reset current messages
     $h->{incoming} = [];     # reset incoming data
     $h->{is_mpd}   = $FALSE; # is remote server a mpd sever?
 }
@@ -166,7 +166,7 @@ sub _onpriv_Disconnected {
 
 
 #
-# event: ServerInput( $input )
+# event: ServerInput($input)
 #
 # Called whenever the tcp peer sends data over the wires, with the $input
 # transmitted given as param.
