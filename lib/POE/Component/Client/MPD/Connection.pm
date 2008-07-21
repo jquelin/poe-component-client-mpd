@@ -23,6 +23,13 @@ Readonly my $IGNORE    => 0;
 Readonly my $RECONNECT => 1;
 
 #
+# -- METHODS
+#
+
+#--
+# public methods
+
+#
 # my $id = POE::Component::Client::MPD::Connection->spawn(\%params);
 #
 # This method will create a POE::Component::TCP session responsible for
@@ -317,6 +324,8 @@ __END__
 POE::Component::Client::MPD::Connection - module handling the tcp connection with mpd
 
 
+
+
 =head1 DESCRIPTION
 
 This module will spawn a poe session responsible for low-level communication
@@ -327,7 +336,9 @@ Note that you're B<not> supposed to use this class directly: it's one of the
 helper class for POCOCM.
 
 
-=head1 PUBLIC PACKAGE METHODS
+
+
+=head1 PUBLIC METHODS
 
 =head2 spawn( \%params )
 
@@ -359,13 +370,18 @@ The POE session id of the peer to dialog with.
 
 
 Those args are not supposed to be empty - ie, there's no defaut, and you
-will get an error if you don't follow this requirement! :-)
+will get an error if you don't follow this requirement! Yes, this is a
+private class, and you're not supposed to use it beyond pococm. :-)
 
 
-=head1 PROTECTED EVENTS ACCEPTED
+
+
+=head1 PUBLIC EVENTS ACCEPTED
 
 The following events are accepted from outside this class - but of course
-restricted to POCOCM.
+restricted to POCOCM (in oo-lingo, they are more protected rather than
+public).
+
 
 
 =head2 disconnect()
@@ -380,6 +396,8 @@ request is a pococm-request object, and that the ->_commands should
 B<not> be newline terminated.
 
 
+
+
 =head1 SEE ALSO
 
 For all related information (bug reporting, mailing-list, pointers to
@@ -387,9 +405,13 @@ MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 
+
+
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
+
+
 
 
 =head1 COPYRIGHT & LICENSE
