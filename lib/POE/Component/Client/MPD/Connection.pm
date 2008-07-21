@@ -65,8 +65,8 @@ sub spawn {
 
         InlineStates => {
             # protected events
-            _send       => \&_onprot_send,         # send data
-            _disconnect => \&_onprot_disconnect,   # force quit
+            send       => \&_onprot_send,         # send data
+            disconnect => \&_onprot_disconnect,   # force quit
 
             # private events
             _ServerInput_data         => \&_onpriv_ServerInput_data,
