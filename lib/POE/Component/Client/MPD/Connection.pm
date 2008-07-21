@@ -88,6 +88,15 @@ sub spawn {
 #--
 # private subs
 
+sub _got_error {
+    my ($k, $h, $errstr) = @_;
+
+    my $session = $h->{session};
+    my $msg     = shift @{ $h->{fifo} };
+    $k->post($session, '_conn_got_error', $msg, $errstr);
+}
+
+
 sub _parse_first_input_line {
     my ($k, $h, $input) = @_;
 
@@ -292,20 +301,6 @@ sub _onpriv_ServerInput_data_eot {
     $msg->data( $h->{incoming} );           # complete message with data
     $k->post($session, '_mpd_data', $msg);  # signal poe session
     $h->{incoming} = [];                    # reset incoming data
-}
-
-
-#
-# event: _ServerInput_error(undef, $error)
-#
-# Called when a message resulted in an $error for mpd.
-#
-sub _onpriv_ServerInput_error {
-    my $h = $_[HEAP];
-    my $session = $h->{session};
-    my $msg     = shift @{ $h->{fifo} };
-    $msg->error( $_[ARG1] );
-    $_[KERNEL]->post($session, '_mpd_error', $msg);
 }
 
 
