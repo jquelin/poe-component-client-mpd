@@ -283,7 +283,7 @@ sub _onpriv_ConnectError {
 sub _onpriv_Disconnected {
     my ($k, $h) = @_[KERNEL, HEAP];
     return if $h->{on_disconnect} != $RECONNECT;
-    $k->post( $h{session}, 'mpd_disconnected');
+    $k->post($h->{session}, 'mpd_disconnected');
     $k->yield('reconnect'); # auto-reconnect
 }
 
