@@ -125,7 +125,7 @@ sub _onpub_default {
 
         # basic commands
         default {
-            my $meth = "_do_$1"
+            my $meth = "_do_$event";
             POE::Component::Client::MPD::Commands->$meth($k, $h, $msg);
         }
     }
