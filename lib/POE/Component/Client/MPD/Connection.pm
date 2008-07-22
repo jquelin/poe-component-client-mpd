@@ -87,6 +87,29 @@ sub spawn {
 #--
 # private subs
 
+
+#
+# _got_data_eot()
+#
+# called when the stream of data is finished. used to send the received
+# data.
+#
+sub _got_data_eot {
+    my ($k, $h) = @_;
+    my $session = $h->{session};
+    my $msg     = shift @{ $h->{fifo} };     # remove completed msg
+    $msg->data( $h->{incoming} );            # complete message with data
+    $k->post($session, 'mpd_data', $msg);    # signal poe session
+    $h->{incoming} = [];                     # reset incoming data
+}
+
+
+#
+# _got_error($kernel, $heap, $errstr);
+#
+# called when the mpd server reports an error. used to report the error
+# to the pococm.
+#
 sub _got_error {
     my ($k, $h, $errstr) = @_;
 
@@ -287,20 +310,6 @@ sub _onpriv_ServerInput_data {
 
 }
 
-
-#
-# event: _ServerInput_data_eot()
-#
-# Called when the stream of data is finished.
-#
-sub _onpriv_ServerInput_data_eot {
-    my ($k, $h) = @_[KERNEL, HEAP];
-    my $session = $h->{session};
-    my $msg     = shift @{ $h->{fifo} };    # remove completed msg
-    $msg->data( $h->{incoming} );           # complete message with data
-    $k->post($session, '_mpd_data', $msg);  # signal poe session
-    $h->{incoming} = [];                    # reset incoming data
-}
 
 
 1;
