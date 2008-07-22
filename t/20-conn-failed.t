@@ -31,7 +31,7 @@ my $conn = POE::Component::Client::MPD::Connection->spawn( {
     host  => 'localhost',
     port  => 16600,
     id    => $id,
-    #retry => 0.5,
+    retry => 0.5,
 } );
 POE::Kernel->run;
 exit;
