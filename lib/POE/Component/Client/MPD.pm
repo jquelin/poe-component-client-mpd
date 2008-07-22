@@ -9,6 +9,7 @@
 
 package POE::Component::Client::MPD;
 
+use 5.010;
 use strict;
 use warnings;
 
@@ -24,9 +25,7 @@ use POE::Component::Client::MPD::Message;
 #use POE::Component::Client::MPD::Playlist;
 
 use base qw[ Class::Accessor::Fast Exporter ];
-__PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
-
-
+__PACKAGE__->mk_accessors( qw[ _host _password _port _version ] );
 
 our $VERSION = '0.8.1';
 
@@ -93,27 +92,43 @@ sub spawn {
 # catch-all handler.
 #
 sub _onpub_default {
-    my ($event, $params) = @_[ARG0, ARG1];
+    my ($k, $h, $event, $params) = @_[KERNEL, HEAP, ARG0, ARG1];
 
-    my $from = $_[SENDER]->ID;
-    my $to   = $_[SESSION]->ID;
-    warn "caught $event ($from -> $to)\n";
-    die "should not be there! caught $event ($from -> $to)"
-        if $_[SENDER] == $_[SESSION];
-#     return unless exists $allowed{$event};
+    # check if event is handled.
+    my @ok_events = qw{
+        version 
+    };
+    die "caught unauthorized event: $event [@$params]"
+        unless $event ~~ [ @ok_events ];
 
+    # create the message that will hold
     my $msg = POE::Component::Client::MPD::Message->new( {
         _from       => $_[SENDER]->ID,
-        _request    => $event,  # /!\ $_[STATE] eq 'default'
-        _params     => $params,
-        _dispatch   => $event,
+        request    => $event,  # /!\ $_[STATE] eq 'default'
+        params     => $params,
         #_answer    => <to be set by handler>
         #_commands  => <to be set by handler>
         #_cooking   => <to be set by handler>
         #_transform => <to be set by handler>
         #_post      => <to be set by handler>
     } );
-    $_[KERNEL]->yield( '_dispatch', $msg );
+
+    # dispatch the event.
+    given ($event) {
+        # playlist commands
+        when (/^pl\.(.*)$/) {
+        }
+
+        # collection commands
+        when (/^coll\.(.*)$/) {
+        }
+
+        # basic commands
+        default {
+            my $meth = "_do_$1"
+            POE::Component::Client::MPD::Commands->$meth($k, $h, $msg);
+        }
+    }
 }
 
 
@@ -252,7 +267,7 @@ sub _onprot_mpd_version {
 # to %params, same as spawn() received.
 #
 sub _onpriv_start {
-    my ($h, $args) = @_[HEAP, ARG0];
+    my ($k, $h, $args) = @_[KERNEL, HEAP, ARG0];
 
     # set up connection details.
     $args = {} unless defined $args;
@@ -266,7 +281,7 @@ sub _onpriv_start {
 
     # set an alias (for easier communication) if requested.
     $h->{alias} = delete $params{alias};
-    $_[KERNEL]->alias_set($h->{alias}) if defined $h->{alias};
+    $k->alias_set($h->{alias}) if defined $h->{alias};
 
     $h->{password} = delete $params{password};
     $h->{_socket}  = POE::Component::Client::MPD::Connection->spawn(\%params);
