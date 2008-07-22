@@ -64,19 +64,21 @@ sub _onpub_disconnect {
     $k->post( $_HUB, '_disconnect' );
 }
 
+=cut
 
 #
 # event: version()
 #
 # Fires back an event with the version number.
 #
-sub _onpub_version {
-    my ($k, $msg) = @_[KERNEL, ARG0];
-    $msg->_answer   ( $SEND );
-    $msg->_cooking  ( $RAW );
-    $k->post( $_HUB, '_version', $msg );
+sub _do_version {
+    my ($k, $h, $msg) = @_;
+    $msg->status(1);
+    $k->post( $msg->_from, 'mpd_answer', $msg, $h->{version} );
 }
 
+
+=pod
 
 #
 # event: kill()
