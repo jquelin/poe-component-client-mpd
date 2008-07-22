@@ -272,9 +272,9 @@ sub _onpriv_start {
     # set up connection details.
     $args = {} unless defined $args;
     my %params = (
-        host     => $ENV{MPD_HOST}     || 'localhost',
-        port     => $ENV{MPD_PORT}     || '6600',
-        password => $ENV{MPD_PASSWORD} || '',
+        host     => $ENV{MPD_HOST}     // 'localhost',
+        port     => $ENV{MPD_PORT}     // '6600',
+        password => $ENV{MPD_PASSWORD} // '',
         %$args,                        # overwrite previous defaults
         id       => $_[SESSION]->ID,   # required for connection
     );
