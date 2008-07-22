@@ -89,7 +89,7 @@ sub spawn {
 
 
 #
-# _got_data_eot()
+# _got_data_eot($kernel, $heap)
 #
 # called when the stream of data is finished. used to send the received
 # data.
@@ -245,9 +245,9 @@ sub _onpriv_ServerInput {
 
     # table of dispatch: check input against regex, and process it.
     given ($input) {
-        when ( /^OK$/ )      { _got_data_eot($input); }
-        when ( /^ACK (.*)/ ) { _got_error($1); }
-        default              { _got_data($input); }
+        when ( /^OK$/ )      { _got_data_eot($k, $h);     }
+        when ( /^ACK (.*)/ ) { _got_error($k, $h, $1);    }
+        default              { _got_data($k, $h, $input); }
     }
 }
 
