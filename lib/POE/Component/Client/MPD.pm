@@ -17,25 +17,25 @@ use Audio::MPD::Common::Status;
 use Carp;
 use List::MoreUtils qw[ firstidx ];
 use POE;
+#use POE::Component::Client::MPD::Commands;
+#use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
-use Readonly;
+#use POE::Component::Client::MPD::Playlist;
 
 use base qw[ Class::Accessor::Fast Exporter ];
 __PACKAGE__->mk_accessors( qw[ _host _password _port  _version ] );
-our @EXPORT_OK   = qw[ $MPD $COLLECTION $PLAYLIST $_HUB ];
-our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
-
-# exportable variables
-Readonly our $MPD        => '_pococ_mpd_commands';
-Readonly our $COLLECTION => '_pococ_mpd_collection';
-Readonly our $PLAYLIST   => '_pococ_mpd_playlist';
-Readonly our $_HUB       => '_pococ_mpd_hub';
 
 
 our $VERSION = '0.8.1';
 
+#
+# -- METHODS
+#
+
+#--
+# public methods
 
 #
 # my $id = spawn( \%params )
@@ -57,39 +57,47 @@ our $VERSION = '0.8.1';
 sub spawn {
     my ($type, $args) = @_;
 
-    require POE::Component::Client::MPD::Collection;
-    require POE::Component::Client::MPD::Commands;
-    require POE::Component::Client::MPD::Playlist;
-
     my $session = POE::Session->create(
         args          => [ $args ],
         inline_states => {
             # private events
-            '_start'                   => \&_onpriv_start,
-            '_send'                    => \&_onpriv_send,
+            '_start'             => \&_onpriv_start,
             # protected events
-            '_mpd_data'                => \&_onprot_mpd_data,
-            '_mpd_error'               => \&_onprot_mpd_error,
-            '_mpd_version'             => \&_onprot_mpd_version,
-            '_disconnect'              => \&_onprot_disconnect,
-            '_version'                 => \&_onprot_version,
+            'mpd_connect_error_fatal'     => \&_onprot_conn_connect_error_fatal,
+            'mpd_connect_error_retriable' => \&_onprot_conn_connect_error_retriable,
+            'mpd_connected'     => \&_onprot_conn_connected,
+            'mpd_disconnected'  => \&_onprot_conn_disconnected,
+            'mpd_data'      =>  \&_onprot_conn_data,
+            'mpd_error'     =>  \&_onprot_conn_error,
+            # public events
+            #'_default'       => \&POE::Component::Client::MPD::_onpub_default,
+            '_mpd_data'      => \&_onprot_mpd_data,
+            '_mpd_error'     => \&_onprot_mpd_error,
+            '_mpd_version'   => \&_onprot_mpd_version,
+            '_disconnect'    => \&_onprot_disconnect,
+            '_version'       => \&_onprot_version,
         },
     );
-
-    POE::Component::Client::MPD::Collection->_spawn;
-    POE::Component::Client::MPD::Commands->_spawn;
-    POE::Component::Client::MPD::Playlist->_spawn;
-
     return $session->ID;
 }
 
 
+#
+# -- EVENTS HANDLERS
+#
+
+#--
+# public events.
+
+#
+# catch-all handler.
+#
 sub _onpub_default {
     my ($event, $params) = @_[ARG0, ARG1];
 
     my $from = $_[SENDER]->ID;
     my $to   = $_[SESSION]->ID;
-#     warn "caught $event ($from -> $to)\n";
+    warn "caught $event ($from -> $to)\n";
     die "should not be there! caught $event ($from -> $to)"
         if $_[SENDER] == $_[SESSION];
 #     return unless exists $allowed{$event};
@@ -112,6 +120,8 @@ sub _onpub_default {
 #--
 # protected events.
 
+=pod
+
 #
 # event: _disconnect()
 #
@@ -120,12 +130,13 @@ sub _onpub_default {
 sub _onprot_disconnect {
     my ($k,$h) = @_[KERNEL, HEAP];
     $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
-    $k->alias_remove( $_HUB );
     $k->post( $h->{_socket}, 'disconnect' );    # pococm-conn
-    $k->post( $PLAYLIST,     '_disconnect' );    # pococm-playlist
-    $k->post( $COLLECTION,   '_disconnect' );    # pococm-coll
 }
 
+=cut
+
+
+=pod
 
 #
 # event: _version()
@@ -139,6 +150,10 @@ sub _onprot_version {
     $k->yield( '_mpd_data', $msg );
 }
 
+=cut
+
+
+=pod
 
 #
 # Event: _mpd_data( $msg )
@@ -200,12 +215,19 @@ sub _onprot_mpd_data {
     $k->post( $msg->_from, 'mpd_result', $msg );
 }
 
+=cut
+
+=pod
+
 sub _onprot_mpd_error {
     # send error.
     my $msg = $_[ARG0];
     $_[KERNEL]->post( $msg->_from, 'mpd_error', $msg );
 }
 
+=cut
+
+=pod
 
 #
 # Event: _mpd_version( $vers )
@@ -216,6 +238,8 @@ sub _onprot_mpd_error {
 sub _onprot_mpd_version {
     $_[HEAP]->{version} = $_[ARG0];
 }
+
+=cut
 
 
 #--
@@ -243,7 +267,6 @@ sub _onpriv_start {
     # set an alias (for easier communication) if requested.
     $h->{alias} = delete $params{alias};
     $_[KERNEL]->alias_set($h->{alias}) if defined $h->{alias};
-    $_[KERNEL]->alias_set( $_HUB );
 
     $h->{password} = delete $params{password};
     $h->{_socket}  = POE::Component::Client::MPD::Connection->spawn(\%params);
@@ -270,6 +293,7 @@ sub _connected {
 =cut
 
 
+=pod
 
 #
 # event: _send( $msg )
@@ -287,6 +311,7 @@ sub _onpriv_send {
     $k->post( $_[HEAP]->{_socket}, 'send', $msg );
 }
 
+=cut
 
 
 1;
