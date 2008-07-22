@@ -13,11 +13,13 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
 use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
+
+=pod
 
 Readonly my @EVENTS => qw[
     disconnect
@@ -50,8 +52,11 @@ sub _onpriv_dispatch {
     $_[KERNEL]->yield( "_onpub_$event", $msg );
 }
 
+=cut
 
 # -- MPD interaction: general commands
+
+=pod
 
 sub _onpub_disconnect {
     my $k = $_[KERNEL];
@@ -122,8 +127,12 @@ sub _onpub_urlhandlers {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
+
 
 # -- MPD interaction: handling volume & output
+
+=pod
 
 #
 # event: volume( $volume )
@@ -192,8 +201,11 @@ sub _onpub_output_disable {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 # -- MPD interaction: retrieving info from current state
+
+=pod
 
 #
 # event: stats()
@@ -273,8 +285,12 @@ sub _onpub_songid {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
+
 
 # -- MPD interaction: altering settings
+
+=pod
 
 #
 # event: repeat( [$repeat] )
@@ -355,9 +371,13 @@ sub _onpub_random {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
+
 
 
 # -- MPD interaction: controlling playback
+
+=pod
 
 #
 # event: play( [$song] )
@@ -512,6 +532,7 @@ sub _onpub_seekid {
     $k->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 1;
 
