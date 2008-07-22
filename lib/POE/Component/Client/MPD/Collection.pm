@@ -13,11 +13,13 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
 use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
+
+=pod
 
 Readonly my @EVENTS => qw[
     all_items all_items_simple items_in_dir
@@ -52,8 +54,11 @@ sub _onpriv_dispatch {
     $_[KERNEL]->yield( "_onpub_$event", $msg );
 }
 
+=cut
 
 # -- Collection: retrieving songs & directories
+
+=pod
 
 #
 # event: coll.all_items( [$path] )
@@ -115,10 +120,13 @@ sub _onpub_items_in_dir {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 
 # -- Collection: retrieving the whole collection
 
+
+=pod
 
 # event: coll.all_songs( )
 
@@ -178,8 +186,11 @@ sub _onpub_all_files {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 # -- Collection: picking songs
+
+=pod
 
 #
 # event: coll.song( $path )
@@ -319,6 +330,7 @@ sub _onpub_songs_with_title_partial {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 1;
 
