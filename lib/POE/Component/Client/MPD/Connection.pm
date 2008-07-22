@@ -70,11 +70,6 @@ sub spawn {
             # protected events
             send       => \&_onprot_send,         # send data
             disconnect => \&_onprot_disconnect,   # force quit
-
-            # private events
-            _ServerInput_data         => \&_onpriv_ServerInput_data,
-            _ServerInput_data_eot     => \&_onpriv_ServerInput_data_eot,
-            _ServerInput_error        => \&_onpriv_ServerInput_error,
         }
     );
 
