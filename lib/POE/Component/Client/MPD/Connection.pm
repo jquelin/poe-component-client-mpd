@@ -89,6 +89,58 @@ sub spawn {
 
 
 #
+# _got_data($kernel, $heap, $input);
+#
+# called when receiving another piece of data.
+#
+sub _got_data {
+    my ($k, $h, $input) = @_;
+
+    # regular data, to be cooked (if needed) and stored.
+    my $msg = $h->{fifo}[0];
+
+    given ($msg->_cooking) {
+        when ($RAW) {
+            # nothing to do, just push the data.
+            push @{ $h->{incoming} }, $input;
+        }
+
+        when ($AS_ITEMS) {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to build an amc-item.
+            my ($k,$v) = split /:\s+/, $input, 2;
+            $k = lc $k;
+
+            if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
+                # build a new amc-item
+                my $item = Audio::MPD::Common::Item->new( $k => $v );
+                push @{ $h->{incoming} }, $item;
+            }
+
+            # just complete the current amc-item
+            $h->{incoming}[-1]->$k($v);
+        }
+
+        when ($AS_KV) {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to get a list of key / value (with the colon ":" acting
+            # as separator).
+            my @data = split(/:\s+/, $input, 2);
+            push @{ $h->{incoming} }, @data;
+        }
+
+        when ($STRIP_FIRST) {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to remove the first field (with the colon ":" acting as
+            # separator).
+            $input = ( split(/:\s+/, $input, 2) )[1];
+            push @{ $h->{incoming} }, $input;
+        }
+    }
+}
+
+
+#
 # _got_data_eot($kernel, $heap)
 #
 # called when the stream of data is finished. used to send the received
@@ -249,65 +301,6 @@ sub _onpriv_ServerInput {
         when ( /^ACK (.*)/ ) { _got_error($k, $h, $1);    }
         default              { _got_data($k, $h, $input); }
     }
-}
-
-
-#
-# event: _ServerInput_data( $input )
-#
-# Called when the stream of data is finished.
-#
-sub _onpriv_ServerInput_data {
-    my ($h, $input) = @_[HEAP, ARG0];
-
-    # regular data, to be cooked (if needed) and stored.
-    my $msg = $h->{fifo}[0];
-    my $cooking = $msg->_cooking;
-    COOKING:
-    {
-        $cooking == $RAW and do {
-            # nothing to do, just push the data.
-            push @{ $h->{incoming} }, $input;
-            last COOKING;
-        };
-
-        $cooking == $AS_ITEMS and do {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to build an amc-item.
-            my ($k,$v) = split /:\s+/, $input, 2;
-            $k = lc $k;
-
-            if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
-                # build a new amc-item
-                my $item = Audio::MPD::Common::Item->new( $k => $v );
-                push @{ $h->{incoming} }, $item;
-                last COOKING;
-            }
-
-            # just complete the current amc-item
-            $h->{incoming}[-1]->$k($v);
-            last COOKING;
-        };
-
-        $cooking == $AS_KV and do {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to get a list of key / value (with the colon ":" acting
-            # as separator).
-            my @data = split(/:\s+/, $input, 2);
-            push @{ $h->{incoming} }, @data;
-            last COOKING;
-        };
-
-        $cooking == $STRIP_FIRST and do {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to remove the first field (with the colon ":" acting as
-            # separator).
-            $input = ( split(/:\s+/, $input, 2) )[1];
-            push @{ $h->{incoming} }, $input;
-            last COOKING;
-        };
-    }
-
 }
 
 
