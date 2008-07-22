@@ -16,7 +16,6 @@ use warnings;
 
 use Audio::MPD::Common::Item;
 use POE;
-use POE::Component::Client::MPD::Message;
 use POE::Component::Client::TCP;
 use Readonly;
 
