@@ -13,11 +13,13 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
 use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
+
+=pod
 
 Readonly my @EVENTS => qw[
     as_items items_changed_since
@@ -50,8 +52,11 @@ sub _onpriv_dispatch {
     $_[KERNEL]->yield( "_onpub_$event", $msg );
 }
 
+=cut
 
 # -- Playlist: retrieving information
+
+=pod
 
 #
 # event: pl.as_items()
@@ -85,8 +90,11 @@ sub _onpub_items_changed_since {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 # -- Playlist: adding / removing songs
+
+=pod
 
 #
 # event: pl.add( $path, $path, ... )
@@ -204,8 +212,11 @@ sub _onpub_crop {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 # -- Playlist: changing playlist order
+
+=pod
 
 #
 # event: pl.shuffle()
@@ -284,8 +295,11 @@ sub _onpub_moveid {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 # -- Playlist: managing playlists
+
+=pod
 
 #
 # event: pl.load( $playlist );
@@ -335,6 +349,7 @@ sub _onpub_rm {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 
 1;
