@@ -8,33 +8,54 @@
 #
 #
 
+use 5.010;
+
 use strict;
 use warnings;
 
 use POE qw[ Component::Client::MPD::Connection ];
+use Readonly;
 use Test::More;
-plan tests => 1;
+
+plan tests => 2;
+Readonly my $ALIAS => 'tester';
+
 
 my $id = POE::Session->create(
     inline_states => {
-        _start     => \&_onpriv_start,
-        _mpd_error => \&_onpriv_mpd_error,
+        _start                      => \&_onpriv_start,
+        mpd_connect_error_retriable => \&_onprot_mpd_connect_error_retriable,
     }
 );
-POE::Component::Client::MPD::Connection->spawn( {
-    host => 'localhost',
-    port => 16600,
-    id   => $id,
+my $conn = POE::Component::Client::MPD::Connection->spawn( {
+    host  => 'localhost',
+    port  => 16600,
+    id    => $id,
+    #retry => 0.5,
 } );
 POE::Kernel->run;
 exit;
 
+#--
 
 sub _onpriv_start {
-    $_[KERNEL]->alias_set('tester'); # increment refcount
+    my ($k, $h) = @_[KERNEL, HEAP];
+    $k->alias_set($ALIAS); # increment refcount
+    $h->{count} = 0;
 }
 
-sub _onpriv_mpd_error  {
-    like( $_[ARG0]->error, qr/^connect: \(\d+\) /, 'connect error trapped' );
+sub _onprot_mpd_connect_error_retriable {
+    my ($k, $h, $errstr) = @_[KERNEL, HEAP, ARG0];
+    given ($h->{count}++) {
+        when (0) {
+            like( $errstr, qr/^connect: \(\d+\) /, 'connect error trapped' );
+        }
+        when (1) {
+            like( $errstr, qr/^connect: \(\d+\) /, 'connection retried' );
+            $k->post($conn, 'disconnect');
+            $k->alias_remove($ALIAS); # decrement refcount
+        }
+    }
 }
+
 
