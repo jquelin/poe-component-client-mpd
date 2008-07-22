@@ -39,12 +39,13 @@ Readonly my $RECONNECT => 1;
 # session newly created.
 #
 # Arguments are passed as a hash reference, with the keys:
-#   - host: hostname of the mpd server.
-#   - port: port of the mpd server.
-#   - id:   poe session id of the peer to dialog with
+#   - host:  hostname of the mpd server.
+#   - port:  port of the mpd server.
+#   - id:    poe session id of the peer to dialog with
+#   - retyr: time to wait before attempting to reconnect. defaults to 5.
 #
-# Those args are not supposed to be empty - ie, there's no defaut, and you
-# will get an error if you don't follow this requirement! Yes, this is a
+# The args without default are not supposed to be empty - ie, you will
+# get an error if you don't follow this requirement! Yes, this is a
 # private class, and you're not supposed to use it beyond pococm. :-)
 #
 sub spawn {
@@ -55,7 +56,7 @@ sub spawn {
         RemoteAddress => $args->{host},
         RemotePort    => $args->{port},
         Filter        => 'POE::Filter::Line',
-        Args          => [ $args->{id} ],
+        Args          => [ $args ],
 
 
         ServerError  => sub { }, # quiet errors
@@ -239,9 +240,10 @@ sub _onprot_send {
 # peer during the life of this session.
 #
 sub _onpriv_Started {
-    my $h = $_[HEAP];
-    $h->{session}       = $_[ARG0];     # poe-session peer
-    $h->{on_disconnect} = $RECONNECT;   # disconnect policy
+    my ($h, $args) = @_[HEAP, ARG0];
+    $h->{session}       = $args->{id};          # poe-session peer
+    $h->{retry}         = $args->{retry} // 5;  # sleep time before retry
+    $h->{on_disconnect} = $RECONNECT;           # disconnect policy
 }
 
 
@@ -271,7 +273,7 @@ sub _onpriv_ConnectError {
         $h->{session}, 'mpd_connect_error_retriable',
         "$syscall: ($errno) $errstr"
     );
-    $k->delay_add('reconnect' => 5); # auto-reconnect in 5 seconds
+    $k->delay_add('reconnect' => $h->{retry}); # auto-reconnect in $retry seconds
 }
 
 
@@ -351,25 +353,31 @@ You should provide some arguments as a hash reference, where the hash keys are:
 
 =item * host
 
-The hostname of the mpd server.
+The hostname of the mpd server. No default.
 
 
 =item * port
 
-The port of the mpd server.
+The port of the mpd server. No default.
 
 
 =item * id
 
-The POE session id of the peer to dialog with.
+The POE session id of the peer to dialog with. No default.
+
+
+=item * retry
+
+How much time to wait (in seconds) before attempting socket
+reconnection. Defaults to 5.
 
 
 =back
 
 
-Those args are not supposed to be empty - ie, there's no defaut, and you
-will get an error if you don't follow this requirement! Yes, this is a
-private class, and you're not supposed to use it beyond pococm. :-)
+The args without default are not supposed to be empty - ie, you will get
+an error if you don't follow this requirement! Yes, this is a private
+class, and you're not supposed to use it beyond pococm. :-)
 
 
 
