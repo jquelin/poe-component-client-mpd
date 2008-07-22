@@ -172,7 +172,13 @@ sub _got_error {
 }
 
 
-sub _parse_first_input_line {
+#
+# _got_first_input_line($kernel, $heap, $input);
+#
+# called when the mpd server fires the first line. used to check whether
+# we are talking to a regular mpd server.
+#
+sub _got_first_input_line {
     my ($k, $h, $input) = @_;
 
     if ( $input =~ /^OK MPD (.*)$/ ) {
@@ -292,7 +298,7 @@ sub _onpriv_ServerInput {
 
     # did we check we were talking to a mpd server?
     if ( not $h->{is_mpd} ) {
-        _parse_first_input_line($k, $h, $input);
+        _got_first_input_line($k, $h, $input);
         return;
     }
 
