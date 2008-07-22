@@ -92,7 +92,7 @@ sub _got_error {
 
     my $session = $h->{session};
     my $msg     = shift @{ $h->{fifo} };
-    $k->post($session, '_conn_got_error', $msg, $errstr);
+    $k->post($session, 'mpd_error', $msg, $errstr);
 }
 
 
@@ -101,11 +101,11 @@ sub _parse_first_input_line {
 
     if ( $input =~ /^OK MPD (.*)$/ ) {
         $h->{is_mpd} = 1;  # remote server *is* a mpd sever
-        $k->post($h->{session}, '_conn_connected', $1);
+        $k->post($h->{session}, 'mpd_connected', $1);
     } else {
         # oops, it appears that it's not a mpd server...
         $k->post(
-            $h->{session}, '_conn_connect_error_fatal',
+            $h->{session}, 'mpd_connect_error_fatal',
             "Not a mpd server - welcome string was: '$input'",
         );
     }
@@ -185,7 +185,7 @@ sub _onpriv_Connected {
 sub _onpriv_ConnectError {
     my ($k, $h, $syscall, $errno, $errstr) = @_[KERNEL, HEAP, ARG0, ARG1, ARG2];
     $k->post(
-        $h->{session}, '_conn_connect_error_retriable',
+        $h->{session}, 'mpd_connect_error_retriable',
         "$syscall: ($errno) $errstr"
     );
     $k->delay_add('reconnect' => 5); # auto-reconnect in 5 seconds
@@ -200,7 +200,7 @@ sub _onpriv_ConnectError {
 sub _onpriv_Disconnected {
     my ($k, $h) = @_[KERNEL, HEAP];
     return if $h->{on_disconnect} != $RECONNECT;
-    $k->post( $h{session}, '_conn_disconnected');
+    $k->post( $h{session}, 'mpd_disconnected');
     $k->yield('reconnect'); # auto-reconnect
 }
 
