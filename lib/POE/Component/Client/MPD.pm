@@ -282,8 +282,7 @@ sub _onpriv_start {
     $k->alias_set($h->{alias}) if defined $h->{alias};
 
     $h->{password} = delete $params{password};
-    $h->{_socket}  = POE::Component::Client::MPD::Connection->spawn(\%params);
-    $h->{pre_messages} = [];
+    $h->{socket}   = POE::Component::Client::MPD::Connection->spawn(\%params);
 }
 
 
