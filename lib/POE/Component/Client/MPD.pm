@@ -64,7 +64,7 @@ sub spawn {
             # protected events
             'mpd_connect_error_fatal'     => \&_onprot_conn_connect_error_fatal,
             'mpd_connect_error_retriable' => \&_onprot_conn_connect_error_retriable,
-            'mpd_connected'     => \&_onprot_conn_connected,
+            'mpd_connected'               => \&_onprot_conn_connected,
             'mpd_disconnected'  => \&_onprot_conn_disconnected,
             'mpd_data'      =>  \&_onprot_conn_data,
             'mpd_error'     =>  \&_onprot_conn_error,
@@ -135,6 +135,21 @@ sub _onpub_default {
 #--
 # protected events.
 
+
+#
+# event: mpd_connected($version)
+#
+# Fill in the mpd version.
+#
+sub _onprot_mpd_connected {
+    my ($k, $h, $version) = @_[KERNEL, HEAP, ARG0];
+    $h->{version} = $version;
+    # FIXME: send password information to mpd
+    # FIXME: send status information to peer
+}
+
+
+
 =pod
 
 #
@@ -146,23 +161,6 @@ sub _onprot_disconnect {
     my ($k,$h) = @_[KERNEL, HEAP];
     $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
     $k->post( $h->{_socket}, 'disconnect' );    # pococm-conn
-}
-
-=cut
-
-
-=pod
-
-#
-# event: _version()
-#
-# Fill in the mpd version, and fakes that we received some data to send
-# version back to requester.
-#
-sub _onprot_version {
-    my ($k,$h,$msg) = @_[KERNEL, HEAP, ARG0];
-    $msg->data( $_[HEAP]->{version} );
-    $k->yield( '_mpd_data', $msg );
 }
 
 =cut
