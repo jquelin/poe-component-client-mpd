@@ -381,16 +381,62 @@ public).
 
 
 
-=head2 disconnect()
+=head2 disconnect( )
 
 Request the pococm-connection to be shutdown. No argument.
 
 
-=head2 send( $request )
+=head2 send($message)
 
-Request pococm-conn to send the C<$request> over the wires. Note that this
-request is a pococm-request object, and that the ->_commands should
+Request pococm-conn to send the C<$message> over the wires. Note that
+this request is a pococm-message object, and that the ->_commands should
 B<not> be newline terminated.
+
+
+
+
+=head1 PUBLIC EVENTS FIRED
+
+The following events are fired from the spawned session.
+
+=head2 mpd_connected($version)
+
+Fired when the session is connected to a mpd server. This event isn't
+fired when the socket connection takes place, but when the session has
+checked that remote peer is a real mpd server. C<$version> is the
+advertised mpd server version.
+
+
+=head2 mpd_connect_error_fatal()
+
+Fired when the session is connected to a server which happens to be
+something else than a mpd server. No retries will be done.
+
+
+=head2 mpd_connect_error_retriable($errstr)
+
+Fired when the session has troubles connecting to the server. C<$errstr>
+will point the faulty syscall that failed. Re-connection will be tried
+after 5 seconds.
+
+
+=head2 mpd_data($msg)
+
+Fired when C<$msg> has been sent over the wires, and mpd server has
+answered with success.
+
+
+=head2 mpd_disconnected()
+
+Fired when the socket has been disconnected for whatever reason. Note
+that this event is B<not> fired in the case of a programmed shutdown
+(see C<disconnect> event above).
+
+
+=head2 mpd_error($msg,$errstr)
+
+Fired when C<$msg> has been sent over the wires, and mpd server has
+answered with an error message C<$errstr>.
 
 
 
