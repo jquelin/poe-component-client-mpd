@@ -266,6 +266,7 @@ sub _onpriv_Connected {
 #
 sub _onpriv_ConnectError {
     my ($k, $h, $syscall, $errno, $errstr) = @_[KERNEL, HEAP, ARG0, ARG1, ARG2];
+    return if $h->{on_disconnect} != $RECONNECT;
     $k->post(
         $h->{session}, 'mpd_connect_error_retriable',
         "$syscall: ($errno) $errstr"
