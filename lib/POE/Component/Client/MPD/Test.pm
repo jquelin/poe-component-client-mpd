@@ -28,21 +28,20 @@ Readonly my $ALIAS    => 'tester';
 Readonly my $TEMPLATE => "$Bin/mpd-test/mpd.conf.template";
 Readonly my $CONFIG   => "$Bin/mpd-test/mpd.conf";
 
+my $was_running = 0;   # whether there was a user mpd running
+my $start_ok    = 0;   # whether the test mpd was started ok
 
 sub import { # this will be run when pococm::Test will be use-d.
     my $self   = shift;
     my %params = @_;
 
-    my $restart = 0;
-    my $stopit  = 0;
-
     customize_test_mpd_configuration();
-    $restart = _stop_user_mpd_if_needed();
-    $stopit  = start_test_mpd();
+    $was_running = _stop_user_mpd_if_needed();
+    $start_ok    = start_test_mpd();
 
     END {
-        stop_test_mpd() if $stopit;
-        return unless $restart;       # no need to restart
+        stop_test_mpd() if $start_ok;
+        return unless $was_running;   # no need to restart
         system 'mpd 2>/dev/null';     # restart user mpd
         sleep 1;                      # wait 1 second to let mpd start.
     }
