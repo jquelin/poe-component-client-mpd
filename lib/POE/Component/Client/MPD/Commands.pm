@@ -96,6 +96,8 @@ sub _onpub_kill {
     $k->post( $_HUB, '_send', $msg );
 }
 
+=cut
+
 
 #
 # event: updatedb( [$path] )
@@ -104,16 +106,17 @@ sub _onpub_kill {
 # directory) is supplied, MPD will only scan it - otherwise, MPD will rescan
 # its whole collection.
 #
-sub _onpub_updatedb {
-    my $msg  = $_[ARG0];
-    my $path = defined $msg->_params->[0] ? $msg->_params->[0] : '';
+sub _do_updatedb {
+    my ($pkg, $k, $h, $msg) = @_;
+    my $path = defined $msg->_params ? $msg->_params->[0] : '';
 
-    $msg->_answer   ( $DISCARD );
-    $msg->_commands ( [ qq[update "$path"] ] );
-    $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_commands( [ qq{update "$path"} ] );
+    $msg->_cooking ( $RAW );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
+
+=pod
 
 #
 # event: urlhandlers()

@@ -97,7 +97,7 @@ sub _onpub_default {
 
     # check if event is handled.
     my @ok_events = qw{
-        version 
+        version updatedb
     };
     return unless $event ~~ [ @ok_events ];
 
