@@ -72,9 +72,9 @@ sub _onpub_disconnect {
 # Fires back an event with the version number.
 #
 sub _do_version {
-    my ($k, $h, $msg) = @_;
+    my ($pkg, $k, $h, $msg) = @_;
     $msg->status(1);
-    $k->post( $msg->_from, 'mpd_answer', $msg, $h->{version} );
+    $k->post( $msg->_from, 'mpd_result', $msg, $h->{version} );
 }
 
 
