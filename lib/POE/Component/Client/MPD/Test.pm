@@ -14,7 +14,7 @@ use warnings;
 
 use FindBin qw[ $Bin ];
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
