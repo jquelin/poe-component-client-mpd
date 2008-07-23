@@ -147,6 +147,7 @@ sub _got_data_eot {
     my $session = $h->{session};
     my $msg     = shift @{ $h->{fifo} };     # remove completed msg
     $msg->_data($h->{incoming});             # complete message with data
+    $msg->status(1);                         # success
     $k->post($session, 'mpd_data', $msg);    # signal poe session
     $h->{incoming} = [];                     # reset incoming data
 }
