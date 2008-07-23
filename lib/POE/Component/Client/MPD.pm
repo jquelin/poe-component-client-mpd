@@ -18,7 +18,7 @@ use Audio::MPD::Common::Status;
 use Carp;
 use List::MoreUtils qw[ firstidx ];
 use POE;
-#use POE::Component::Client::MPD::Commands;
+use POE::Component::Client::MPD::Commands;
 #use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
@@ -69,7 +69,7 @@ sub spawn {
             'mpd_data'      =>  \&_onprot_conn_data,
             'mpd_error'     =>  \&_onprot_conn_error,
             # public events
-            #'_default'       => \&POE::Component::Client::MPD::_onpub_default,
+            '_default'       => \&POE::Component::Client::MPD::_onpub_default,
             '_mpd_data'      => \&_onprot_mpd_data,
             '_mpd_error'     => \&_onprot_mpd_error,
             '_mpd_version'   => \&_onprot_mpd_version,
@@ -98,8 +98,7 @@ sub _onpub_default {
     my @ok_events = qw{
         version 
     };
-    die "caught unauthorized event: $event [@$params]"
-        unless $event ~~ [ @ok_events ];
+    return unless $event ~~ [ @ok_events ];
 
     # create the message that will hold
     my $msg = POE::Component::Client::MPD::Message->new( {
