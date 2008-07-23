@@ -69,11 +69,12 @@ sub spawn {
             'mpd_data'      =>  \&_onprot_conn_data,
             'mpd_error'     =>  \&_onprot_conn_error,
             # public events
+            'disconnect'     => \&_onpub_disconnect,
             '_default'       => \&POE::Component::Client::MPD::_onpub_default,
+
             '_mpd_data'      => \&_onprot_mpd_data,
             '_mpd_error'     => \&_onprot_mpd_error,
             '_mpd_version'   => \&_onprot_mpd_version,
-            '_disconnect'    => \&_onprot_disconnect,
             '_version'       => \&_onprot_version,
         },
     );
@@ -131,6 +132,20 @@ sub _onpub_default {
 }
 
 
+#
+# event: disconnect()
+#
+# Request the pococm to be shutdown. Leave mpd running.
+#
+sub _onpub_disconnect {
+    my ($k,$h) = @_[KERNEL, HEAP];
+    $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
+    $k->post( $h->{socket}, 'disconnect' );                 # pococm-conn
+}
+
+
+
+
 #--
 # protected events.
 
@@ -148,24 +163,6 @@ sub _onprot_mpd_connected {
 }
 
 
-
-=pod
-
-#
-# event: _disconnect()
-#
-# Request the pococm to be shutdown. Leave mpd running.
-#
-sub _onprot_disconnect {
-    my ($k,$h) = @_[KERNEL, HEAP];
-    $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
-    $k->post( $h->{_socket}, 'disconnect' );    # pococm-conn
-}
-
-=cut
-
-
-=pod
 
 #
 # Event: _mpd_data( $msg )
