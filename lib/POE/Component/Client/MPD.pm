@@ -66,7 +66,7 @@ sub spawn {
             'mpd_connect_error_retriable' => \&_onprot_conn_connect_error_retriable,
             'mpd_connected'               => \&_onprot_mpd_connected,
             'mpd_disconnected'  => \&_onprot_conn_disconnected,
-            'mpd_data'      =>  \&_onprot_conn_data,
+            'mpd_data'      =>  \&_onprot_mpd_data,
             'mpd_error'     =>  \&_onprot_conn_error,
             # public events
             'disconnect'     => \&_onpub_disconnect,
@@ -165,12 +165,14 @@ sub _onprot_mpd_connected {
 
 
 #
-# Event: _mpd_data( $msg )
+# Event: mpd_data( $msg )
 #
 # Received when mpd finished to send back some data.
 #
 sub _onprot_mpd_data {
     my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
+
+=pod
 
     TRANSFORM:
     {
@@ -197,6 +199,10 @@ sub _onprot_mpd_data {
         };
     }
 
+=cut
+
+
+=pod
 
     # check for post-callback.
     # need to be before pre-callback, since a pre-event may need to have
@@ -220,11 +226,12 @@ sub _onprot_mpd_data {
 
     return if $msg->_answer == $DISCARD;
 
+=cut
+
     # send result.
-    $k->post( $msg->_from, 'mpd_result', $msg );
+    $k->post($msg->_from, 'mpd_result', $msg, $msg->_data);
 }
 
-=cut
 
 =pod
 
