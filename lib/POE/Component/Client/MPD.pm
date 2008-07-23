@@ -64,7 +64,7 @@ sub spawn {
             # protected events
             'mpd_connect_error_fatal'     => \&_onprot_conn_connect_error_fatal,
             'mpd_connect_error_retriable' => \&_onprot_conn_connect_error_retriable,
-            'mpd_connected'               => \&_onprot_conn_connected,
+            'mpd_connected'               => \&_onprot_mpd_connected,
             'mpd_disconnected'  => \&_onprot_conn_disconnected,
             'mpd_data'      =>  \&_onprot_conn_data,
             'mpd_error'     =>  \&_onprot_conn_error,
