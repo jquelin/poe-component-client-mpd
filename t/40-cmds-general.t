@@ -12,49 +12,63 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
+use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
-our $nbtests = 5;
-our @tests   = (
-    # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
+my $nbtests = 11;
+my @tests   = (
+    # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # updatedb
-    [ $MPD, 'updatedb',    [],       $SLEEP1,  undef               ],
-    [ $MPD, 'stats',       [],       $SEND,    \&check_update      ],
-    [ $MPD, 'updatedb',    ['dir1'], $DISCARD, undef               ],
-    [ $MPD, 'stats',       [],       $SEND,    \&check_update      ],
+    [ 'updatedb',    [],       1, \&check_success     ],
+    [ 'stats',       [],       0, \&check_update      ],
+    [ 'updatedb',    ['dir1'], 0, \&check_success     ],
+    [ 'stats',       [],       0, \&check_update      ],
 
     # version
-    # needs to be *after* updatedb, so version messages can be treated.
-    [ $MPD, 'version',     [],       $SEND,    \&check_version     ],
+    # needs to be *after* updatedb, so version messages can be treated
+    # by socket.
+    [ 'version',     [],       0, \&check_version     ],
 
     # urlhandlers
-    [ $MPD, 'urlhandlers', [],       $SEND,    \&check_urlhandlers ],
+    [ 'urlhandlers', [],       0, \&check_urlhandlers ],
 );
 
 
 # are we able to test module?
-eval 'use POE::Component::Client::MPD::Test';
-diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
+diag($@), plan skip_all=>$@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
-sub check_version {
-    SKIP: {
-        my $output = qx[mpd --version 2>/dev/null];
-        skip 'need mpd installed', 1 unless $output =~ /^mpd .* ([\d.]+)\n/;
-        is( $_[0]->data, $1, 'mpd version grabbed during connection' );
-    }
+#--
+
+sub check_success {
+    my ($msg) = @_;
+    is($msg->status, 1, "command '" . $msg->request . "' returned an ok status");
 }
+
 sub check_update  {
-    my $stats = $_[0]->data;
+    my ($msg, $stats) = @_;
+    check_success($msg);
     isnt( $stats->db_update,  0, 'database has been updated' );
 }
 
 sub check_urlhandlers {
-    my @handlers = @{ $_[0]->data };
-    is( scalar @handlers,     1, 'only one url handler supported' );
-    is( $handlers[0], 'http://', 'only http is supported by now' );
+    my ($msg, $handlers) = @_;
+    check_success($msg);
+    is(scalar @$handlers,         1, 'only one url handler supported');
+    is($handlers->[0],    'http://', 'only http is supported by now');
 }
+
+sub check_version {
+    my ($msg, $vers) = @_;
+    SKIP: {
+        my $output = qx[mpd --version 2>/dev/null];
+        skip 'need mpd installed', 2 unless $output =~ /^mpd .* ([\d.]+)\n/;
+        check_success($msg);
+        is($vers, $1, 'mpd version grabbed during connection is correct');
+    }
+}
+
