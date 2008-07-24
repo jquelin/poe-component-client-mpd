@@ -116,23 +116,18 @@ sub _do_updatedb {
 }
 
 
-=pod
-
 #
 # event: urlhandlers()
 #
 # Return an array of supported URL schemes.
 #
-sub _onpub_urlhandlers {
-    my $msg  = $_[ARG0];
+sub _do_urlhandlers {
+    my ($pkg, $k, $h, $msg) = @_;
 
-    $msg->_answer   ( $SEND );
     $msg->_commands ( [ 'urlhandlers' ] );
     $msg->_cooking  ( $STRIP_FIRST );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
-
-=cut
 
 
 # -- MPD interaction: handling volume & output
