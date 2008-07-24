@@ -172,34 +172,23 @@ sub _onprot_mpd_connected {
 sub _onprot_mpd_data {
     my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
 
-=pod
-
-    TRANSFORM:
-    {
-        # transform data if needed.
-        my $transform = $msg->_transform;
-        last TRANSFORM unless defined $msg->_transform;
-
-        $transform == $AS_SCALAR and do {
-            my $data = $msg->data->[0];
-            $msg->data($data);
-            last TRANSFORM;
-        };
-        $transform == $AS_STATS and do {
-            my %stats = @{ $msg->data };
+    # transform data if needed.
+    given ($msg->_transform) {
+        when ($AS_SCALAR) {
+            my $data = $msg->_data->[0];
+            $msg->_data($data);
+        }
+        when ($AS_STATS) {
+            my %stats = @{ $msg->_data };
             my $stats = Audio::MPD::Common::Stats->new( \%stats );
-            $msg->data($stats);
-            last TRANSFORM;
-        };
-        $transform == $AS_STATUS and do {
-            my %status = @{ $msg->data };
+            $msg->_data($stats);
+        }
+        when ($AS_STATUS) {
+            my %status = @{ $msg->_data };
             my $status = Audio::MPD::Common::Status->new( \%status );
-            $msg->data($status);
-            last TRANSFORM;
+            $msg->_data($status);
         };
     }
-
-=cut
 
 
 =pod
