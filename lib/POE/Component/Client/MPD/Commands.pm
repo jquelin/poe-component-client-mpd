@@ -210,21 +210,21 @@ sub _onpub_output_disable {
 
 # -- MPD interaction: retrieving info from current state
 
-=pod
-
 #
 # event: stats()
 #
 # Return a hash with the current statistics of MPD.
 #
-sub _onpub_stats {
-    my $msg = $_[ARG0];
-    $msg->_answer   ( $SEND );
+sub _do_stats {
+    my ($pkg, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'stats' ] );
     $msg->_cooking  ( $AS_KV );
     $msg->_transform( $AS_STATS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
