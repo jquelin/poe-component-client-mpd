@@ -22,7 +22,6 @@ use Test::More;
 use base qw[ Exporter ];
 our @EXPORT = qw[ customize_test_mpd_configuration start_test_mpd stop_test_mpd ];
 
-#our ($VERSION) = '$Rev: 5727 $' =~ /(\d+)/;
 
 Readonly my $ALIAS    => 'tester';
 Readonly my $TEMPLATE => "$Bin/mpd-test/mpd.conf.template";
@@ -49,11 +48,12 @@ sub import { # this will be run when pococm::Test will be use-d.
     return if exists $params{dont_start_poe};
 
     # fake mpd has been started successfully, plan the tests.
-    plan tests => $::nbtests;
+    plan tests => $params{nbtests};
 
     # fire pococm + create session to follow the tests.
     POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
     POE::Session->create(
+        args => \%params,
         inline_states => {
             _start     => \&_onpriv_start,
             mpd_result => \&_onpub_mpd_result,
@@ -161,24 +161,18 @@ sub _stop_user_mpd_if_needed {
 # Called to schedule the next test.
 #
 sub _onpub_next_test {
-    my $k = $_[KERNEL];
+    my ($k,$h) = @_[KERNEL, HEAP];
 
-    if ( scalar @::tests == 0 ) { # no more tests.
+    if ( scalar @{ $h->{tests} } == 0 ) { # no more tests.
         $k->alias_remove($ALIAS);
-        $k->post( $MPD, 'disconnect' );
+        $k->post('mpd', 'disconnect');
         return;
     }
 
     # post next event.
-    my $session = $::tests[0][0];
-    my $event   = $::tests[0][1];
-    my $args    = $::tests[0][2];
-    $k->post( $session, $event, @$args );
-
-    return if $::tests[0][3] == $SEND;
-    $k->delay_set( 'next_test', 1 ) if $::tests[0][3] == $SLEEP1;
-    $k->yield( 'next_test' )        if $::tests[0][3] == $DISCARD;
-    shift @::tests;
+    my $event = $h->{tests}[0][0];
+    my $args  = $h->{tests}[0][1];
+    $k->post( 'mpd', $event, @$args );
 }
 
 
@@ -188,9 +182,10 @@ sub _onpub_next_test {
 # Called when mpd talks back, with $msg as a pococm-message param.
 #
 sub _onpub_mpd_result {
-    $::tests[0][4]->( $_[ARG0] );      # check if everything went fine
-    shift @::tests;                    # remove test being played
-    $_[KERNEL]->yield( 'next_test' );  # call next test
+    my ($k, $h, $msg, $results) = @_[KERNEL, HEAP, ARG0, ARG1];
+    $h->{tests}[0][3]->($msg, $results);             # check if everything went fine
+    $k->delay_set('next_test'=>$h->{tests}[0][2]);   # call next test after some time
+    shift @{ $h->{tests} };                          # remove test being played
 }
 
 
@@ -203,8 +198,9 @@ sub _onpub_mpd_result {
 # Called when the poe session has started.
 #
 sub _onpriv_start {
-    my $k = $_[KERNEL];
+    my ($k, $h, $args) = @_[KERNEL, HEAP, ARG0];
     $k->alias_set($ALIAS);           # increment refcount
+    $h->{tests} = $args->{tests};    # store tests
     $k->yield( 'next_test' );        # launch the first test.
 }
 
