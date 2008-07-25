@@ -78,25 +78,19 @@ sub _do_version {
 }
 
 
-=pod
-
 #
 # event: kill()
 #
 # Kill the mpd server, and request the pococm to be shutdown.
 #
-sub _onpub_kill {
-    my ($k, $msg) = @_[KERNEL, ARG0];
+sub _do_kill {
+    my ($pkg, $k, $h, $msg) = @_;
 
-    $msg->_post_to   ( $MPD );
-    $msg->_post_event( 'disconnect' );
-    $msg->_answer   ( $DISCARD );
     $msg->_commands ( [ 'kill' ] );
     $msg->_cooking  ( $RAW );
-    $k->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
+    $k->delay_set('disconnect'=>1);
 }
-
-=cut
 
 
 #
