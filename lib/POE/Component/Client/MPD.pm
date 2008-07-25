@@ -98,7 +98,7 @@ sub _onpub_default {
     # check if event is handled.
     my @ok_events = qw{
         version kill updatedb urlhandlers
-        stats
+        stats status
     };
     return unless $event ~~ [ @ok_events ];
 

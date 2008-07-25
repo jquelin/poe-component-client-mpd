@@ -213,8 +213,6 @@ sub _do_stats {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: status()
@@ -222,13 +220,16 @@ sub _do_stats {
 # Return a hash with the current status of MPD.
 #
 sub _onpub_status {
-    my $msg = $_[ARG0];
-    $msg->_answer   ( $SEND );
+    my ($pkg, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'status' ] );
     $msg->_cooking  ( $AS_KV );
     $msg->_transform( $AS_STATUS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+
+=pod
 
 
 #
