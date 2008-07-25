@@ -62,10 +62,10 @@ sub spawn {
             # private events
             '_start'             => \&_onpriv_start,
             # protected events
-            'mpd_connect_error_fatal'     => \&_onprot_conn_connect_error_fatal,
-            'mpd_connect_error_retriable' => \&_onprot_conn_connect_error_retriable,
+            #'mpd_connect_error_fatal'     => \&_onprot_conn_connect_error_fatal,
+            #'mpd_connect_error_retriable' => \&_onprot_conn_connect_error_retriable,
             'mpd_connected'               => \&_onprot_mpd_connected,
-            'mpd_disconnected'  => \&_onprot_conn_disconnected,
+            'mpd_disconnected'            => \&_onprot_mpd_disconnected,
             'mpd_data'      =>  \&_onprot_mpd_data,
             'mpd_error'     =>  \&_onprot_conn_error,
             # public events
@@ -154,13 +154,24 @@ sub _onpub_disconnect {
 #
 # event: mpd_connected($version)
 #
-# Fill in the mpd version.
+# Called when pococm-conn made sure we're talking to a mpd server.
 #
 sub _onprot_mpd_connected {
     my ($k, $h, $version) = @_[KERNEL, HEAP, ARG0];
     $h->{version} = $version;
     # FIXME: send password information to mpd
     # FIXME: send status information to peer
+}
+
+
+
+#
+# event: mpd_disconnected()
+#
+# Called when pococm-conn got disconnected by mpd.
+#
+sub _onprot_mpd_disconnected {
+    my ($k, $h, $version) = @_[KERNEL, HEAP, ARG0];
 }
 
 
