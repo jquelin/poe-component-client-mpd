@@ -12,53 +12,58 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
-use POE::Component::Client::MPD::Message;
-use Readonly;
 use Test::More;
 
-our $nbtests = 10;
-our @tests   = (
-    # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
+my $nbtests = 30;
+my @tests   = (
+    # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # repeat
-    [ $MPD, 'repeat', [1],  $DISCARD, undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_repeat_is_on  ],
-    [ $MPD, 'repeat', [0],  $DISCARD, undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_repeat_is_off ],
-    [ $MPD, 'repeat', [],   $SLEEP1,  undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_repeat_is_on  ],
-    [ $MPD, 'repeat', [],   $SLEEP1,  undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_repeat_is_off ],
-
-    # random
-    [ $MPD, 'random', [1],  $DISCARD, undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_random_is_on  ],
-    [ $MPD, 'random', [0],  $DISCARD, undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_random_is_off ],
-    [ $MPD, 'random', [],   $SLEEP1,  undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_random_is_on  ],
-    [ $MPD, 'random', [],   $SLEEP1,  undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_random_is_off ],
+    [ 'repeat', [1],  0, \&check_success       ],
+    [ 'status', [],   0, \&check_repeat_is_on  ],
+    [ 'repeat', [0],  0, \&check_success       ],
+    [ 'status', [],   0, \&check_repeat_is_off ],
+    [ 'repeat', [],   1, \&check_success       ],
+    [ 'status', [],   0, \&check_repeat_is_on  ],
+    [ 'repeat', [],   1, \&check_success       ],
+    [ 'status', [],   0, \&check_repeat_is_off ],
 
     # fade
-    [ $MPD, 'fade',   [15], $DISCARD, undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_fade_is_on    ],
-    [ $MPD, 'fade',   [],   $DISCARD, undef                 ],
-    [ $MPD, 'status', [],   $SEND,    \&check_fade_is_off   ],
+    [ 'fade',   [15], 0, \&check_success       ],
+    [ 'status', [],   0, \&check_fade_is_on    ],
+    [ 'fade',   [],   0, \&check_success       ],
+    [ 'status', [],   0, \&check_fade_is_off   ],
+
+    # random
+    [ 'random', [1],  0, \&check_success       ],
+    [ 'status', [],   0, \&check_random_is_on  ],
+    [ 'random', [0],  0, \&check_success       ],
+    [ 'status', [],   0, \&check_random_is_off ],
+    [ 'random', [],   1, \&check_success       ],
+    [ 'status', [],   0, \&check_random_is_on  ],
+    [ 'random', [],   1, \&check_success       ],
+    [ 'status', [],   0, \&check_random_is_off ],
 );
 
+
 # are we able to test module?
-eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
+diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
-sub check_repeat_is_on  { is( $_[0]->data->repeat, 1, 'repeat is on' ); }
-sub check_repeat_is_off { is( $_[0]->data->repeat, 0, 'repeat is off' ); }
+#--
 
-sub check_random_is_on  { is( $_[0]->data->random, 1, 'random is on' ); }
-sub check_random_is_off { is( $_[0]->data->random, 0, 'random is off' ); }
+sub check_success {
+    my ($msg) = @_;
+    is($msg->status, 1, "command '" . $msg->request . "' returned an ok status");
+}
 
-sub check_fade_is_on    { is( $_[0]->data->xfade, 15, 'enabling fading' ); }
-sub check_fade_is_off   { is( $_[0]->data->xfade, 0, 'disabling fading by default' ); }
+sub check_repeat_is_on  { check_success($_[0]); is($_[1]->repeat, 1, 'repeat is on'); }
+sub check_repeat_is_off { check_success($_[0]); is($_[1]->repeat, 0, 'repeat is off'); }
+
+sub check_random_is_on  { check_success($_[0]); is($_[1]->random, 1, 'random is on'); }
+sub check_random_is_off { check_success($_[0]); is($_[1]->random, 0, 'random is off'); }
+
+sub check_fade_is_on    { check_success($_[0]); is($_[1]->xfade, 15, 'enabling fading'); }
+sub check_fade_is_off   { check_success($_[0]); is($_[1]->xfade, 0,  'disabling fading by default'); }
 
