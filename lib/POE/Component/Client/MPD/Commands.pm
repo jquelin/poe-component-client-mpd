@@ -401,21 +401,20 @@ sub _do_pause {
 }
 
 
-=pod
-
 #
 # event: stop()
 #
 # Stop playback
 #
-sub _onpub_stop {
-    my $msg = $_[ARG0];
-    $msg->_answer   ( $DISCARD );
+sub _do_stop {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'stop' ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
+=pod
 
 #
 # event: next()
