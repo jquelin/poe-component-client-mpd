@@ -26,15 +26,14 @@ use POE::Component::Client::MPD::Message;
 
 our $VERSION = '0.8.1';
 
-#
-# -- METHODS
-#
-
 #--
-# public methods
+# CLASS METHODS
+#
+
+# -- public methods
 
 #
-# my $id = spawn( \%params )
+# my $id = POE::Component::Client::MPD->spawn( \%params )
 #
 # This method will create a POE session responsible for communicating
 # with mpd. It will return the poe id of the session newly created.
@@ -79,12 +78,17 @@ sub spawn {
 }
 
 
+#--
+# METHODS
 #
 # -- EVENTS HANDLERS
 #
 
 #--
-# public events.
+# EVENTS HANDLERS
+#
+
+# -- public events.
 
 #
 # catch-all handler.
@@ -142,11 +146,7 @@ sub _onpub_disconnect {
 }
 
 
-
-
-#--
-# protected events.
-
+# -- protected events.
 
 #
 # event: mpd_connected($version)
@@ -256,8 +256,7 @@ sub _onprot_mpd_version {
 =cut
 
 
-#--
-# private events
+# -- private events
 
 #
 # Event: _start( \%params )
