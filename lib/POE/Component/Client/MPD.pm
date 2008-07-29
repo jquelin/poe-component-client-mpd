@@ -126,7 +126,7 @@ sub _onpub_default {
     my @ok_events_commands = qw{
         version kill updatedb urlhandlers
         volume output_enable output_disable
-        stats status
+        stats status current
         play pause
     };
     my @ok_events_playlist = qw{

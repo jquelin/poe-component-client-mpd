@@ -222,22 +222,22 @@ sub _do_status {
 }
 
 
-=pod
-
 
 #
 # event: current()
 #
 # Return a POCOCM::Item::Song representing the song currently playing.
 #
-sub _onpub_current {
-    my $msg = $_[ARG0];
-    $msg->_answer   ( $SEND );
+sub _do_current {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'currentsong' ] );
     $msg->_cooking  ( $AS_ITEMS );
     $msg->_transform( $AS_SCALAR );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
