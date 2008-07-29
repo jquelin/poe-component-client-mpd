@@ -158,25 +158,21 @@ sub _do_volume {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: output_enable( $output )
 #
 # Enable the specified audio output. $output is the ID of the audio output.
 #
-sub _onpub_output_enable {
-    my $msg    = $_[ARG0];
-    my $output = $msg->_params->[0];
+sub _do_output_enable {
+    my ($self, $k, $h, $msg) = @_;
+    my $output = $msg->params->[0];
 
-    $msg->_answer   ( $DISCARD );
     $msg->_commands ( [ "enableoutput $output" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 #
 # event: output_disable( $output )

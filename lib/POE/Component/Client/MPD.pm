@@ -125,7 +125,7 @@ sub _onpub_default {
     # check if event is handled.
     my @ok_events_commands = qw{
         version kill updatedb urlhandlers
-        volume output_disable
+        volume output_enable output_disable
         stats status
         play
     };
