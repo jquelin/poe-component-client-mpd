@@ -130,6 +130,7 @@ sub _onpub_default {
         play
     };
     my @ok_events_playlist = qw{
+        pl.add
     };
     my @ok_events = ( @ok_events_commands, @ok_events_playlist );
     return unless $event ~~ [ @ok_events ];

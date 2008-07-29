@@ -94,30 +94,28 @@ sub _onpub_items_changed_since {
 
 # -- Playlist: adding / removing songs
 
-=pod
-
 #
 # event: pl.add( $path, $path, ... )
 #
 # Add the songs identified by $path (relative to MPD's music directory) to
 # the current playlist.
-# No return event.
 #
-sub _onpub_add {
-    my $msg = $_[ARG0];
+sub _do_add {
+    my ($self, $k, $h, $msg) = @_;
 
-    my $args   = $msg->_params;
+    my $args   = $msg->params;
     my @pathes = @$args;         # args of the poe event
     my @commands = (             # build the commands
         'command_list_begin',
-        map( qq[add "$_"], @pathes ),
+        map( qq{add "$_"}, @pathes ),
         'command_list_end',
     );
-    $msg->_answer   ( $DISCARD );
     $msg->_commands ( \@commands );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
