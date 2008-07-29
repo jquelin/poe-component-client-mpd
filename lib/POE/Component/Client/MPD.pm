@@ -22,7 +22,7 @@ use POE::Component::Client::MPD::Commands;
 #use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
-#use POE::Component::Client::MPD::Playlist;
+use POE::Component::Client::MPD::Playlist;
 
 use base qw{ Class::Accessor::Fast };
 
@@ -297,8 +297,9 @@ sub _onpriv_start {
     $h->{password} = delete $params{password};
     $h->{socket}   = POE::Component::Client::MPD::Connection->spawn(\%params);
 
-    $h->{mpd}  = POE::Component::Client::MPD->new;
-    $h->{cmds} = POE::Component::Client::MPD::Commands->new;
+    $h->{mpd}      = POE::Component::Client::MPD->new;
+    $h->{cmds}     = POE::Component::Client::MPD::Commands->new;
+    $h->{playlist} = POE::Component::Client::MPD::Playlist->new;
 }
 
 
