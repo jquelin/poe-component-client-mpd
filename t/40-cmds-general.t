@@ -12,9 +12,6 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD;
-use POE::Component::Client::MPD::Message;
-use Readonly;
 use Test::More;
 
 my $nbtests = 11;
