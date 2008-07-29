@@ -219,7 +219,7 @@ sub _do_stats {
 #
 # Return a hash with the current status of MPD.
 #
-sub _onpub_status {
+sub _do_status {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'status' ] );
