@@ -414,20 +414,21 @@ sub _do_stop {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
 
 #
 # event: next()
 #
 # Play next song in playlist.
 #
-sub _onpub_next {
-    my $msg = $_[ARG0];
-    $msg->_answer   ( $DISCARD );
+sub _do_next {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'next' ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
