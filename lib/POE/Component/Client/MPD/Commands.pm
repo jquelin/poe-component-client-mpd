@@ -176,23 +176,23 @@ sub _onpub_output_enable {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 #
 # event: output_disable( $output )
 #
 # Disable the specified audio output. $output is the ID of the audio output.
 #
-sub _onpub_output_disable {
-    my $msg    = $_[ARG0];
-    my $output = $msg->_params->[0];
+sub _do_output_disable {
+    my ($self, $k, $h, $msg) = @_;
+    my $output = $msg->params->[0];
 
-    $msg->_answer   ( $DISCARD );
     $msg->_commands ( [ "disableoutput $output" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
+
 
 # -- MPD interaction: retrieving info from current state
 
