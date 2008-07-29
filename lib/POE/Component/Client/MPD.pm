@@ -125,6 +125,7 @@ sub _onpub_default {
         version kill updatedb urlhandlers
         volume
         stats status
+        play
     };
     return unless $event ~~ [ @ok_events ];
 

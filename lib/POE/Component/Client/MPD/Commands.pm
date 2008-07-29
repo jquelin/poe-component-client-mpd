@@ -369,22 +369,23 @@ sub _onpub_random {
 
 # -- MPD interaction: controlling playback
 
-=pod
-
 #
 # event: play( [$song] )
 #
 # Begin playing playlist at song number $song. If no argument supplied,
 # resume playing.
 #
-sub _onpub_play {
-    my $msg = $_[ARG0];
-    my $number = defined $msg->_params->[0] ? $msg->_params->[0] : '';
-    $msg->_answer   ( $DISCARD );
+sub _do_play {
+    my ($self, $k, $h, $msg) = @_;
+
+    my $number = $msg->params->[0] // '';
     $msg->_commands ( [ "play $number" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
+
 }
+
+=pod
 
 
 #
