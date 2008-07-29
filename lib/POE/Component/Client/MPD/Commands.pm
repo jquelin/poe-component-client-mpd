@@ -321,38 +321,36 @@ sub _onpub_fade {
 }
 
 
+=cut
+
 #
 # event: random( [$random] )
 #
 # Set the random mode to $random (1 or 0). If $random is not specified then
 # the random mode is toggled.
 #
-sub _onpub_random {
-    my ($k, $msg) = @_[KERNEL, ARG0];
+sub _do_random {
+    my ($self, $k, $h, $msg) = @_;
 
-    my $mode = $msg->_params->[0];
+    my $mode = $msg->params->[0];
+
     if ( defined $mode )  {
         $mode = $mode ? 1 : 0;   # force integer
     } else {
-        if ( not defined $msg->data ) {
+        if ( not defined $msg->_data ) {
             # no status yet - fire an event
-            $msg->_dispatch  ( 'status' );
-            $msg->_post_to   ( $MPD );
-            $msg->_post_event( 'random' );
-            $k->post( $MPD, '_dispatch', $msg );
+            $msg->_post( 'random' );
+            $h->{mpd}->_dispatch($k, $h, 'status', $msg);
             return;
         }
 
-        $mode = $msg->data->random ? 0 : 1; # negate current value
+        $mode = $msg->_data->random ? 0 : 1; # negate current value
     }
 
     $msg->_cooking ( $RAW );
-    $msg->_answer  ( $DISCARD );
     $msg->_commands( [ "random $mode" ] );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
-
-=cut
 
 
 
