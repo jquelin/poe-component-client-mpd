@@ -121,12 +121,15 @@ sub _onpub_default {
     my ($k, $h, $event, $params) = @_[KERNEL, HEAP, ARG0, ARG1];
 
     # check if event is handled.
-    my @ok_events = qw{
+    my @ok_events_commands = qw{
         version kill updatedb urlhandlers
         volume
         stats status
         play
     };
+    my @ok_events_playlist = qw{
+    };
+    my @ok_events = ( @ok_events_commands, @ok_events_playlist );
     return unless $event ~~ [ @ok_events ];
 
     # create the message that will hold
