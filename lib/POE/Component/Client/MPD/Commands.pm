@@ -72,7 +72,7 @@ sub _onpub_disconnect {
 # Fires back an event with the version number.
 #
 sub _do_version {
-    my ($pkg, $k, $h, $msg) = @_;
+    my ($self, $k, $h, $msg) = @_;
     $msg->status(1);
     $k->post( $msg->_from, 'mpd_result', $msg, $h->{version} );
 }
@@ -84,7 +84,7 @@ sub _do_version {
 # Kill the mpd server, and request the pococm to be shutdown.
 #
 sub _do_kill {
-    my ($pkg, $k, $h, $msg) = @_;
+    my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'kill' ] );
     $msg->_cooking  ( $RAW );
@@ -101,7 +101,7 @@ sub _do_kill {
 # its whole collection.
 #
 sub _do_updatedb {
-    my ($pkg, $k, $h, $msg) = @_;
+    my ($self, $k, $h, $msg) = @_;
     my $path = defined $msg->_params ? $msg->_params->[0] : '';
 
     $msg->_commands( [ qq{update "$path"} ] );
@@ -116,7 +116,7 @@ sub _do_updatedb {
 # Return an array of supported URL schemes.
 #
 sub _do_urlhandlers {
-    my ($pkg, $k, $h, $msg) = @_;
+    my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'urlhandlers' ] );
     $msg->_cooking  ( $STRIP_FIRST );
@@ -205,7 +205,7 @@ sub _onpub_output_disable {
 # Return a hash with the current statistics of MPD.
 #
 sub _do_stats {
-    my ($pkg, $k, $h, $msg) = @_;
+    my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'stats' ] );
     $msg->_cooking  ( $AS_KV );
@@ -220,7 +220,7 @@ sub _do_stats {
 # Return a hash with the current status of MPD.
 #
 sub _onpub_status {
-    my ($pkg, $k, $h, $msg) = @_;
+    my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'status' ] );
     $msg->_cooking  ( $AS_KV );
