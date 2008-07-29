@@ -364,10 +364,7 @@ sub _do_play {
     $msg->_commands ( [ "play $number" ] );
     $msg->_cooking  ( $RAW );
     $k->post( $h->{socket}, 'send', $msg );
-
 }
-
-=pod
 
 
 #
@@ -376,17 +373,15 @@ sub _do_play {
 # Begin playing playlist at song ID $song. If no argument supplied,
 # resume playing.
 #
-sub _onpub_playid {
-    my $msg = $_[ARG0];
-    my $number = defined $msg->_params->[0] ? $msg->_params->[0] : '';
-    $msg->_answer   ( $DISCARD );
+sub _do_playid {
+    my ($self, $k, $h, $msg) = @_;
+
+    my $number = $msg->params->[0] // '';
     $msg->_commands ( [ "playid $number" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-
-=cut
 
 #
 # event: pause( [$sate] )
