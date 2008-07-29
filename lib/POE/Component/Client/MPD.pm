@@ -287,6 +287,9 @@ sub _onpriv_start {
 
     $h->{password} = delete $params{password};
     $h->{socket}   = POE::Component::Client::MPD::Connection->spawn(\%params);
+
+    $h->{mpd}  = POE::Component::Client::MPD->new;
+    $h->{cmds} = POE::Component::Client::MPD::Commands->new;
 }
 
 
