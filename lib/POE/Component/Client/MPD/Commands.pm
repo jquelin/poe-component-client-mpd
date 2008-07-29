@@ -428,22 +428,21 @@ sub _do_next {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: prev()
 #
 # Play previous song in playlist.
 #
-sub _onpub_prev {
-    my $msg = $_[ARG0];
-    $msg->_answer   ( $DISCARD );
+sub _do_prev {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'previous' ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
+=pod
 
 #
 # event: seek( $time, [$song] )
