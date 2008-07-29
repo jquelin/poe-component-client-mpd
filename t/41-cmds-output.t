@@ -12,70 +12,88 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
-use POE::Component::Client::MPD::Message;
-use Readonly;
 use Test::More;
 
 my $volume;
-my @songs = qw[ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg ];
+my @songs = qw{ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg };
 
-our $nbtests = 5;
-our @tests   = (
-    # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
+my $nbtests = 20;
+my @tests   = (
+    # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # store current volume.
-    [ $MPD, 'status', [],   $SEND, sub { $volume = $_[0]->data->volume } ],
+    [ 'status', [],   0, sub { $volume = $_[1]->volume } ],
 
     # volume
-    [ $MPD, 'volume', [10], $DISCARD,  undef ],  # init to sthg we know
-    [ $MPD, 'volume', [42], $DISCARD,  undef ],
-    [ $MPD, 'status', [],   $SEND,     \&check_volume_absolute ],
+    [ 'volume', [10], 0,  \&check_success                  ],  # init to sthg we know
+    [ 'volume', [4],  0,  \&check_success                  ],
+    [ 'status', [],   0,  \&check_volume_absolute          ],
 
-    [ $MPD, 'volume', ['+9'], $SLEEP1, undef ],
-    [ $MPD, 'status', [],     $SEND,   \&check_volume_relative_pos ],
+    [ 'volume', ['+5'], 1, \&check_success                 ],
+    [ 'status', [],     0, \&check_volume_relative_pos     ],
 
-    [ $MPD, 'volume', ['-4'], $SLEEP1, undef ],
-    [ $MPD, 'status', [],     $SEND,   \&check_volume_relative_neg ],
-
-    # restore previous volume - dirty hack.
-    [ $MPD, 'status', [],   $SEND, sub {$poe_kernel->post($MPD,'volume',$volume) } ],
+    [ 'volume', ['-4'], 1, \&check_success                 ],
+    [ 'status', [],     0, \&check_volume_relative_neg     ],
 
     # output_disable.
-    [ $PLAYLIST, 'add',       \@songs, $DISCARD, undef                  ],
-    [ $MPD, 'play',           [],      $DISCARD, undef                  ],
-    [ $MPD, 'output_disable', [0],     $SLEEP1,  undef                  ],
-    [ $MPD, 'status',         [],      $SEND,    \&check_output_disable ],
+    [ 'pl.add',         \@songs, 0, \&check_success        ],
+    [ 'play',           [],      0, \&check_success        ],
+    [ 'output_disable', [0],     1, \&check_success        ],
+    [ 'status',         [],      0, \&check_output_disable ],
 
     # enable_output.
-    [ $MPD, 'output_enable',  [0],     $SLEEP1,  undef                  ],
-    [ $MPD, 'play',           [],      $DISCARD, undef                  ],
-    [ $MPD, 'pause',          [],      $DISCARD, undef                  ],
-    [ $MPD, 'status',         [],      $SEND,    \&check_output_enable  ],
+    [ 'output_enable',  [0],     1, \&check_success        ],
+    [ 'play',           [],      0, \&check_success        ],
+    [ 'pause',          [],      0, \&check_success        ],
+    [ 'status',         [],      0, \&check_output_enable  ],
+
+    # restore previous volume - dirty hack.
+    [ 'status', [],   0, sub {$poe_kernel->post('volume',$volume)} ],
 );
 
 # are we able to test module?
-eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
+diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
-sub check_volume_absolute {
-    is( $_[0]->data->volume, 42, 'setting volume' );
+#--
+
+sub check_success {
+    my ($msg) = @_;
+    is($msg->status, 1, "command '" . $msg->request . "' returned an ok status");
 }
+
+sub check_volume_absolute {
+    my ($msg, $status) = @_;
+    check_success($msg);
+    is($status->volume, 4, 'setting volume');
+}
+
 sub check_volume_relative_pos {
-    is( $_[0]->data->volume, 51, 'increasing volume' );
+    my ($msg, $status) = @_;
+    check_success($msg);
+    is($status->volume, 9, 'increasing volume');
 }
 
 sub check_volume_relative_neg {
-    is( $_[0]->data->volume, 47, 'decreasing volume' );
+    my ($msg, $status) = @_;
+    check_success($msg);
+    is($status->volume, 5, 'decreasing volume');
 }
 
 sub check_output_disable {
-    like( $_[0]->data->error, qr/^problems/, 'disabling output' );
+    my ($msg, $status) = @_;
+    check_success($msg);
+    TODO: {
+        local $TODO = "detection method doesn't always work - depends on timing";
+        like($status->error, qr/^problems/, 'disabling output' );
+    }
 }
 
 sub check_output_enable {
-    is( $_[0]->data->error, undef, 'enabling output' );
+    my ($msg, $status) = @_;
+    check_success($msg);
+    is($status->error, undef, 'enabling output' );
 }
 
 
