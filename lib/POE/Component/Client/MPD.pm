@@ -81,8 +81,30 @@ sub spawn {
 #--
 # METHODS
 #
-# -- EVENTS HANDLERS
-#
+
+# -- private methods
+
+sub _dispatch {
+    my ($self, $k, $h, $event, $msg) = @_;
+
+    # dispatch the event.
+    given ($event) {
+        # playlist commands
+        when (/^pl\.(.*)$/) {
+        }
+
+        # collection commands
+        when (/^coll\.(.*)$/) {
+        }
+
+        # basic commands
+        default {
+            my $meth = "_do_$event";
+            $h->{cmds}->$meth($k, $h, $msg);
+        }
+    }
+}
+
 
 #--
 # EVENTS HANDLERS
@@ -115,22 +137,8 @@ sub _onpub_default {
         #_post      => <to be set by handler>
     } );
 
-    # dispatch the event.
-    given ($event) {
-        # playlist commands
-        when (/^pl\.(.*)$/) {
-        }
-
-        # collection commands
-        when (/^coll\.(.*)$/) {
-        }
-
-        # basic commands
-        default {
-            my $meth = "_do_$event";
-            POE::Component::Client::MPD::Commands->$meth($k, $h, $msg);
-        }
-    }
+    # dispatch the event so it is handled by the correct object/method.
+    $h->{mpd}->_dispatch($k, $h, $event, $msg);
 }
 
 
