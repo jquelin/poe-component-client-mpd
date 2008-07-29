@@ -24,6 +24,8 @@ use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
 #use POE::Component::Client::MPD::Playlist;
 
+use base qw{ Class::Accessor::Fast };
+
 our $VERSION = '0.8.1';
 
 #--
