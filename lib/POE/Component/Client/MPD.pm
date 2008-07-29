@@ -127,7 +127,7 @@ sub _onpub_default {
         version kill updatedb urlhandlers
         volume output_enable output_disable
         stats status
-        play
+        play pause
     };
     my @ok_events_playlist = qw{
         pl.add

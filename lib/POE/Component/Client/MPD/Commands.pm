@@ -400,6 +400,8 @@ sub _onpub_playid {
 }
 
 
+=cut
+
 #
 # event: pause( [$sate] )
 #
@@ -408,15 +410,17 @@ sub _onpub_playid {
 #
 # Note that if $state is not given, pause state will be toggled.
 #
-sub _onpub_pause {
-    my $msg = $_[ARG0];
-    my $state = defined $msg->_params->[0] ? $msg->_params->[0] : '';
-    $msg->_answer   ( $DISCARD );
+sub _do_pause {
+    my ($self, $k, $h, $msg) = @_;
+
+    my $state = $msg->params->[0] // '';
     $msg->_commands ( [ "pause $state" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
+
+=pod
 
 #
 # event: stop()
