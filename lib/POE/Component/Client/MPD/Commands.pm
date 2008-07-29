@@ -302,8 +302,6 @@ sub _do_repeat {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: fade( [$seconds] )
@@ -311,17 +309,15 @@ sub _do_repeat {
 # Enable crossfading and set the duration of crossfade between songs. If
 # $seconds is not specified or $seconds is 0, then crossfading is disabled.
 #
-sub _onpub_fade {
-    my $msg     = $_[ARG0];
-    my $seconds = $msg->_params->[0] || 0;
-    $msg->_answer   ( $DISCARD );
+sub _do_fade {
+    my ($self, $k, $h, $msg) = @_;
+    my $seconds = $msg->params->[0] // 0;
+
     $msg->_commands ( [ "crossfade $seconds" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-
-=cut
 
 #
 # event: random( [$random] )
@@ -333,7 +329,6 @@ sub _do_random {
     my ($self, $k, $h, $msg) = @_;
 
     my $mode = $msg->params->[0];
-
     if ( defined $mode )  {
         $mode = $mode ? 1 : 0;   # force integer
     } else {
