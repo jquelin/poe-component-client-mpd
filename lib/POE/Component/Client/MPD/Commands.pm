@@ -102,7 +102,7 @@ sub _do_kill {
 #
 sub _do_updatedb {
     my ($self, $k, $h, $msg) = @_;
-    my $path = defined $msg->_params ? $msg->_params->[0] : '';
+    my $path = $msg->params->[0] // '';
 
     $msg->_commands( [ qq{update "$path"} ] );
     $msg->_cooking ( $RAW );
