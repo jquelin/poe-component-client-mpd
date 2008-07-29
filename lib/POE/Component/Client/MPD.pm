@@ -93,6 +93,8 @@ sub _dispatch {
     given ($event) {
         # playlist commands
         when (/^pl\.(.*)$/) {
+            my $meth = "_do_$1";
+            $h->{playlist}->$meth($k, $h, $msg);
         }
 
         # collection commands
