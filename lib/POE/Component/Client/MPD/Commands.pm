@@ -237,8 +237,6 @@ sub _do_current {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: song( [$song] )
@@ -246,15 +244,17 @@ sub _do_current {
 # Return a POCOCM::Item::Song representing the song number $song.
 # If $song is not supplied, returns the current song.
 #
-sub _onpub_song {
-    my $msg  = $_[ARG0];
-    my $song = $msg->_params->[0];
-    $msg->_answer   ( $SEND );
+sub _do_song {
+    my ($self, $k, $h, $msg) = @_;
+    my $song = $msg->params->[0];
+
     $msg->_commands ( [ defined $song ? "playlistinfo $song" : 'currentsong' ] );
     $msg->_cooking  ( $AS_ITEMS );
     $msg->_transform( $AS_SCALAR );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
