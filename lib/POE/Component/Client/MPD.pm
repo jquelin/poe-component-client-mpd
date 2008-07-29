@@ -210,17 +210,15 @@ sub _onprot_mpd_data {
     }
 
 
-=pod
-
     # check for post-callback.
-    # need to be before pre-callback, since a pre-event may need to have
-    # a post-callback.
-    if ( defined $msg->_post_event ) {
-        $msg->_dispatch( $msg->_post_event );
-        $msg->_post_event( undef );           # remove postback.
-        $k->post( $msg->_post_to, '_dispatch', $msg ); # need a post-treatment...
+    if ( defined $msg->_post ) {
+        my $event = $msg->_post;    # save postback.
+        $msg->_post( undef );       # remove postback.
+        $h->{mpd}->_dispatch($k, $h, $event, $msg);
         return;
     }
+
+=pod
 
     # check for pre-callback.
     my $preidx = firstidx { $msg->_request eq $_->_pre_event } @{ $h->{pre_messages} };
