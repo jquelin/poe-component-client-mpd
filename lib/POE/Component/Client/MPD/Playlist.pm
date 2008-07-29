@@ -17,7 +17,7 @@ use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
 use Readonly;
 
-use base qw[ Class::Accessor::Fast ];
+use base qw{ Class::Accessor::Fast };
 
 =pod
 
