@@ -126,8 +126,6 @@ sub _do_urlhandlers {
 
 # -- MPD interaction: handling volume & output
 
-=pod
-
 #
 # event: volume( $volume )
 #
@@ -135,33 +133,32 @@ sub _do_urlhandlers {
 # If $volume is prefixed by '+' or '-' then the volume is changed relatively
 # by that value.
 #
-sub _onpub_volume {
-    my ($k, $msg) = @_[KERNEL, ARG0];
-    my $volume;
+sub _do_volume {
+    my ($self, $k, $h, $msg) = @_;
 
-    if ( $msg->_params->[0] =~ /^(-|\+)(\d+)/ ) {
+    my $volume;
+    if ( $msg->params->[0] =~ /^(-|\+)(\d+)/ ) {
         my ($op, $delta) = ($1, $2);
-        if ( not defined $msg->data ) {
+        if ( not defined $msg->_data ) {
             # no status yet - fire an event
-            $msg->_dispatch  ( 'status' );
-            $msg->_post_to   ( $MPD );
-            $msg->_post_event( 'volume' );
-            $k->yield( '_dispatch', $msg );
+            $msg->_post( 'volume' );
+            $h->{mpd}->_dispatch($k, $h, 'status', $msg);
             return;
         }
 
         # already got a status result
-        my $curvol = $msg->data->volume;
+        my $curvol = $msg->_data->volume;
         $volume = $op eq '+' ? $curvol + $delta : $curvol - $delta;
     } else {
-        $volume = $msg->_params->[0];
+        $volume = $msg->params->[0];
     }
 
-    $msg->_cooking  ( $RAW );
-    $msg->_answer   ( $DISCARD );
     $msg->_commands ( [ "setvol $volume" ] );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_cooking  ( $RAW );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
