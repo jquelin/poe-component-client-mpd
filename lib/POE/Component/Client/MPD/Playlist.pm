@@ -131,8 +131,6 @@ sub _do_delete {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: pl.deleteid( $songid, $songid, ... )
@@ -140,23 +138,21 @@ sub _do_delete {
 # Remove the specified $songid (as assigned by mpd when inserted in playlist)
 # from the current playlist.
 #
-sub _onpub_deleteid {
-    my $msg = $_[ARG0];
+sub _do_deleteid {
+    my ($self, $k, $h, $msg) = @_;
 
-    my $args    = $msg->_params;
-    my @songids = @$args;         # args of the poe event
+    my $args    = $msg->params;
+    my @songids = @$args;
     my @commands = (              # build the commands
         'command_list_begin',
-        map( qq[deleteid $_], @songids ),
+        map( qq{deleteid $_}, @songids ),
         'command_list_end',
     );
-    $msg->_answer   ( $DISCARD );
     $msg->_commands ( \@commands );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 #
 # event: clear()
