@@ -128,7 +128,7 @@ sub _onpub_default {
         volume output_enable output_disable
         stats status current song songid
         repeat fade random
-        play playid pause stop next prev
+        play playid pause stop next prev seek
     };
     my @ok_events_playlist = qw{
         pl.add

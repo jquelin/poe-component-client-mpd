@@ -442,7 +442,6 @@ sub _do_prev {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
 
 #
 # event: seek( $time, [$song] )
@@ -450,30 +449,28 @@ sub _do_prev {
 # Seek to $time seconds in song number $song. If $song number is not specified
 # then the perl module will try and seek to $time in the current song.
 #
-sub _onpub_seek {
-    my ($k, $msg) = @_[KERNEL, ARG0];
+sub _do_seek {
+    my ($self, $k, $h, $msg) = @_;
 
-    my ($time, $song) = @{ $msg->_params }[0,1];
+    my ($time, $song) = @{ $msg->params }[0,1];
     $time ||= 0; $time = int $time;
     if ( not defined $song )  {
-        if ( not defined $msg->data ) {
+        if ( not defined $msg->_data ) {
             # no status yet - fire an event
-            $msg->_dispatch  ( 'status' );
-            $msg->_post_to   ( $MPD );
-            $msg->_post_event( 'seek' );
-            $k->post( $MPD, '_dispatch', $msg );
+            $msg->_post( 'seek' );
+            $h->{mpd}->_dispatch($k, $h, 'status', $msg);
             return;
         }
 
-        $song = $msg->data->song;
+        $song = $msg->_data->song;
     }
 
     $msg->_cooking ( $RAW );
-    $msg->_answer  ( $DISCARD );
     $msg->_commands( [ "seek $song $time" ] );
-    $k->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
+=pod
 
 #
 # event: seekid( $time, [$songid] )
