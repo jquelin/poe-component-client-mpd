@@ -483,7 +483,8 @@ maintenance.
 
 To achieve those commands, send the corresponding event to the POCOCM
 session you created: it will be responsible for dispatching the event
-where it is needed.
+where it is needed. Under no circumstance should you call directly subs
+or methods from this module directly.
 
 Read POCOCM's pod to learn how to deal with answers from those commands.
 
