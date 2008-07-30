@@ -23,63 +23,63 @@ my @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     #[ $PLAYLIST, 'pl.clear', [],      0, &check_success          ],
-    [ 'pl.add',   \@songs, 0, \&check_success          ],
+    [ 'pl.add',   \@songs, 0, \&check_success ],
 
     # play
-    [ 'play',     [],      0, \&check_success           ],
+    [ 'play',     [],      0, \&check_success ],
     [ 'status',   [],      0, \&check_play1   ],
-    [ 'play',     [2],     0, \&check_success           ],
+    [ 'play',     [2],     0, \&check_success ],
     [ 'status',   [],      0, \&check_play2   ],
 
     # playid
-    [ 'play',     [0],     0, \&check_success           ],
-    [ 'pause',    [],      0, \&check_success           ],
-    [ 'playid',   [],      0, \&check_success           ],
+    [ 'play',     [0],     0, \&check_success ],
+    [ 'pause',    [],      0, \&check_success ],
+    [ 'playid',   [],      0, \&check_success ],
     [ 'status',   [],      0, \&check_playid1 ],
-    [ 'playid',   [1],     0, \&check_success           ],
+    [ 'playid',   [1],     0, \&check_success ],
     [ 'status',   [],      0, \&check_playid2 ],
 
     # pause
-    [ 'pause',    [1],     0, \&check_success           ],
+    [ 'pause',    [1],     0, \&check_success ],
     [ 'status',   [],      0, \&check_pause1  ],
-    [ 'pause',    [0],     0, \&check_success           ],
+    [ 'pause',    [0],     0, \&check_success ],
     [ 'status',   [],      0, \&check_pause2  ],
-    [ 'pause',    [],      0, \&check_success           ],
+    [ 'pause',    [],      0, \&check_success ],
     [ 'status',   [],      0, \&check_pause3  ],
-    [ 'pause',    [],      0, \&check_success           ],
+    [ 'pause',    [],      0, \&check_success ],
     [ 'status',   [],      0, \&check_pause4  ],
 
     # stop
-    [ 'stop',     [],      0, \&check_success           ],
+    [ 'stop',     [],      0, \&check_success ],
     [ 'status',   [],      0, \&check_stop    ],
 
     # prev / next
-    [ 'play',     [1],     0, \&check_success           ],
-    [ 'pause',    [],      0, \&check_success           ],
-    [ 'next',     [],      0, \&check_success           ],
+    [ 'play',     [1],     0, \&check_success ],
+    [ 'pause',    [],      0, \&check_success ],
+    [ 'next',     [],      0, \&check_success ],
     [ 'status',   [],      0, \&check_prev    ],
-    [ 'prev',     [],      0, \&check_success           ],
+    [ 'prev',     [],      0, \&check_success ],
     [ 'status',   [],      0, \&check_next    ],
 
     # seek
-    [ 'seek',     [1,2],   0, \&check_success           ],
-    [ 'pause',    [1],     1, \&check_success           ],
+    [ 'seek',     [1,2],   0, \&check_success ],
+    [ 'pause',    [1],     1, \&check_success ],
     [ 'status',   [],      0, \&check_seek1   ],
-    [ 'seek',     [],      0, \&check_success           ],
-    [ 'pause',    [1],     1, \&check_success           ],
+    [ 'seek',     [],      0, \&check_success ],
+    [ 'pause',    [1],     1, \&check_success ],
     [ 'status',   [],      0, \&check_seek2   ],
-    [ 'seek',     [1],     0, \&check_success           ],
-    [ 'pause',    [1],     1, \&check_success           ],
+    [ 'seek',     [1],     0, \&check_success ],
+    [ 'pause',    [1],     1, \&check_success ],
     [ 'status',   [],      0, \&check_seek3   ],
 
     # seekid
-    [ 'seekid',   [1,1],   0, \&check_success           ],
+    [ 'seekid',   [1,1],   0, \&check_success ],
     [ 'status',   [],      0, \&check_seekid1 ],
-    [ 'seekid',   [],      0, \&check_success           ],
-    [ 'pause',    [1],     1, \&check_success           ],
+    [ 'seekid',   [],      0, \&check_success ],
+    [ 'pause',    [1],     1, \&check_success ],
     [ 'status',   [],      0, \&check_seekid2 ],
-    [ 'seekid',   [1],     0, \&check_success           ],
-    [ 'pause',    [1],     1, \&check_success           ],
+    [ 'seekid',   [1],     0, \&check_success ],
+    [ 'pause',    [1],     1, \&check_success ],
     [ 'status',   [],      0, \&check_seekid3 ],
 );
 
