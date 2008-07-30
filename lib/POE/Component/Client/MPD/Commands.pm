@@ -20,16 +20,6 @@ use base qw[ Class::Accessor::Fast ];
 
 # -- MPD interaction: general commands
 
-=pod
-
-sub _onpub_disconnect {
-    my $k = $_[KERNEL];
-    $k->alias_remove( $MPD );
-    $k->post( $_HUB, '_disconnect' );
-}
-
-=cut
-
 #
 # event: version()
 #
