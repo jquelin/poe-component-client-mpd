@@ -110,30 +110,28 @@ sub _do_add {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: pl.delete( $number, $number, ... )
 #
 # Remove song $number (starting from 0) from the current playlist.
-# No return event.
 #
-sub _onpub_delete {
-    my $msg = $_[ARG0];
+sub _do_delete {
+    my ($self, $k, $h, $msg) = @_;
 
-    my $args    = $msg->_params;
-    my @numbers = @$args;         # args of the poe event
+    my $args    = $msg->params;
+    my @numbers = @$args;
     my @commands = (              # build the commands
         'command_list_begin',
-        map( qq[delete $_], reverse sort {$a<=>$b} @numbers ),
+        map( qq{delete $_}, reverse sort {$a<=>$b} @numbers ),
         'command_list_end',
     );
-    $msg->_answer   ( $DISCARD );
     $msg->_commands ( \@commands );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
