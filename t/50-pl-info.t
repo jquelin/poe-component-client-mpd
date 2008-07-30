@@ -12,48 +12,50 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
-use POE::Component::Client::MPD::Message;
-use Readonly;
 use Test::More;
 
-
-our $nbtests = 10;
+my $nbtests = 14;
 my @songs = qw[
     title.ogg dir1/title-artist-album.ogg
     dir1/title-artist.ogg dir2/album.ogg
 ];
-our @tests   = (
-    # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
+my @tests   = (
+    # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
-    [ $PLAYLIST, 'clear', [],      $DISCARD, undef ],
-    [ $PLAYLIST, 'add',   \@songs, $DISCARD, undef ],
+    [ 'pl.clear',                [], 0, \&check_success       ],
+    [ 'pl.add',             \@songs, 0, \&check_success       ],
 
     # pl.as_items
-    [ $PLAYLIST, 'as_items',            [],  $SEND, \&check_as_items      ],
+    [ 'pl.as_items',             [], 0, \&check_as_items      ],
 
     # pl.items_changed_since
-    [ $PLAYLIST, 'items_changed_since', [0], $SEND, \&check_items_changed ],
+    [ 'pl.items_changed_since', [0], 0, \&check_items_changed ],
 
 );
 
 
 # are we able to test module?
-eval 'use POE::Component::Client::MPD::Test';
+eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
 diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
+#--
+
+sub check_success {
+    my ($msg) = @_;
+    is($msg->status, 1, "command '" . $msg->request . "' returned an ok status");
+}
+
 sub check_as_items {
-    my @items = @{ $_[0]->data };
-    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
-        'pl.as_items() returns AMC::Item::Song objects' ) for @items;
-    is( $items[0]->title, 'ok-title', 'first song reported first' );
+    my ($msg, $items) = @_;
+    check_success($msg);
+    isa_ok($_, 'Audio::MPD::Common::Item::Song', 'pl.as_items() return') for @$items;
+    is($items->[0]->title, 'ok-title', 'first song reported first');
 }
 
 sub check_items_changed {
-    my @items = @{ $_[0]->data };
-    isa_ok( $_, 'Audio::MPD::Common::Item::Song',
-            'items_changed_since() returns AMC::Item::Song objects' )
-        for @items;
-    is( $items[0]->title, 'ok-title', 'first song reported first' );
+    my ($msg, $items) = @_;
+    check_success($msg);
+    isa_ok($_, 'Audio::MPD::Common::Item::Song', 'items_changed_since() return') for @$items;
+    is($items->[0]->title, 'ok-title', 'first song reported first');
 }
