@@ -13,46 +13,10 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
-use Readonly;
 
 use base qw[ Class::Accessor::Fast ];
 
-=pod
-
-Readonly my @EVENTS => qw[
-    disconnect
-    version kill updatedb urlhandlers
-    volume output_enable output_disable
-    stats status current song songid
-    repeat random fade
-    play playid pause stop next prev seek seekid
-];
-
-sub _spawn {
-    my $object = __PACKAGE__->new;
-    my $session = POE::Session->create(
-        inline_states => {
-            '_start'      => sub { $_[KERNEL]->alias_set( $MPD ) },
-            '_default'    => \&POE::Component::Client::MPD::_onpub_default,
-            '_dispatch'   => \&_onpriv_dispatch,
-        },
-        object_states => [ $object => [ map { "_onpub_$_" } @EVENTS ] ]
-    );
-
-    return $session->ID;
-}
-
-sub _onpriv_dispatch {
-    my $msg = $_[ARG0];
-    my $event = $msg->_dispatch;
-    $event =~ s/^[^.]\.//;
-#     warn "dispatching $event\n";
-    $_[KERNEL]->yield( "_onpub_$event", $msg );
-}
-
-=cut
 
 # -- MPD interaction: general commands
 
