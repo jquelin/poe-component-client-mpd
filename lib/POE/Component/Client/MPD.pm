@@ -103,8 +103,7 @@ sub _dispatch {
 
         # basic commands
         default {
-            my $meth = "_do_$event";
-            $h->{cmds}->$meth($k, $h, $msg);
+            $h->{cmds}->$event($k, $h, $msg);
         }
     }
 }

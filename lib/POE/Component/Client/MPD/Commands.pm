@@ -71,7 +71,7 @@ sub _onpub_disconnect {
 #
 # Return mpd's version number as advertised during connection.
 #
-sub _do_version {
+sub version {
     my ($self, $k, $h, $msg) = @_;
     $msg->status(1);
     $k->post( $msg->_from, 'mpd_result', $msg, $h->{version} );
@@ -83,7 +83,7 @@ sub _do_version {
 #
 # Kill the mpd server, and request the pococm to be shutdown.
 #
-sub _do_kill {
+sub kill {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'kill' ] );
@@ -100,7 +100,7 @@ sub _do_kill {
 # directory) is supplied, MPD will only scan it - otherwise, MPD will rescan
 # its whole collection.
 #
-sub _do_updatedb {
+sub updatedb {
     my ($self, $k, $h, $msg) = @_;
     my $path = $msg->params->[0] // '';
 
@@ -115,7 +115,7 @@ sub _do_updatedb {
 #
 # Return an array of supported URL schemes.
 #
-sub _do_urlhandlers {
+sub urlhandlers {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'urlhandlers' ] );
@@ -133,7 +133,7 @@ sub _do_urlhandlers {
 # If $volume is prefixed by '+' or '-' then the volume is changed relatively
 # by that value.
 #
-sub _do_volume {
+sub volume {
     my ($self, $k, $h, $msg) = @_;
 
     my $volume;
@@ -164,7 +164,7 @@ sub _do_volume {
 #
 # Enable the specified audio output. $output is the ID of the audio output.
 #
-sub _do_output_enable {
+sub output_enable {
     my ($self, $k, $h, $msg) = @_;
     my $output = $msg->params->[0];
 
@@ -179,7 +179,7 @@ sub _do_output_enable {
 #
 # Disable the specified audio output. $output is the ID of the audio output.
 #
-sub _do_output_disable {
+sub output_disable {
     my ($self, $k, $h, $msg) = @_;
     my $output = $msg->params->[0];
 
@@ -198,7 +198,7 @@ sub _do_output_disable {
 # Return an Audio::MPD::Common::Stats object with the current statistics
 # of MPD.
 #
-sub _do_stats {
+sub stats {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'stats' ] );
@@ -213,7 +213,7 @@ sub _do_stats {
 #
 # Return an Audio::MPD::Common::Status object the current status of MPD.
 #
-sub _do_status {
+sub status {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'status' ] );
@@ -230,7 +230,7 @@ sub _do_status {
 # Return an Audio::MPD::Common::Item::Song representing the song
 # currently playing.
 #
-sub _do_current {
+sub current {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'currentsong' ] );
@@ -246,7 +246,7 @@ sub _do_current {
 # Return an Audio::MPD::Common::Item::Song representing the song number
 # $song. If $song is not supplied, returns the current song.
 #
-sub _do_song {
+sub song {
     my ($self, $k, $h, $msg) = @_;
     my $song = $msg->params->[0];
 
@@ -263,7 +263,7 @@ sub _do_song {
 # Return an Audio::MPD::Common::Item::Song representing the song id
 # $songid. If $songid is not supplied, returns the current song.
 #
-sub _do_songid {
+sub songid {
     my ($self, $k, $h, $msg) = @_;
     my $song = $msg->params->[0];
 
@@ -282,7 +282,7 @@ sub _do_songid {
 # Set the repeat mode to $repeat (1 or 0). If $repeat is not specified then
 # the repeat mode is toggled.
 #
-sub _do_repeat {
+sub repeat {
     my ($self, $k, $h, $msg) = @_;
 
     my $mode = $msg->params->[0];
@@ -311,7 +311,7 @@ sub _do_repeat {
 # Enable crossfading and set the duration of crossfade between songs. If
 # $seconds is not specified or $seconds is 0, then crossfading is disabled.
 #
-sub _do_fade {
+sub fade {
     my ($self, $k, $h, $msg) = @_;
     my $seconds = $msg->params->[0] // 0;
 
@@ -327,7 +327,7 @@ sub _do_fade {
 # Set the random mode to $random (1 or 0). If $random is not specified then
 # the random mode is toggled.
 #
-sub _do_random {
+sub random {
     my ($self, $k, $h, $msg) = @_;
 
     my $mode = $msg->params->[0];
@@ -359,7 +359,7 @@ sub _do_random {
 # Begin playing playlist at song number $song. If no argument supplied,
 # resume playing.
 #
-sub _do_play {
+sub play {
     my ($self, $k, $h, $msg) = @_;
 
     my $number = $msg->params->[0] // '';
@@ -375,7 +375,7 @@ sub _do_play {
 # Begin playing playlist at song ID $song. If no argument supplied,
 # resume playing.
 #
-sub _do_playid {
+sub playid {
     my ($self, $k, $h, $msg) = @_;
 
     my $number = $msg->params->[0] // '';
@@ -393,7 +393,7 @@ sub _do_playid {
 #
 # Note that if $state is not given, pause state will be toggled.
 #
-sub _do_pause {
+sub pause {
     my ($self, $k, $h, $msg) = @_;
 
     my $state = $msg->params->[0] // '';
@@ -408,7 +408,7 @@ sub _do_pause {
 #
 # Stop playback.
 #
-sub _do_stop {
+sub stop {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'stop' ] );
@@ -422,7 +422,7 @@ sub _do_stop {
 #
 # Play next song in playlist.
 #
-sub _do_next {
+sub next {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'next' ] );
@@ -436,7 +436,7 @@ sub _do_next {
 #
 # Play previous song in playlist.
 #
-sub _do_prev {
+sub prev {
     my ($self, $k, $h, $msg) = @_;
 
     $msg->_commands ( [ 'previous' ] );
@@ -451,7 +451,7 @@ sub _do_prev {
 # Seek to $time seconds in song number $song. If $song number is not specified
 # then the perl module will try and seek to $time in the current song.
 #
-sub _do_seek {
+sub seek {
     my ($self, $k, $h, $msg) = @_;
 
     my ($time, $song) = @{ $msg->params }[0,1];
@@ -479,7 +479,7 @@ sub _do_seek {
 # Seek to $time seconds in song ID $songid. If $songid number is not specified
 # then the perl module will try and seek to $time in the current song.
 #
-sub _do_seekid {
+sub seekid {
     my ($self, $k, $h, $msg) = @_;
 
     my ($time, $songid) = @{ $msg->params }[0,1];
@@ -519,7 +519,8 @@ maintenance.
 
 To achieve those commands, send the corresponding event to the POCOCM
 session you created: it will be responsible for dispatching the event
-where it is needed.
+where it is needed. Under no circumstance should you call directly subs
+or methods from this module directly.
 
 Read POCOCM's pod to learn how to deal with answers from those commands.
 
