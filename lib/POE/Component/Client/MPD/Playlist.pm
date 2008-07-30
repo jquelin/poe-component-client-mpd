@@ -70,26 +70,22 @@ sub _do_as_items {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: pl.items_changed_since( $plversion )
 #
-# Return a list with all the songs (as POCOM::Item::Song objects) added to
-# the playlist since playlist $plversion.
+# Return a list with all the songs (as Audio::MPD::Common::Item::Song
+# objects) added to the playlist since playlist $plversion.
 #
-sub _onpub_items_changed_since {
-    my $msg  = $_[ARG0];
-    my $plid = $msg->_params->[0];
+sub _do_items_changed_since {
+    my ($self, $k, $h, $msg) = @_;
+    my $plid = $msg->params->[0];
 
-    $msg->_answer   ( $SEND );
     $msg->_commands ( [ "plchanges $plid" ] );
     $msg->_cooking  ( $AS_ITEMS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 # -- Playlist: adding / removing songs
 
