@@ -158,20 +158,22 @@ sub _onpub_deleteid {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 #
 # event: clear()
 #
 # Remove all the songs from the current playlist.
 #
-sub _onpub_clear {
-    my $msg = $_[ARG0];
-    $msg->_answer   ( $DISCARD );
+sub _do_clear {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'clear' ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
+=pod
 
 #
 # event: crop()
