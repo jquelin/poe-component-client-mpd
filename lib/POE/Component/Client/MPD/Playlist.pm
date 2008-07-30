@@ -167,41 +167,36 @@ sub _do_clear {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
 
 #
 # event: crop()
 #
 #  Remove all of the songs from the current playlist *except* the current one.
 #
-sub _onpub_crop {
-    my ($k, $msg) = @_[KERNEL, ARG0];
+sub _do_crop {
+    my ($self, $k, $h, $msg) = @_;
 
-    if ( not defined $msg->data ) {
+    if ( not defined $msg->_data ) {
         # no status yet - fire an event
-        $msg->_dispatch  ( 'status' );
-        $msg->_post_to   ( $PLAYLIST );
-        $msg->_post_event( 'crop' );
-        $k->post( $MPD, '_dispatch', $msg );
+        $msg->_post( 'pl.crop' );
+        $h->{mpd}->_dispatch($k, $h, 'status', $msg);
         return;
     }
 
     # now we know what to remove
-    my $cur = $msg->data->song;
-    my $len = $msg->data->playlistlength - 1;
+    my $cur = $msg->_data->song;
+    my $len = $msg->_data->playlistlength - 1;
     my @commands = (
         'command_list_begin',
-        map( { $_  != $cur ? "delete $_" : '' } reverse 0..$len ),
+        map( { $_ != $cur ? "delete $_" : '' } reverse 0..$len ),
         'command_list_end'
     );
 
     $msg->_cooking  ( $RAW );
-    $msg->_answer   ( $DISCARD );
     $msg->_commands ( \@commands );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 # -- Playlist: changing playlist order
 
