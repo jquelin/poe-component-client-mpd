@@ -69,7 +69,7 @@ sub _onpub_disconnect {
 #
 # event: version()
 #
-# Fires back an event with the version number.
+# Return mpd's version number as advertised during connection.
 #
 sub _do_version {
     my ($self, $k, $h, $msg) = @_;
@@ -195,7 +195,8 @@ sub _do_output_disable {
 #
 # event: stats()
 #
-# Return a hash with the current statistics of MPD.
+# Return an Audio::MPD::Common::Stats object with the current statistics
+# of MPD.
 #
 sub _do_stats {
     my ($self, $k, $h, $msg) = @_;
@@ -210,7 +211,7 @@ sub _do_stats {
 #
 # event: status()
 #
-# Return a hash with the current status of MPD.
+# Return an Audio::MPD::Common::Status object the current status of MPD.
 #
 sub _do_status {
     my ($self, $k, $h, $msg) = @_;
@@ -226,7 +227,8 @@ sub _do_status {
 #
 # event: current()
 #
-# Return a POCOCM::Item::Song representing the song currently playing.
+# Return an Audio::MPD::Common::Item::Song representing the song
+# currently playing.
 #
 sub _do_current {
     my ($self, $k, $h, $msg) = @_;
@@ -241,8 +243,8 @@ sub _do_current {
 #
 # event: song( [$song] )
 #
-# Return a POCOCM::Item::Song representing the song number $song.
-# If $song is not supplied, returns the current song.
+# Return an Audio::MPD::Common::Item::Song representing the song number
+# $song. If $song is not supplied, returns the current song.
 #
 sub _do_song {
     my ($self, $k, $h, $msg) = @_;
@@ -258,8 +260,8 @@ sub _do_song {
 #
 # event: songid( [$songid] )
 #
-# Return a POCOCM::Item::Song representing the song id $songid.
-# If $songid is not supplied, returns the current song.
+# Return an Audio::MPD::Common::Item::Song representing the song id
+# $songid. If $songid is not supplied, returns the current song.
 #
 sub _do_songid {
     my ($self, $k, $h, $msg) = @_;
@@ -404,7 +406,7 @@ sub _do_pause {
 #
 # event: stop()
 #
-# Stop playback
+# Stop playback.
 #
 sub _do_stop {
     my ($self, $k, $h, $msg) = @_;
@@ -505,15 +507,22 @@ __END__
 
 =head1 NAME
 
-POE::Component::Client::MPD::Commands - module handling basic commands
+POE::Component::Client::MPD::Commands - module handling basic mpd commands
+
 
 
 =head1 DESCRIPTION
 
-C<POCOCM::Commands> is responsible for handling general purpose commands.
+C<POCOCM::Commands> is responsible for handling general purpose
+commands. They are in a dedicated module to achieve easier code
+maintenance.
+
 To achieve those commands, send the corresponding event to the POCOCM
 session you created: it will be responsible for dispatching the event
 where it is needed.
+
+Read POCOCM's pod to learn how to deal with answers from those commands.
+
 
 
 =head1 PUBLIC EVENTS
@@ -523,13 +532,187 @@ The following is a list of general purpose events accepted by POCOCM.
 
 =head2 General commands
 
+
+=over 4
+
+=item * version()
+
+Return mpd's version number as advertised during connection.
+
+
+=item * kill()
+
+Kill the mpd server, and request the pococm to be shutdown.
+
+
+=item * updatedb( [$path] )
+
+Force mpd to rescan its collection. If C<$path> (relative to MPD's music
+directory) is supplied, MPD will only scan it - otherwise, MPD will
+rescan its whole collection.
+
+
+=item * urlhandlers()
+
+Return an array of supported URL schemes.
+
+
+=back
+
+
+
 =head2 Handling volume & output
+
+
+=over 4
+
+=item * volume( $volume )
+
+Sets the audio output volume percentage to absolute C<$volume>. If
+C<$volume> is prefixed by '+' or '-' then the volume is changed
+relatively by that value.
+
+
+=item * output_enable( $output )
+
+Enable the specified audio output. C<$output> is the ID of the audio
+output.
+
+
+=item * output_disable( $output )
+
+Disable the specified audio output. C<$output> is the ID of the audio output.
+
+
+=back
+
+
 
 =head2 Retrieving info from current state
 
+
+=over 4
+
+=item * stats()
+
+Return an C<Audio::MPD::Common::Stats> object with the current
+statistics of MPD.
+
+
+=item * status ()
+
+Return an C<Audio::MPD::Common::Status> object with the current
+status of MPD.
+
+
+=item * current()
+
+Return an C<Audio::MPD::Common::Item::Song> representing the song
+currently playing.
+
+
+=item * song( [$song] )
+
+Return an C<Audio::MPD::Common::Item::Song> representing the song number
+C<$song>. If C<$song> is not supplied, returns the current song.
+
+
+=item * songid( [$songid] )
+
+Return an C<Audio::MPD::Common::Item::Song> representing the song id
+C<$songid>. If C<$songid> is not supplied, returns the current song.
+
+
+=back
+
+
+
 =head2 Altering settings
 
+
+=over 4
+
+=item * repeat( [$repeat] )
+
+Set the repeat mode to C<$repeat> (1 or 0). If C<$repeat> is not
+specified then the repeat mode is toggled.
+
+
+=item * fade( [$seconds] )
+
+Enable crossfading and set the duration of crossfade between songs. If
+C<$seconds> is not specified or C<$seconds> is 0, then crossfading is
+disabled.
+
+
+=item * random( [$random] )
+
+Set the random mode to C<$random> (1 or 0). If C<$random> is not
+specified then the random mode is toggled.
+
+
+=back
+
+
+
 =head2 Controlling playback
+
+
+=over 4
+
+=item * play( [$song] )
+
+Begin playing playlist at song number C<$song>. If no argument supplied,
+resume playing.
+
+
+=item * playid( [$song] )
+
+Begin playing playlist at song ID C<$song>. If no argument supplied,
+resume playing.
+
+
+=item * pause( [$sate] )
+
+Pause playback. If C<$state> is 0 then the current track is unpaused, if
+C<$state> is 1 then the current track is paused.
+
+Note that if C<$state> is not given, pause state will be toggled.
+
+
+=item * stop()
+
+Stop playback.
+
+
+=item * next()
+
+Play next song in playlist.
+
+
+=item * prev()
+
+Play previous song in playlist.
+
+
+=item * seek( $time, [$song] )
+
+Seek to C<$time> seconds in song number C<$song>. If C<$song> number is
+not specified then the perl module will try and seek to C<$time> in the
+current song.
+
+
+=item * seekid( $time, [$songid] )
+
+Seek to C<$time> seconds in song ID C<$songid>. If C<$songid> number is
+not specified then the perl module will try and seek to C<$time> in the
+current song.
+
+
+
+
+=back
+
 
 
 =head1 SEE ALSO
@@ -539,9 +722,11 @@ MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 
+
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
+
 
 
 =head1 COPYRIGHT & LICENSE
