@@ -131,6 +131,7 @@ sub _onpub_default {
         play playid pause stop next prev seek seekid
     };
     my @ok_events_playlist = qw{
+        pl.as_items
         pl.add
     };
     my @ok_events = ( @ok_events_commands, @ok_events_playlist );

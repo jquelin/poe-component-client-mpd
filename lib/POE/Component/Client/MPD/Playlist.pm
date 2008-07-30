@@ -56,22 +56,21 @@ sub _onpriv_dispatch {
 
 # -- Playlist: retrieving information
 
-=pod
-
 #
 # event: pl.as_items()
 #
-# Return an array of C<POCOCM::Item::Song>s, one for each of the
-# songs in the current playlist.
+# Return an array of C<Audio::MPD::Common::Item::Song>s, one for each of
+# the songs in the current playlist.
 #
-sub _onpub_as_items {
-    my $msg = $_[ARG0];
+sub _do_as_items {
+    my ($self, $k, $h, $msg) = @_;
 
-    $msg->_answer   ( $SEND );
     $msg->_commands ( [ 'playlistinfo' ] );
     $msg->_cooking  ( $AS_ITEMS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
