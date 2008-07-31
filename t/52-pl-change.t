@@ -12,62 +12,69 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
-use POE::Component::Client::MPD::Message;
-use Readonly;
 use Test::More;
 
-
 my $plvers;
-our $nbtests = 5;
 my @songs = qw[
     title.ogg
     dir1/title-artist-album.ogg
     dir1/title-artist.ogg
     dir2/album.ogg
 ];
-our @tests   = (
-    # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
+my $nbtests = 20;
+my @tests   = (
+    # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # pl.swapid
     # test should come first to know the song id
-    [ $PLAYLIST, 'clear',    [],       $DISCARD, undef          ],
-    [ $PLAYLIST, 'add',      \@songs,  $DISCARD, undef          ],
-    [ $PLAYLIST, 'swapid',   [0,2],    $DISCARD, undef          ],
-    [ $PLAYLIST, 'as_items', [],       $SEND,    \&check_2ndpos ],
-    [ $PLAYLIST, 'swapid',   [0,2],    $DISCARD, undef          ],
+    [ 'pl.clear',         [], 0, \&check_success ],
+    [ 'pl.add',      \@songs, 0, \&check_success ],
+    [ 'pl.swapid',     [0,2], 0, \&check_success ],
+    [ 'pl.as_items',      [], 0, \&check_2ndpos  ],
+    [ 'pl.swapid',     [0,2], 0, \&check_success ],
 
     # pl.moveid
     # test should come second to know the song id
-    [ $PLAYLIST, 'moveid',   [0,2],    $DISCARD, undef          ],
-    [ $PLAYLIST, 'as_items', [],       $SEND,    \&check_2ndpos ],
-    [ $PLAYLIST, 'moveid',   [0,0],    $DISCARD, undef          ],
+    [ 'pl.moveid',     [0,2], 0, \&check_success ],
+    [ 'pl.as_items',      [], 0, \&check_2ndpos  ],
+    [ 'pl.moveid',     [0,0], 0, \&check_success ],
 
     # pl.swap
-    [ $PLAYLIST, 'swap',     [0,2],    $DISCARD, undef          ],
-    [ $PLAYLIST, 'as_items', [],       $SEND,    \&check_2ndpos ],
-    [ $PLAYLIST, 'swap',     [0,2],    $DISCARD, undef          ],
+    [ 'pl.swap',       [0,2], 0, \&check_success ],
+    [ 'pl.as_items',      [], 0, \&check_2ndpos  ],
+    [ 'pl.swap',       [0,2], 0, \&check_success ],
 
     # pl.move
-    [ $PLAYLIST, 'move',     [0,2],    $DISCARD, undef          ],
-    [ $PLAYLIST, 'as_items', [],       $SEND,    \&check_2ndpos ],
+    [ 'pl.move',       [0,2], 0, \&check_success ],
+    [ 'pl.as_items',      [], 0, \&check_2ndpos  ],
 
     # pl.shuffle
-    [ $MPD,      'status',   [],       $SEND,    sub { $plvers=$_[0]->data->playlist; } ],
-    [ $PLAYLIST, 'shuffle',  [],       $DISCARD, undef                                  ],
-    [ $MPD,      'status',   [],       $SEND,    \&check_shuffle                        ],
+    [ 'status',           [], 0, sub { $plvers=$_[1]->playlist; } ],
+    [ 'pl.shuffle',       [], 0, \&check_success                  ],
+    [ 'status',           [], 0, \&check_shuffle                  ],
 );
 
+
 # are we able to test module?
-eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
+diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
+#--
+
+sub check_success {
+    my ($msg) = @_;
+    is($msg->status, 1, "command '" . $msg->request . "' returned an ok status");
+}
+
 sub check_shuffle {
-    is( $_[0]->data->playlist, $plvers+1, 'shuffle() changes playlist version' );
+    my ($msg, $status) = @_;
+    check_success($msg);
+    is($status->playlist, $plvers+1, 'shuffle() changes playlist version');
 }
 
 sub check_2ndpos {
-    my @items = @{ $_[0]->data };
-    is( $items[2]->title, 'ok-title', 'swap[id()] / swap[id()] changes songs' );
+    my ($msg, $items) = @_;
+    check_success($msg);
+    is($items->[2]->title, 'ok-title', 'swap[id()] / swap[id()] changes songs');
 }
