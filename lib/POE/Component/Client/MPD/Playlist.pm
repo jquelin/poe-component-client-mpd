@@ -291,23 +291,22 @@ sub _do_load {
 }
 
 
-=pod
-
 #
 # event: pl.save( $playlist );
 #
 # Save the current playlist to a file called $playlist in MPD's
 # playlist directory.
 #
-sub _onpub_save {
-    my $msg  = $_[ARG0];
-    my $playlist = $msg->_params->[0];
+sub _do_save {
+    my ($self, $k, $h, $msg) = @_;
+    my $playlist = $msg->params->[0];
 
-    $msg->_answer   ( $DISCARD );
-    $msg->_commands ( [ qq[save "$playlist"] ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_commands ( [ qq[save "$playlist"] ] );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
