@@ -65,7 +65,7 @@ sub spawn {
             'mpd_connected'               => \&_onprot_mpd_connected,
             'mpd_disconnected'            => \&_onprot_mpd_disconnected,
             'mpd_data'      =>  \&_onprot_mpd_data,
-            'mpd_error'     =>  \&_onprot_conn_error,
+            'mpd_error'     =>  sub {use Data::Dumper;say Dumper(\@_)},#\&_onprot_conn_error,
             # public events
             'disconnect'     => \&_onpub_disconnect,
             '_default'       => \&POE::Component::Client::MPD::_onpub_default,
