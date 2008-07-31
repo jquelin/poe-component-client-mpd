@@ -200,22 +200,19 @@ sub _do_crop {
 
 # -- Playlist: changing playlist order
 
-=pod
-
 #
 # event: pl.shuffle()
 #
 # Shuffle the current playlist.
 #
-sub _onpub_shuffle {
-    my $msg  = $_[ARG0];
-    $msg->_answer   ( $DISCARD );
-    $msg->_commands ( [ 'shuffle' ] );
+sub _do_shuffle {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_commands ( [ 'shuffle' ] );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 #
 # event: pl.swap( $song1, song2 )
