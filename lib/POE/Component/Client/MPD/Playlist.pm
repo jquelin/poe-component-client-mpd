@@ -215,23 +215,22 @@ sub _onpub_shuffle {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 #
 # event: pl.swap( $song1, song2 )
 #
 # Swap positions of song number $song1 and $song2 in the current playlist.
 #
-sub _onpub_swap {
-    my $msg  = $_[ARG0];
-    my ($from, $to) = @{ $msg->_params }[0,1];
+sub _do_swap {
+    my ($self, $k, $h, $msg) = @_;
+    my ($from, $to) = @{ $msg->params }[0,1];
 
-    $msg->_answer   ( $DISCARD );
-    $msg->_commands ( [ "swap $from $to" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_commands ( [ "swap $from $to" ] );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 #
 # event: pl.swapid( $songid1, songid2 )
