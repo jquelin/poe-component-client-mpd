@@ -246,24 +246,21 @@ sub _do_swapid {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
 
 #
 # event: pl.move( $song, $newpos );
 #
 # Move song number $song to the position $newpos.
 #
-sub _onpub_move {
-    my $msg  = $_[ARG0];
-    my ($song, $pos) = @{ $msg->_params }[0,1];
+sub _do_move {
+    my ($self, $k, $h, $msg) = @_;
+    my ($song, $pos) = @{ $msg->params }[0,1];
 
-    $msg->_answer   ( $DISCARD );
-    $msg->_commands ( [ "move $song $pos" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_commands ( [ "move $song $pos" ] );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 #
 # event: pl.moveid( $songid, $newpos );
