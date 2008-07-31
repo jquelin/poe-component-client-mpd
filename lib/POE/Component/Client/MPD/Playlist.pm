@@ -306,25 +306,21 @@ sub _do_save {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
-# event: pl.save( $playlist );
+# event: pl.rm( $playlist );
 #
 # Delete playlist named $playlist from MPD's playlist directory.
 #
-sub _onpub_rm {
-    my $msg  = $_[ARG0];
-    my $playlist = $msg->_params->[0];
+sub _do_rm {
+    my ($self, $k, $h, $msg) = @_;
+    my $playlist = $msg->params->[0];
 
-    $msg->_answer   ( $DISCARD );
-    $msg->_commands ( [ qq[rm "$playlist"] ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_commands ( [ qq[rm "$playlist"] ] );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 
 1;
