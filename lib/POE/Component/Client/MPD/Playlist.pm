@@ -264,23 +264,22 @@ sub _onpub_move {
     $_[KERNEL]->post( $_HUB, '_send', $msg );
 }
 
+=cut
 
 #
 # event: pl.moveid( $songid, $newpos );
 #
 # Move song id $songid to the position $newpos.
 #
-sub _onpub_moveid {
-    my $msg  = $_[ARG0];
-    my ($songid, $pos) = @{ $msg->_params }[0,1];
+sub _do_moveid {
+    my ($self, $k, $h, $msg) = @_;
+    my ($songid, $pos) = @{ $msg->params }[0,1];
 
-    $msg->_answer   ( $DISCARD );
-    $msg->_commands ( [ "moveid $songid $pos" ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_commands ( [ "moveid $songid $pos" ] );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 # -- Playlist: managing playlists
 
