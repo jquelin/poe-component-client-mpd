@@ -19,40 +19,6 @@ use Readonly;
 
 use base qw{ Class::Accessor::Fast };
 
-=pod
-
-Readonly my @EVENTS => qw[
-    as_items items_changed_since
-    add delete deleteid clear crop
-    shuffle swap swapid move moveid
-    load save rm
-];
-
-
-sub _spawn {
-    my $object = __PACKAGE__->new;
-    my $session = POE::Session->create(
-        inline_states => {
-            '_start'      => sub { $_[KERNEL]->alias_set( $PLAYLIST ) },
-            '_default'    => \&POE::Component::Client::MPD::_onpub_default,
-            '_dispatch'   => \&_onpriv_dispatch,
-            '_disconnect' => sub { $_[KERNEL]->alias_remove( $PLAYLIST ) },
-        },
-        object_states => [ $object => [ map { "_onpub_$_" } @EVENTS ] ]
-    );
-
-    return $session->ID;
-}
-
-sub _onpriv_dispatch {
-    my $msg = $_[ARG0];
-    my $event = $msg->_dispatch;
-    $event =~ s/^[^.]\.//;
-#     warn "dispatching $event\n";
-    $_[KERNEL]->yield( "_onpub_$event", $msg );
-}
-
-=cut
 
 # -- Playlist: retrieving information
 
