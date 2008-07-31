@@ -133,6 +133,7 @@ sub _onpub_default {
     my @ok_events_playlist = qw{
         pl.as_items pl.items_changed_since
         pl.add pl.delete pl.deleteid pl.clear pl.crop
+        pl.swapid
     };
     my @ok_events = ( @ok_events_commands, @ok_events_playlist );
     return unless $event ~~ [ @ok_events ];
