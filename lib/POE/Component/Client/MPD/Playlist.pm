@@ -276,23 +276,22 @@ sub _do_moveid {
 
 # -- Playlist: managing playlists
 
-=pod
-
 #
 # event: pl.load( $playlist );
 #
 # Load list of songs from specified $playlist file.
 #
-sub _onpub_load {
-    my $msg  = $_[ARG0];
-    my $playlist = $msg->_params->[0];
+sub _do_load {
+    my ($self, $k, $h, $msg) = @_;
+    my $playlist = $msg->params->[0];
 
-    $msg->_answer   ( $DISCARD );
-    $msg->_commands ( [ qq[load "$playlist"] ] );
     $msg->_cooking  ( $RAW );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $msg->_commands ( [ qq[load "$playlist"] ] );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
+
+=pod
 
 #
 # event: pl.save( $playlist );
