@@ -18,21 +18,21 @@ my @songs = qw[
     title.ogg dir1/title-artist-album.ogg
     dir1/title-artist.ogg dir2/album.ogg
 ];
-my ($nb);
+my $nb;
 my $nbtests = 26;
 my @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # delete / deleteid
     # should come first to be sure songid #0 is really here.
-    [ 'pl.clear',        [], 0, \&check_success       ],
-    [ 'pl.add',     \@songs, 0, \&check_success       ],
-    [ 'status',          [], 0, \&get_nb              ],
-    [ 'pl.delete',    [1,2], 0, \&check_success       ],
-    [ 'status',          [], 0, \&check_del           ],
-    [ 'status',          [], 0, \&get_nb              ],
-    [ 'pl.deleteid',    [0], 0, \&check_success       ],
-    [ 'status',          [], 0, \&check_delid         ],
+    [ 'pl.clear',              [], 0, \&check_success ],
+    [ 'pl.add',           \@songs, 0, \&check_success ],
+    [ 'status',                [], 0, \&get_nb        ],
+    [ 'pl.delete',          [1,2], 0, \&check_success ],
+    [ 'status',                [], 0, \&check_del     ],
+    [ 'status',                [], 0, \&get_nb        ],
+    [ 'pl.deleteid',          [0], 0, \&check_success ],
+    [ 'status',                [], 0, \&check_delid   ],
 
     # add
     [ 'pl.clear',              [], 0, \&check_success ],
@@ -42,16 +42,16 @@ my @tests   = (
     [ 'status',                [], 0, \&check_add     ],
 
     # clear
-    [ 'pl.add',   \@songs, 0, \&check_success         ],
-    [ 'pl.clear',      [], 0, \&check_success         ],
-    [ 'status',        [], 0, \&check_clear           ],
+    [ 'pl.add',           \@songs, 0, \&check_success ],
+    [ 'pl.clear',              [], 0, \&check_success ],
+    [ 'status',                [], 0, \&check_clear   ],
 
     # crop
-    [ 'pl.add',  \@songs, 0, \&check_success          ],
-    [ 'play',        [1], 0, \&check_success          ], # to set song
-    [ 'stop',         [], 0, \&check_success          ],
-    [ 'pl.crop',      [], 1, \&check_success          ],
-    [ 'status',       [], 0, \&check_crop             ],
+    [ 'pl.add',           \@songs, 0, \&check_success ],
+    [ 'play',                 [1], 0, \&check_success ], # to set song
+    [ 'stop',                  [], 0, \&check_success ],
+    [ 'pl.crop',               [], 1, \&check_success ],
+    [ 'status',                [], 0, \&check_crop    ],
 
 );
 
