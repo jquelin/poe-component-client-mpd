@@ -13,9 +13,7 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
-use Readonly;
 
 use base qw{ Class::Accessor::Fast };
 
