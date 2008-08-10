@@ -215,22 +215,22 @@ sub _do_songs_with_filename_partial {
 
 # -- Collection: songs, albums & artists relations
 
-=pod
-
 #
 # event: coll.albums_by_artist($artist);
 #
 # Return all albums (strings) performed by $artist or where $artist
 # participated.
 #
-sub _onpub_albums_by_artist {
-    my $msg  = $_[ARG0];
-    my $what = $msg->_params->[0];
-    $msg->_answer   ( $SEND );
+sub _do_albums_by_artist {
+    my ($self, $k, $h, $msg) = @_;
+    my $what = $msg->params->[0];
+
     $msg->_commands ( [ qq[list album "$what"] ] );
     $msg->_cooking  ( $STRIP_FIRST );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
