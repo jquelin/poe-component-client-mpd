@@ -182,22 +182,22 @@ sub _do_all_files {
 
 # -- Collection: picking songs
 
-=pod
-
 #
 # event: coll.song( $path )
 #
 # Return the AMC::Item::Song which correspond to $path.
 #
-sub _onpub_song {
-    my $msg  = $_[ARG0];
-    my $what = $msg->_params->[0];
-    $msg->_answer   ( $SEND );
+sub _do_song {
+    my ($self, $k, $h, $msg) = @_;
+    my $what = $msg->params->[0];
+
     $msg->_commands ( [ qq[find filename "$what"] ] );
     $msg->_cooking  ( $AS_ITEMS );
     $msg->_transform( $AS_SCALAR );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #

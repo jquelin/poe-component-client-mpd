@@ -141,6 +141,7 @@ sub _onpub_default {
     my @events_collection = qw{
         coll.all_items coll.all_items_simple coll.items_in_dir
         coll.all_albums coll.all_artists coll.all_titles coll.all_files
+        coll.song
     };
     my @ok_events = ( @events_commands, @events_playlist, @events_collection );
     return unless $event ~~ [ @ok_events ];
