@@ -163,8 +163,6 @@ sub _do_all_titles {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: coll.all_files()
@@ -172,15 +170,15 @@ sub _do_all_titles {
 # Return a mpd_result event with the list of all filenames (strings)
 # currently known by mpd.
 #
-sub _onpub_all_files {
-    my $msg  = $_[ARG0];
-    $msg->_answer   ( $SEND );
+sub _do_all_files {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'list filename' ] );
     $msg->_cooking  ( $STRIP_FIRST );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
+
 
 # -- Collection: picking songs
 
