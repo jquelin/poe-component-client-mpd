@@ -12,45 +12,56 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
-use POE::Component::Client::MPD::Message;
 use FindBin qw[ $Bin ];
-use Readonly;
 use Test::More;
 
 
-our $nbtests = 4;
-our @tests   = (
-    # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
+my $nbtests = 11;
+my @tests   = (
+    # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # load
-    [ $PLAYLIST, 'load',     ['test'], $DISCARD, undef        ],
-    [ $PLAYLIST, 'as_items', [],       $SEND,    \&check_load ],
+    [ 'pl.clear',             [], 0, \&check_success ],
+    [ 'pl.load',        ['test'], 0, \&check_success ],
+    [ 'pl.as_items',          [], 0, \&check_load    ],
 
     # save
-    [ $PLAYLIST, 'save',     ['test-jq'], $DISCARD, undef        ],
-    [ $MPD,      'status',   [],          $SEND,    \&check_save ],
+    [ 'pl.save',     ['test-jq'], 0, \&check_success ],
+    [ 'status',               [], 0, \&check_save    ],
 
     # rm
-    [ $PLAYLIST, 'rm',       ['test-jq'], $DISCARD, undef      ],
-    [ $MPD,      'status',   [],          $SEND,    \&check_rm ],
+    [ 'pl.rm',       ['test-jq'], 0, \&check_success ],
+    [ 'status',               [], 0, \&check_rm      ],
 );
 
+
 # are we able to test module?
-eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
+diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
+#--
+
+sub check_success {
+    my ($msg) = @_;
+    is($msg->status, 1, "command '" . $msg->request . "' returned an ok status");
+}
+
 sub check_load {
-    my @items = @{ $_[0]->data };
-    is( scalar @items, 1, 'pl.load() adds songs' );
-    is( $items[0]->title, 'ok-title', 'pl.load() adds the correct songs' );
+    my ($msg, $items) = @_;
+    check_success($msg);
+    is(scalar @$items, 1, 'pl.load() adds songs');
+    is($items->[0]->title, 'ok-title', 'pl.load() adds the correct songs');
 }
 
 sub check_save {
-    ok( -f "$Bin/mpd-test/playlists/test-jq.m3u", 'pl.save() creates a playlist' );
+    my ($msg, $status) = @_;
+    check_success($msg);
+    ok(-f "$Bin/mpd-test/playlists/test-jq.m3u", 'pl.save() creates a playlist');
 }
 
 sub check_rm {
-    ok( ! -f "$Bin/mpd-test/playlists/test-jq.m3u", 'rm() removes a playlist' );
+    my ($msg, $status) = @_;
+    check_success($msg);
+    ok(! -f "$Bin/mpd-test/playlists/test-jq.m3u", 'rm() removes a playlist');
 }
