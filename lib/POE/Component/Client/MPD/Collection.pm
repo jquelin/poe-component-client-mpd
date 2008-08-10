@@ -197,25 +197,25 @@ sub _do_song {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: coll.songs_with_filename_partial( $string );
 #
 # Return the AMC::Item::Songs containing $string in their path.
 #
-sub _onpub_songs_with_filename_partial {
-    my $msg  = $_[ARG0];
-    my $what = $msg->_params->[0];
-    $msg->_answer   ( $SEND );
+sub _do_songs_with_filename_partial {
+    my ($self, $k, $h, $msg) = @_;
+    my $what = $msg->params->[0];
+
     $msg->_commands ( [ qq[search filename "$what"] ] );
     $msg->_cooking  ( $AS_ITEMS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
 
 # -- Collection: songs, albums & artists relations
+
+=pod
 
 #
 # event: coll.albums_by_artist($artist);
