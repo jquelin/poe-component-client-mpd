@@ -19,7 +19,7 @@ use Carp;
 use List::MoreUtils qw[ firstidx ];
 use POE;
 use POE::Component::Client::MPD::Commands;
-#use POE::Component::Client::MPD::Collection;
+use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::MPD::Playlist;
@@ -307,6 +307,7 @@ sub _onpriv_start {
     $h->{mpd}      = POE::Component::Client::MPD->new;
     $h->{cmds}     = POE::Component::Client::MPD::Commands->new;
     $h->{playlist} = POE::Component::Client::MPD::Playlist->new;
+    $h->{collection} = POE::Component::Client::MPD::Collection->new;
 }
 
 
