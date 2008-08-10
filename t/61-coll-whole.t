@@ -12,57 +12,65 @@ use strict;
 use warnings;
 
 use POE;
-use POE::Component::Client::MPD qw[ :all ];
-use POE::Component::Client::MPD::Message;
-use Readonly;
 use Test::More;
 
 
-our $nbtests = 8;
-our @tests   = (
-    # [ 'event', [ $arg1, $arg2, ... ], $answer_back, \&check_results ]
+my $nbtests = 12;
+my @tests   = (
+    # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # all_albums
-    [ $COLLECTION, 'all_albums',  [], $SEND, \&check_all_albums ],
+    [ 'coll.all_albums',  [], 0, \&check_all_albums ],
 
     # all_artists
-    [ $COLLECTION, 'all_artists', [], $SEND, \&check_all_artists ],
+    [ 'coll.all_artists', [], 0, \&check_all_artists ],
 
     # all_titles
-    [ $COLLECTION, 'all_titles',  [], $SEND, \&check_all_titles ],
+    [ 'coll.all_titles',  [], 0, \&check_all_titles ],
 
     # all_files
-    [ $COLLECTION, 'all_files',   [], $SEND, \&check_all_files ],
+    [ 'coll.all_files',   [], 0, \&check_all_files ],
 
 );
 
 
 # are we able to test module?
-eval 'use POE::Component::Client::MPD::Test';
-plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
+diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 exit;
 
+#--
+
+sub check_success {
+    my ($msg) = @_;
+    is($msg->status, 1, "command '" . $msg->request . "' returned an ok status");
+}
+
 sub check_all_albums {
-    my @list = @{ $_[0]->data };
-    is( scalar @list, 1, 'all_albums return the albums' );
-    is( $list[0], 'our album', 'all_albums return strings' );
+    my ($msg, $items) = @_;
+    check_success($msg);
+    is(scalar @$items, 1, 'all_albums() return the albums');
+    is($items->[0], 'our album', 'all_albums() return strings');
 }
 
 sub check_all_artists {
-    my @list = @{ $_[0]->data };
-    is( scalar @list, 1, 'all_artists return the artists' );
-    is( $list[0], 'dir1-artist', 'all_artists return strings' );
+    my ($msg, $items) = @_;
+    check_success($msg);
+    is(scalar @$items, 1, 'all_artists() return the artists');
+    is($items->[0], 'dir1-artist', 'all_artists() return strings');
 }
 
 sub check_all_titles {
-    my @list = @{ $_[0]->data };
-    is( scalar @list, 3, 'all_titles return the titles' );
-    like( $list[0], qr/-title$/, 'all_titles return strings' );
+    my ($msg, $items) = @_;
+    check_success($msg);
+    is(scalar @$items, 3, 'all_titles() return the titles');
+    like( $items->[0], qr/-title$/, 'all_titles() return strings');
 }
 
 
 sub check_all_files {
-    my $list = $_[0]->data;
-    is( scalar @$list, 4, 'all_files return the pathes' );
-    like( $list->[0], qr/\.ogg$/, 'all_files return strings' );
+    my ($msg, $items) = @_;
+    check_success($msg);
+    is(scalar @$items, 4, 'all_files() return the pathes');
+    like($items->[0], qr/\.ogg$/, 'all_files() return strings');
 }
