@@ -144,7 +144,7 @@ sub _onpub_default {
         coll.song coll.songs_with_filename_partial
         coll.albums_by_artist coll.songs_by_artist coll.songs_by_artist_partial
             coll.songs_from_album coll.songs_from_album_partial
-            coll.songs_with_title
+            coll.songs_with_title coll.songs_with_title_partial
     };
     my @ok_events = ( @events_commands, @events_playlist, @events_collection );
     return unless $event ~~ [ @ok_events ];
