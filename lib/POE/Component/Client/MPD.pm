@@ -125,20 +125,22 @@ sub _onpub_default {
     my ($k, $h, $event, $params) = @_[KERNEL, HEAP, ARG0, ARG1];
 
     # check if event is handled.
-    my @ok_events_commands = qw{
+    my @events_commands = qw{
         version kill updatedb urlhandlers
         volume output_enable output_disable
         stats status current song songid
         repeat fade random
         play playid pause stop next prev seek seekid
     };
-    my @ok_events_playlist = qw{
+    my @events_playlist = qw{
         pl.as_items pl.items_changed_since
         pl.add pl.delete pl.deleteid pl.clear pl.crop
         pl.shuffle pl.swap pl.swapid pl.move pl.moveid
         pl.load pl.save pl.rm
     };
-    my @ok_events = ( @ok_events_commands, @ok_events_playlist );
+    my @events_collection = qw{
+    };
+    my @ok_events = ( @events_commands, @events_playlist, @events_collection );
     return unless $event ~~ [ @ok_events ];
 
     # create the message that will hold
