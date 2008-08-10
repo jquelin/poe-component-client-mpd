@@ -139,6 +139,7 @@ sub _onpub_default {
         pl.load pl.save pl.rm
     };
     my @events_collection = qw{
+        coll.all_items
     };
     my @ok_events = ( @events_commands, @events_playlist, @events_collection );
     return unless $event ~~ [ @ok_events ];

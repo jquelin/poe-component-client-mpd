@@ -57,25 +57,24 @@ sub _onpriv_dispatch {
 
 # -- Collection: retrieving songs & directories
 
-=pod
-
 #
 # event: coll.all_items( [$path] )
 #
-# Return *all* POCOCM::Items (both songs & directories) currently known
-# by mpd.
+# Return *all* Audio::MPD::Common::Items (both songs & directories)
+# currently known by mpd.
 # If $path is supplied (relative to mpd root), restrict the retrieval to
 # songs and dirs in this directory.
 #
-sub _onpub_all_items {
-    my $msg  = $_[ARG0];
-    my $path = $msg->_params->[0] || '';
+sub _do_all_items {
+    my ($self, $k, $h, $msg) = @_;
+    my $path = $msg->params->[0] // '';
 
-    $msg->_answer   ( $SEND );
     $msg->_commands ( [ qq[listallinfo "$path"] ] );
     $msg->_cooking  ( $AS_ITEMS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
