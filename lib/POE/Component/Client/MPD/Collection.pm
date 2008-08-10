@@ -119,22 +119,23 @@ sub _do_items_in_dir {
 # -- Collection: retrieving the whole collection
 
 
-=pod
-
 # event: coll.all_songs( )
+# FIXME?
 
 #
 # event: coll.all_albums( )
 #
 # Return the list of all albums (strings) currently known by mpd.
 #
-sub _onpub_all_albums {
-    my $msg  = $_[ARG0];
-    $msg->_answer   ( $SEND );
+sub _do_all_albums {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'list album' ] );
     $msg->_cooking  ( $STRIP_FIRST );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
