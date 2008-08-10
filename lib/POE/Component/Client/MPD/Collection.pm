@@ -149,21 +149,21 @@ sub _do_all_artists {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: coll.all_titles( )
 #
 # Return the list of all titles (strings) currently known by mpd.
 #
-sub _onpub_all_titles {
-    my $msg  = $_[ARG0];
-    $msg->_answer   ( $SEND );
+sub _do_all_titles {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'list title' ] );
     $msg->_cooking  ( $STRIP_FIRST );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
