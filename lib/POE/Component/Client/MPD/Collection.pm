@@ -18,42 +18,6 @@ use POE::Component::Client::MPD::Message;
 
 use base qw[ Class::Accessor::Fast ];
 
-=pod
-
-Readonly my @EVENTS => qw[
-    all_items all_items_simple items_in_dir
-    all_albums all_artists all_titles all_files
-    song songs_with_filename_partial
-    albums_by_artist
-        songs_by_artist  songs_by_artist_partial
-        songs_from_album songs_from_album_partial
-        songs_with_title songs_with_title_partial
-];
-
-sub _spawn {
-    my $object = __PACKAGE__->new;
-    my $session = POE::Session->create(
-        inline_states => {
-            '_start'      => sub { $_[KERNEL]->alias_set( $COLLECTION ) },
-            '_default'    => \&POE::Component::Client::MPD::_onpub_default,
-            '_dispatch'   => \&_onpriv_dispatch,
-            '_disconnect' => sub { $_[KERNEL]->alias_remove( $COLLECTION ) },
-        },
-        object_states => [ $object => [ map { "_onpub_$_" } @EVENTS ] ]
-    );
-
-    return $session->ID;
-}
-
-sub _onpriv_dispatch {
-    my $msg = $_[ARG0];
-    my $event = $msg->_dispatch;
-    $event =~ s/^[^.]\.//;
-#     warn "dispatching $event\n";
-    $_[KERNEL]->yield( "_onpub_$event", $msg );
-}
-
-=cut
 
 # -- Collection: retrieving songs & directories
 
