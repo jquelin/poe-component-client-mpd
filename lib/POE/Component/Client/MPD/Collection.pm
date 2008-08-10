@@ -97,8 +97,6 @@ sub _do_all_items_simple {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: coll.items_in_dir( [$path] )
@@ -107,17 +105,15 @@ sub _do_all_items_simple {
 # root directory.
 # Note that this sub does not work recusrively on all directories.
 #
-sub _onpub_items_in_dir {
-    my $msg  = $_[ARG0];
-    my $path = $msg->_params->[0] || '';
+sub _do_items_in_dir {
+    my ($self, $k, $h, $msg) = @_;
+    my $path = $msg->params->[0] // '';
 
-    $msg->_answer   ( $SEND );
     $msg->_commands ( [ qq[lsinfo "$path"] ] );
     $msg->_cooking  ( $AS_ITEMS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
 
-=cut
 
 
 # -- Collection: retrieving the whole collection
