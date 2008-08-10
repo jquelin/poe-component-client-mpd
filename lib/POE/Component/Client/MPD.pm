@@ -143,7 +143,8 @@ sub _onpub_default {
         coll.all_albums coll.all_artists coll.all_titles coll.all_files
         coll.song coll.songs_with_filename_partial
         coll.albums_by_artist coll.songs_by_artist coll.songs_by_artist_partial
-        coll.songs_from_album coll.songs_from_album_partial
+            coll.songs_from_album coll.songs_from_album_partial
+            coll.songs_with_title
     };
     my @ok_events = ( @events_commands, @events_playlist, @events_collection );
     return unless $event ~~ [ @ok_events ];
