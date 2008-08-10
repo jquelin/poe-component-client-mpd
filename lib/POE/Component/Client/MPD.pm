@@ -99,6 +99,8 @@ sub _dispatch {
 
         # collection commands
         when (/^coll\.(.*)$/) {
+            my $meth = "_do_$1";
+            $h->{collection}->$meth($k, $h, $msg);
         }
 
         # basic commands
