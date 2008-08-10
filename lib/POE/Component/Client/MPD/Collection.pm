@@ -230,22 +230,22 @@ sub _do_albums_by_artist {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: coll.songs_by_artist($artist);
 #
 # Return all AMC::Item::Songs performed by $artist.
 #
-sub _onpub_songs_by_artist {
-    my $msg  = $_[ARG0];
-    my $what = $msg->_params->[0];
-    $msg->_answer   ( $SEND );
+sub _do_songs_by_artist {
+    my ($self, $k, $h, $msg) = @_;
+    my $what = $msg->params->[0];
+
     $msg->_commands ( [ qq[find artist "$what"] ] );
     $msg->_cooking  ( $AS_ITEMS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
