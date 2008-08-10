@@ -20,16 +20,16 @@ my @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # all_items
-    [ 'coll.all_items',              [], 0, \&check_all_items1 ],
-    [ 'coll.all_items',        ['dir1'], 0, \&check_all_items2 ],
+    [ 'coll.all_items',              [], 0, \&check_all_items1        ],
+    [ 'coll.all_items',        ['dir1'], 0, \&check_all_items2        ],
 
     # all_items_simple
     [ 'coll.all_items_simple',       [], 0, \&check_all_items_simple1 ],
     [ 'coll.all_items_simple', ['dir1'], 0, \&check_all_items_simple2 ],
 
     # items_in_dir
-    [ 'coll.items_in_dir',           [], 0, \&check_items_in_dir1 ],
-    [ 'coll.items_in_dir',     ['dir1'], 0, \&check_items_in_dir2 ],
+    [ 'coll.items_in_dir',           [], 0, \&check_items_in_dir1     ],
+    [ 'coll.items_in_dir',     ['dir1'], 0, \&check_items_in_dir2     ],
 );
 
 

@@ -20,16 +20,16 @@ my @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # all_albums
-    [ 'coll.all_albums',  [], 0, \&check_all_albums ],
+    [ 'coll.all_albums',  [], 0, \&check_all_albums  ],
 
     # all_artists
     [ 'coll.all_artists', [], 0, \&check_all_artists ],
 
     # all_titles
-    [ 'coll.all_titles',  [], 0, \&check_all_titles ],
+    [ 'coll.all_titles',  [], 0, \&check_all_titles  ],
 
     # all_files
-    [ 'coll.all_files',   [], 0, \&check_all_files ],
+    [ 'coll.all_files',   [], 0, \&check_all_files   ],
 
 );
 
