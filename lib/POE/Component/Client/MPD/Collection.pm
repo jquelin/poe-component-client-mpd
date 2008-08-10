@@ -74,31 +74,30 @@ sub _do_all_items {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: coll.all_items_simple( [$path] )
 #
-# Return *all* POCOCM::Items (both songs & directories) currently known
-# by mpd.
+# Return *all* Audio::MPD::Common::Items (both songs & directories)
+# currently known by mpd.
 #
 # If $path is supplied (relative to mpd root), restrict the retrieval to
 # songs and dirs in this directory.
 #
-# /!\ Warning: the POCOCM::Item::Song objects will only have their tag
-# file filled. Any other tag will be empty, so don't use this sub for any
-# other thing than a quick scan!
+# /!\ Warning: the Audio::MPD::Common::Item::Song objects will only have
+# their tag file filled. Any other tag will be empty, so don't use this
+# sub for any other thing than a quick scan!
 #
-sub _onpub_all_items_simple {
-    my $msg  = $_[ARG0];
-    my $path = $msg->_params->[0] || '';
+sub _do_all_items_simple {
+    my ($self, $k, $h, $msg) = @_;
+    my $path = $msg->params->[0] // '';
 
-    $msg->_answer   ( $SEND );
     $msg->_commands ( [ qq[listall "$path"] ] );
     $msg->_cooking  ( $AS_ITEMS );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
