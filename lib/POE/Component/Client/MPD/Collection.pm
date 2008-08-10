@@ -135,21 +135,21 @@ sub _do_all_albums {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-=pod
-
 
 #
 # event: coll.all_artists( )
 #
 # Return the list of all artists (strings) currently known by mpd.
 #
-sub _onpub_all_artists {
-    my $msg  = $_[ARG0];
-    $msg->_answer   ( $SEND );
+sub _do_all_artists {
+    my ($self, $k, $h, $msg) = @_;
+
     $msg->_commands ( [ 'list artist' ] );
     $msg->_cooking  ( $STRIP_FIRST );
-    $_[KERNEL]->post( $_HUB, '_send', $msg );
+    $k->post( $h->{socket}, 'send', $msg );
 }
+
+=pod
 
 
 #
