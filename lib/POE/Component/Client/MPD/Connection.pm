@@ -271,12 +271,26 @@ sub _onpriv_ConnectError {
     my ($k, $h, $syscall, $errno, $errstr) = @_[KERNEL, HEAP, ARG0, ARG1, ARG2];
     return unless $h->{auto_reconnect};
 
-    $k->post(
-        $h->{session}, 'mpd_connect_error_retriable',
-        "$syscall: ($errno) $errstr"
-    );
-    # auto-reconnect in $retry_wait seconds
-    $k->delay_add('reconnect' => $h->{retry_wait});
+    # check if this is the last allowed error.
+    $h->{retries_left}--;
+    my ($event, $msg);
+    if ( $h->{retries_left} > 0 ) {
+        # nope, we can reconnect
+        $event = 'mpd_connect_error_retriable';
+        $msg   = '';
+
+        # auto-reconnect in $retry_wait seconds
+        $k->delay_add('reconnect' => $h->{retry_wait});
+
+    } else {
+        # yup, it was our last chance.
+        $event = 'mpd_connect_error_fatal';
+        $msg   = 'too many failed attempts! message was: ';
+    }
+
+    # signal that there was a problem during connection
+    my $error = $msg . "$syscall: ($errno) $errstr";
+    $k->post( $h->{session}, $event, $error );
 }
 
 
