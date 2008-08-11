@@ -415,23 +415,26 @@ checked that remote peer is a real mpd server. C<$version> is the
 advertised mpd server version.
 
 
-=head2 mpd_connect_error_fatal()
+=head2 mpd_connect_error_fatal( $errstr )
 
-Fired when the session is connected to a server which happens to be
-something else than a mpd server. No retries will be done.
+Fired when the session encounters a fatal error. This happens either
+when the session is connected to a server which happens to be something
+else than a mpd server, or if there was more than C<max_retries> (see
+C<spawn()> params) connection retries in a row. C<$errstr> will contain
+the problem encountered. No retries will be done.
 
 
-=head2 mpd_connect_error_retriable($errstr)
+=head2 mpd_connect_error_retriable( $errstr )
 
 Fired when the session has troubles connecting to the server. C<$errstr>
 will point the faulty syscall that failed. Re-connection will be tried
-after 5 seconds.
+after C<$retry_wait> seconds (see C<spawn()> params).
 
 
 =head2 mpd_data( $msg )
 
 Fired when C<$msg> has been sent over the wires, and mpd server has
-answered with success. The actual result should be looked up in
+answered with success. The actual output should be looked up in
 C<$msg->_data>.
 
 
@@ -439,7 +442,8 @@ C<$msg->_data>.
 
 Fired when the socket has been disconnected for whatever reason. Note
 that this event is B<not> fired in the case of a programmed shutdown
-(see C<disconnect()> event above).
+(see C<disconnect()> event above). A reconnection will be automatically
+re-tried after C<$retry_wait> (see C<spawn()> params).
 
 
 =head2 mpd_error( $msg, $errstr )
