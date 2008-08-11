@@ -255,20 +255,6 @@ sub _onprot_mpd_error {
 
 =cut
 
-=pod
-
-#
-# Event: _mpd_version( $vers )
-#
-# Event received during connection, when mpd server sends its version.
-# Store it for later usage if needed.
-#
-sub _onprot_mpd_version {
-    $_[HEAP]->{version} = $_[ARG0];
-}
-
-=cut
-
 
 # -- private events
 
