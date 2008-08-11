@@ -371,6 +371,7 @@ __END__
 POE::Component::Client::MPD - a full-blown mpd client library
 
 
+
 =head1 SYNOPSIS
 
     use POE qw{ Component::Client::MPD };
@@ -385,6 +386,7 @@ POE::Component::Client::MPD - a full-blown mpd client library
     $_[KERNEL]->post( 'mpd', 'next' );
 
 
+
 =head1 DESCRIPTION
 
 POCOCM gives a clear message-passing interface (sitting on top of POE)
@@ -395,15 +397,18 @@ object is created.
 Commands are then sent to the server as messages are passed.
 
 
+
 =head1 PUBLIC PACKAGE METHODS
 
-=head2 spawn( \%params )
+
+=head2 my $id = POCOCM->spawn( \%params )
 
 This method will create a POE session responsible for communicating with mpd.
 It will return the poe id of the session newly created.
 
 You can tune the pococm by passing some arguments as a hash reference, where
 the hash keys are:
+
 
 =over 4
 
@@ -433,6 +438,7 @@ An optional string to alias the newly created POE session.
 =back
 
 
+
 =head1 PUBLIC EVENTS
 
 For a list of public events that you can send to a POCOCM session, check:
@@ -443,15 +449,21 @@ For a list of public events that you can send to a POCOCM session, check:
 
 C<POCOCM::Commands> for general commands
 
-=item *
-
-C<POCOCM::Playlist> for playlist-related commands
 
 =item *
 
-C<POCOCM::Collection> for collection-related commands
+C<POCOCM::Playlist> for playlist-related commands. Those events begin
+with C<pl.>.
+
+
+=item *
+
+C<POCOCM::Collection> for collection-related commands. Those events
+begin with C<coll.>.
+
 
 =back
+
 
 
 =head1 BUGS
@@ -463,6 +475,7 @@ I will be notified, and then you'll automatically be notified of progress on
 your bug as I make changes.
 
 
+
 =head1 SEE ALSO
 
 You can find more information on the mpd project on its homepage at
@@ -470,8 +483,8 @@ L<http://www.musicpd.org>, or its wiki L<http://mpd.wikia.com>.
 
 C<POE::Component::Client::MPD development> takes place on C<< <audio-mpd
 at googlegroups.com> >>: feel free to join us. (use
-L<http://groups.google.com/group/audio-mpd> to sign in). Our subversion
-repository is located at L<https://svn.musicpd.org>.
+L<http://groups.google.com/group/audio-mpd> to sign in). Our git
+repository is located at L<git://repo.or.cz/poe-component-client-mpd.git>.
 
 
 You can also look for information on this module at:
@@ -493,9 +506,11 @@ L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD>
 =back
 
 
+
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
+
 
 
 =head1 COPYRIGHT & LICENSE
