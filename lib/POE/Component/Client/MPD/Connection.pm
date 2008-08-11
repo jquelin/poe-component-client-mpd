@@ -20,9 +20,6 @@ use POE::Component::Client::TCP;
 use Readonly;
 
 
-Readonly my $IGNORE    => 0;
-Readonly my $RECONNECT => 1;
-
 #
 # -- METHODS
 #
@@ -38,10 +35,11 @@ Readonly my $RECONNECT => 1;
 # session newly created.
 #
 # Arguments are passed as a hash reference, with the keys:
-#   - host:  hostname of the mpd server.
-#   - port:  port of the mpd server.
-#   - id:    poe session id of the peer to dialog with
-#   - retry: time to wait before attempting to reconnect. defaults to 5.
+#   - host:        hostname of the mpd server.
+#   - port:        port of the mpd server.
+#   - id:          poe session id of the peer to dialog with.
+#   - max_retries: number of retries before giving up. defaults to 5.
+#   - retry_wait:  time to wait before attempting to reconnect. defaults to 5.
 #
 # The args without default are not supposed to be empty - ie, you will
 # get an error if you don't follow this requirement! Yes, this is a
@@ -204,8 +202,8 @@ sub _got_first_input_line {
 # Request the pococm-connection to be shutdown. No argument.
 #
 sub _onprot_disconnect {
-    $_[HEAP]->{on_disconnect} = $IGNORE; # no more auto-reconnect.
-    $_[KERNEL]->yield( 'shutdown' );     # shutdown socket.
+    $_[HEAP]->{auto_reconnect} = 0;    # no more auto-reconnect.
+    $_[KERNEL]->yield( 'shutdown' );   # shutdown socket.
 }
 
 
@@ -236,9 +234,10 @@ sub _onprot_send {
 #
 sub _onpriv_Started {
     my ($h, $args) = @_[HEAP, ARG0];
-    $h->{session}       = $args->{id};          # poe-session peer
-    $h->{retry}         = $args->{retry} // 5;  # sleep time before retry
-    $h->{on_disconnect} = $RECONNECT;           # disconnect policy
+    $h->{session}        = $args->{id};                # poe-session peer
+    $h->{max_retries}    = $args->{max_retries} // 5;  # max retries before giving up
+    $h->{retry_wait}     = $args->{retry_wait}  // 5;  # sleep time before retry
+    $h->{auto_reconnect} = 1;                          # disconnect policy
 }
 
 
@@ -258,17 +257,20 @@ sub _onpriv_Connected {
 #
 # event: ConnectError($syscall, $errno, $errstr)
 #
-# Called whenever the tcp connection fails to be established. Receives
+# Called whenever the tcp connection fails to be established. Generally
+# due to mpd server not started, or wrong host / port, etc. Receives
 # the $syscall that failed, as well as $errno and $errstr.
 #
 sub _onpriv_ConnectError {
     my ($k, $h, $syscall, $errno, $errstr) = @_[KERNEL, HEAP, ARG0, ARG1, ARG2];
-    return if $h->{on_disconnect} != $RECONNECT;
+    return unless $h->{auto_reconnect};
+
     $k->post(
         $h->{session}, 'mpd_connect_error_retriable',
         "$syscall: ($errno) $errstr"
     );
-    $k->delay_add('reconnect' => $h->{retry}); # auto-reconnect in $retry seconds
+    # auto-reconnect in $retry_wait seconds
+    $k->delay_add('reconnect' => $h->{retry_wait});
 }
 
 
@@ -279,7 +281,7 @@ sub _onpriv_ConnectError {
 #
 sub _onpriv_Disconnected {
     my ($k, $h) = @_[KERNEL, HEAP];
-    return if $h->{on_disconnect} != $RECONNECT;
+    return unless $h->{auto_reconnect};
     $k->post($h->{session}, 'mpd_disconnected');
     $k->yield('reconnect'); # auto-reconnect
 }
@@ -359,7 +361,12 @@ The port of the mpd server. Mandatory, no default.
 The POE session id of the peer to dialog with. Mandatory, no default.
 
 
-=item * retry
+=item * max_retries
+
+How much time to attempt reconnection before giving up. Defaults to 5.
+
+
+=item * retry_wait
 
 How much time to wait (in seconds) before attempting socket
 reconnection. Defaults to 5.
