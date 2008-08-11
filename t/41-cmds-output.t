@@ -11,18 +11,12 @@
 use strict;
 use warnings;
 
-use POE;
 use Test::More;
 
-my $volume;
-my @songs = qw{ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg };
-
+my @songs   = qw{ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg };
 my $nbtests = 20;
 my @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
-
-    # store current volume.
-    [ 'status', [],   0, sub { $volume = $_[1]->volume } ],
 
     # volume
     [ 'volume', [10], 0,  \&check_success                  ],  # init to sthg we know
@@ -46,9 +40,6 @@ my @tests   = (
     [ 'play',           [],      0, \&check_success        ],
     [ 'pause',          [],      0, \&check_success        ],
     [ 'status',         [],      0, \&check_output_enable  ],
-
-    # restore previous volume - dirty hack.
-    [ 'status', [],   0, sub {$poe_kernel->post('volume',$volume)} ],
 );
 
 # are we able to test module?

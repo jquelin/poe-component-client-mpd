@@ -11,9 +11,7 @@
 use strict;
 use warnings;
 
-use POE;
 use Test::More;
-
 
 my $nbtests = 12;
 my @tests   = (

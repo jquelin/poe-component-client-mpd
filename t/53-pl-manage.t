@@ -11,10 +11,8 @@
 use strict;
 use warnings;
 
-use POE;
 use FindBin qw{ $Bin };
 use Test::More;
-
 
 my $nbtests = 11;
 my @tests   = (

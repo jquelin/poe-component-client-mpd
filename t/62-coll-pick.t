@@ -11,10 +11,9 @@
 use strict;
 use warnings;
 
-use POE;
 use Test::More;
 
-my $path = 'dir1/title-artist-album.ogg';
+my $path    = 'dir1/title-artist-album.ogg';
 my $nbtests = 8;
 my @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]

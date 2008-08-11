@@ -11,8 +11,7 @@
 use strict;
 use warnings;
 
-use POE;
-use POE::Component::Client::MPD;
+use POE qw{ Component::Client::MPD };
 use Test::More;
 
 eval 'use POE::Component::Client::MPD::Test dont_start_poe=>1';
