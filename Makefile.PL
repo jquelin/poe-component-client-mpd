@@ -22,7 +22,6 @@ WriteMakefile(
     PREREQ_PM => {
         'Audio::MPD::Common' => 0,
         'Class::Accessor'    => 0,
-        'List::MoreUtils'    => 0,
         'POE'                => 0,
         'Readonly'           => 0,
         'Test::More'         => 0,

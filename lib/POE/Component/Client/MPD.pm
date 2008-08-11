@@ -16,7 +16,6 @@ use warnings;
 use Audio::MPD::Common::Stats;
 use Audio::MPD::Common::Status;
 use Carp;
-use List::MoreUtils qw{ firstidx };
 use POE;
 use POE::Component::Client::MPD::Commands;
 use POE::Component::Client::MPD::Collection;
