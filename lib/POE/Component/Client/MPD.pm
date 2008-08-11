@@ -240,22 +240,6 @@ sub _onprot_mpd_data {
         return;
     }
 
-=pod
-
-    # check for pre-callback.
-    my $preidx = firstidx { $msg->_request eq $_->_pre_event } @{ $h->{pre_messages} };
-    if ( $preidx != -1 ) {
-        my $pre = splice @{ $h->{pre_messages} }, $preidx, 1;
-        $k->yield( $pre->_pre_from, $pre, $msg );  # call post pre-event
-        $pre->_pre_from ( undef );                 # remove pre-callback
-        $pre->_pre_event( undef );                 # remove pre-event
-        return;
-    }
-
-    return if $msg->_answer == $DISCARD;
-
-=cut
-
     # send result.
     $k->post($msg->_from, 'mpd_result', $msg, $msg->_data);
 }
