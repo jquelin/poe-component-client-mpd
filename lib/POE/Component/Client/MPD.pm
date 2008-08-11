@@ -181,7 +181,7 @@ sub _onpub_disconnect {
 # -- protected events.
 
 #
-# event: mpd_connected($version)
+# event: mpd_connected( $version )
 #
 # Called when pococm-conn made sure we're talking to a mpd server.
 #
