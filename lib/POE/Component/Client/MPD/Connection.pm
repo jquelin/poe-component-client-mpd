@@ -253,9 +253,10 @@ sub _onpriv_Started {
 #
 sub _onpriv_Connected {
     my $h = $_[HEAP];
-    $h->{fifo}     = [];     # reset current messages
-    $h->{incoming} = [];     # reset incoming data
-    $h->{is_mpd}   = 0;      # is remote server a mpd sever?
+    $h->{fifo}         = [];                 # reset current messages
+    $h->{incoming}     = [];                 # reset incoming data
+    $h->{is_mpd}       = 0;                  # is remote server a mpd sever?
+    $h->{retries_left} = $h->{max_retries};  # reset connection retries count
 }
 
 
