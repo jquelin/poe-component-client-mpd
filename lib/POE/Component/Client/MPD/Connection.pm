@@ -41,7 +41,7 @@ Readonly my $RECONNECT => 1;
 #   - host:  hostname of the mpd server.
 #   - port:  port of the mpd server.
 #   - id:    poe session id of the peer to dialog with
-#   - retyr: time to wait before attempting to reconnect. defaults to 5.
+#   - retry: time to wait before attempting to reconnect. defaults to 5.
 #
 # The args without default are not supposed to be empty - ie, you will
 # get an error if you don't follow this requirement! Yes, this is a
@@ -320,7 +320,6 @@ POE::Component::Client::MPD::Connection - module handling the tcp connection wit
 
 
 
-
 =head1 DESCRIPTION
 
 This module will spawn a poe session responsible for low-level communication
@@ -329,7 +328,6 @@ needed.
 
 Note that you're B<not> supposed to use this class directly: it's one of the
 helper class for POCOCM.
-
 
 
 
@@ -348,17 +346,17 @@ You should provide some arguments as a hash reference, where the hash keys are:
 
 =item * host
 
-The hostname of the mpd server. No default.
+The hostname of the mpd server. Mandatory, no default.
 
 
 =item * port
 
-The port of the mpd server. No default.
+The port of the mpd server. Mandatory, no default.
 
 
 =item * id
 
-The POE session id of the peer to dialog with. No default.
+The POE session id of the peer to dialog with. Mandatory, no default.
 
 
 =item * retry
@@ -371,9 +369,8 @@ reconnection. Defaults to 5.
 
 
 The args without default are not supposed to be empty - ie, you will get
-an error if you don't follow this requirement! Yes, this is a private
+an error if you don't follow those requirements! Yes, this is a private
 class, and you're not supposed to use it beyond pococm. :-)
-
 
 
 
@@ -384,18 +381,17 @@ restricted to POCOCM (in oo-lingo, they are more protected rather than
 public).
 
 
+=head2 disconnect()
 
-=head2 disconnect( )
+Request the pococm-connection to be shutdown. This does B<not> shut down
+the MPD server. No argument.
 
-Request the pococm-connection to be shutdown. No argument.
 
-
-=head2 send($message)
+=head2 send( $message )
 
 Request pococm-conn to send the C<$message> over the wires. Note that
-this request is a pococm-message object, and that the ->_commands should
-B<not> be newline terminated.
-
+this request is a pococm-message object properly filled up, and that the
+C<_commands()> attribute should B<not> be newline terminated.
 
 
 
@@ -403,7 +399,8 @@ B<not> be newline terminated.
 
 The following events are fired from the spawned session.
 
-=head2 mpd_connected($version)
+
+=head2 mpd_connected( $version )
 
 Fired when the session is connected to a mpd server. This event isn't
 fired when the socket connection takes place, but when the session has
@@ -424,24 +421,24 @@ will point the faulty syscall that failed. Re-connection will be tried
 after 5 seconds.
 
 
-=head2 mpd_data($msg)
+=head2 mpd_data( $msg )
 
 Fired when C<$msg> has been sent over the wires, and mpd server has
-answered with success.
+answered with success. The actual result should be looked up in
+C<$msg->_data>.
 
 
 =head2 mpd_disconnected()
 
 Fired when the socket has been disconnected for whatever reason. Note
 that this event is B<not> fired in the case of a programmed shutdown
-(see C<disconnect> event above).
+(see C<disconnect()> event above).
 
 
-=head2 mpd_error($msg,$errstr)
+=head2 mpd_error( $msg, $errstr )
 
 Fired when C<$msg> has been sent over the wires, and mpd server has
-answered with an error message C<$errstr>.
-
+answered with the error message C<$errstr>.
 
 
 
@@ -453,11 +450,9 @@ section C<SEE ALSO>
 
 
 
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
 
 
 
