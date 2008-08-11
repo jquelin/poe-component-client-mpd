@@ -119,7 +119,7 @@ sub _dispatch {
 # -- public events.
 
 #
-# catch-all handler.
+# catch-all handler for pococm events that drive mpd.
 #
 sub _onpub_default {
     my ($k, $h, $event, $params) = @_[KERNEL, HEAP, ARG0, ARG1];
@@ -154,7 +154,6 @@ sub _onpub_default {
         _from       => $_[SENDER]->ID,
         request    => $event,  # /!\ $_[STATE] eq 'default'
         params     => $params,
-        #_answer    => <to be set by handler>
         #_commands  => <to be set by handler>
         #_cooking   => <to be set by handler>
         #_transform => <to be set by handler>
