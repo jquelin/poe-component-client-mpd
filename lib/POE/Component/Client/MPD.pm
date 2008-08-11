@@ -106,7 +106,7 @@ sub _dispatch {
         # basic commands
         default {
             my $meth = "_do_$event";
-            $h->{cmds}->$meth($k, $h, $msg);
+            $h->{commands}->$meth($k, $h, $msg);
         }
     }
 }
@@ -314,9 +314,9 @@ sub _onpriv_start {
     $h->{password} = delete $params{password};
     $h->{socket}   = POE::Component::Client::MPD::Connection->spawn(\%params);
 
-    $h->{mpd}      = POE::Component::Client::MPD->new;
-    $h->{cmds}     = POE::Component::Client::MPD::Commands->new;
-    $h->{playlist} = POE::Component::Client::MPD::Playlist->new;
+    $h->{mpd}        = POE::Component::Client::MPD->new;
+    $h->{commands}   = POE::Component::Client::MPD::Commands->new;
+    $h->{playlist}   = POE::Component::Client::MPD::Playlist->new;
     $h->{collection} = POE::Component::Client::MPD::Collection->new;
 }
 
