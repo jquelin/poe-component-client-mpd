@@ -39,7 +39,7 @@ use Readonly;
 #   - port:        port of the mpd server.
 #   - id:          poe session id of the peer to dialog with.
 #   - max_retries: number of retries before giving up. defaults to 5.
-#   - retry_wait:  time to wait before attempting to reconnect. defaults to 5.
+#   - retry_wait:  time to wait before attempting to reconnect. defaults to 2.
 #
 # The args without default are not supposed to be empty - ie, you will
 # get an error if you don't follow this requirement! Yes, this is a
@@ -238,7 +238,7 @@ sub _onpriv_Started {
     # storing params
     $h->{session}     = $args->{id};                # poe-session peer
     $h->{max_retries} = $args->{max_retries} // 5;  # max retries before giving up
-    $h->{retry_wait}  = $args->{retry_wait}  // 5;  # sleep time before retry
+    $h->{retry_wait}  = $args->{retry_wait}  // 2;  # sleep time before retry
 
     # setting session vars
     $h->{auto_reconnect} = 1;                   # on-disconnect policy
@@ -393,7 +393,7 @@ How much time to attempt reconnection before giving up. Defaults to 5.
 =item * retry_wait
 
 How much time to wait (in seconds) before attempting socket
-reconnection. Defaults to 5.
+reconnection. Defaults to 2.
 
 
 =back
