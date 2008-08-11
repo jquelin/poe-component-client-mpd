@@ -234,10 +234,15 @@ sub _onprot_send {
 #
 sub _onpriv_Started {
     my ($h, $args) = @_[HEAP, ARG0];
-    $h->{session}        = $args->{id};                # poe-session peer
-    $h->{max_retries}    = $args->{max_retries} // 5;  # max retries before giving up
-    $h->{retry_wait}     = $args->{retry_wait}  // 5;  # sleep time before retry
-    $h->{auto_reconnect} = 1;                          # disconnect policy
+
+    # storing params
+    $h->{session}     = $args->{id};                # poe-session peer
+    $h->{max_retries} = $args->{max_retries} // 5;  # max retries before giving up
+    $h->{retry_wait}  = $args->{retry_wait}  // 5;  # sleep time before retry
+
+    # setting session vars
+    $h->{auto_reconnect} = 1;                   # on-disconnect policy
+    $h->{retries_left}   = $h->{max_retries};   # how much chances is there still?
 }
 
 
