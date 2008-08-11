@@ -179,7 +179,7 @@ sub _do_shuffle {
 
 
 #
-# event: pl.swap( $song1, song2 )
+# event: pl.swap( $song1, $song2 )
 #
 # Swap positions of song number $song1 and $song2 in the current playlist.
 #
@@ -194,7 +194,7 @@ sub _do_swap {
 
 
 #
-# event: pl.swapid( $songid1, songid2 )
+# event: pl.swapid( $songid1, $songid2 )
 #
 # Swap positions of song id $songid1 and $songid2 in the current playlist.
 #
@@ -209,7 +209,7 @@ sub _do_swapid {
 
 
 #
-# event: pl.move( $song, $newpos );
+# event: pl.move( $song, $newpos )
 #
 # Move song number $song to the position $newpos.
 #
@@ -224,7 +224,7 @@ sub _do_move {
 
 
 #
-# event: pl.moveid( $songid, $newpos );
+# event: pl.moveid( $songid, $newpos )
 #
 # Move song id $songid to the position $newpos.
 #
@@ -241,7 +241,7 @@ sub _do_moveid {
 # -- Playlist: managing playlists
 
 #
-# event: pl.load( $playlist );
+# event: pl.load( $playlist )
 #
 # Load list of songs from specified $playlist file.
 #
@@ -256,7 +256,7 @@ sub _do_load {
 
 
 #
-# event: pl.save( $playlist );
+# event: pl.save( $playlist )
 #
 # Save the current playlist to a file called $playlist in MPD's
 # playlist directory.
@@ -272,7 +272,7 @@ sub _do_save {
 
 
 #
-# event: pl.rm( $playlist );
+# event: pl.rm( $playlist )
 #
 # Delete playlist named $playlist from MPD's playlist directory.
 #
@@ -296,26 +296,143 @@ __END__
 POE::Component::Client::MPD::Playlist - module handling playlist commands
 
 
+
 =head1 DESCRIPTION
 
-C<POCOCM::Playlist> is responsible for handling playlist-related commands.
+C<POCOCM::Playlist> is responsible for handling general purpose
+commands. They are in a dedicated module to achieve easier code
+maintenance.
+
 To achieve those commands, send the corresponding event to the POCOCM
 session you created: it will be responsible for dispatching the event
-where it is needed.
+where it is needed. Under no circumstance should you call directly subs
+or methods from this module directly.
+
+Read POCOCM's pod to learn how to deal with answers from those commands.
+
 
 
 =head1 PUBLIC EVENTS
 
-The following is a list of general purpose events accepted by POCOCM.
+The following is a list of playlist-related events accepted by POCOCM.
 
 
 =head2 Retrieving information
 
+
+=over 4
+
+=item * pl.as_items()
+
+Return an array of C<Audio::MPD::Common::Item::Song>s, one for each of
+the songs in the current playlist.
+
+
+=item * pl.items_changed_since( $plversion )
+
+Return a list with all the songs (as C<Audio::MPD::Common::Item::Song>
+objects) added to the playlist since playlist C<$plversion>.
+
+
+=back
+
+
+
 =head2 Adding / removing songs
+
+
+=over 4
+
+=item * pl.add( $path, $path, ... )
+
+Add the songs identified by C<$path> (relative to MPD's music directory)
+to the current playlist.
+
+
+=item * pl.delete( $number, $number, ... )
+
+Remove song C<$number> (starting from 0) from the current playlist.
+
+
+=item * pl.deleteid( $songid, $songid, ... )
+
+Remove the specified C<$songid> (as assigned by mpd when inserted in
+playlist) from the current playlist.
+
+
+=item * clear()
+
+Remove all the songs from the current playlist.
+
+
+=item * crop()
+
+Remove all of the songs from the current playlist *except* the current one.
+
+
+=back
+
+
 
 =head2 Changing playlist order
 
+
+=over 4
+
+=item * pl.shuffle()
+
+Shuffle the current playlist.
+
+
+=item * pl.swap( $song1, $song2 )
+
+Swap positions of song number C<$song1> and C<$song2> in the current
+playlist.
+
+
+=item * pl.swapid( $songid1, $songid2 )
+
+Swap positions of song id C<$songid1> and C<$songid2> in the current
+playlist.
+
+
+=item * pl.move( $song, $newpos )
+
+Move song number C<$song> to the position C<$newpos>.
+
+
+=item * pl.moveid( $songid, $newpos )
+
+Move song id C<$songid> to the position C<$newpos>.
+
+
+=back
+
+
+
 =head2 Managing playlists
+
+
+=over 4
+
+=item * pl.load( $playlist )
+
+Load list of songs from specified C<$playlist> file.
+
+
+=item * pl.save( $playlist )
+
+Save the current playlist to a file called C<$playlist> in MPD's
+playlist directory.
+
+
+=item * pl.rm( $playlist )
+
+Delete playlist named C<$playlist> from MPD's playlist directory.
+
+
+=back
+
 
 
 =head1 SEE ALSO
@@ -325,9 +442,11 @@ MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 
+
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
+
 
 
 =head1 COPYRIGHT & LICENSE
