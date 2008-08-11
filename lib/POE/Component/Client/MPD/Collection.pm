@@ -26,6 +26,7 @@ use base qw[ Class::Accessor::Fast ];
 #
 # Return *all* Audio::MPD::Common::Items (both songs & directories)
 # currently known by mpd.
+#
 # If $path is supplied (relative to mpd root), restrict the retrieval to
 # songs and dirs in this directory.
 #
@@ -49,8 +50,8 @@ sub _do_all_items {
 # songs and dirs in this directory.
 #
 # /!\ Warning: the Audio::MPD::Common::Item::Song objects will only have
-# their tag file filled. Any other tag will be empty, so don't use this
-# sub for any other thing than a quick scan!
+# their attribute file filled. Any other attribute will be empty, so
+# don't use this sub for any other thing than a quick scan!
 #
 sub _do_all_items_simple {
     my ($self, $k, $h, $msg) = @_;
@@ -83,11 +84,11 @@ sub _do_items_in_dir {
 # -- Collection: retrieving the whole collection
 
 
-# event: coll.all_songs( )
+# event: coll.all_songs()
 # FIXME?
 
 #
-# event: coll.all_albums( )
+# event: coll.all_albums()
 #
 # Return the list of all albums (strings) currently known by mpd.
 #
@@ -101,7 +102,7 @@ sub _do_all_albums {
 
 
 #
-# event: coll.all_artists( )
+# event: coll.all_artists()
 #
 # Return the list of all artists (strings) currently known by mpd.
 #
@@ -115,7 +116,7 @@ sub _do_all_artists {
 
 
 #
-# event: coll.all_titles( )
+# event: coll.all_titles()
 #
 # Return the list of all titles (strings) currently known by mpd.
 #
@@ -163,7 +164,7 @@ sub _do_song {
 
 
 #
-# event: coll.songs_with_filename_partial( $string );
+# event: coll.songs_with_filename_partial( $string )
 #
 # Return the AMC::Item::Songs containing $string in their path.
 #
@@ -180,7 +181,7 @@ sub _do_songs_with_filename_partial {
 # -- Collection: songs, albums & artists relations
 
 #
-# event: coll.albums_by_artist($artist);
+# event: coll.albums_by_artist( $artist )
 #
 # Return all albums (strings) performed by $artist or where $artist
 # participated.
@@ -196,7 +197,7 @@ sub _do_albums_by_artist {
 
 
 #
-# event: coll.songs_by_artist($artist);
+# event: coll.songs_by_artist( $artist )
 #
 # Return all AMC::Item::Songs performed by $artist.
 #
@@ -211,7 +212,7 @@ sub _do_songs_by_artist {
 
 
 #
-# event: coll.songs_by_artist_partial($artist);
+# event: coll.songs_by_artist_partial( $artist )
 #
 # Return all AMC::Item::Songs performed by $artist.
 #
@@ -226,7 +227,7 @@ sub _do_songs_by_artist_partial {
 
 
 #
-# event: coll.songs_from_album($album);
+# event: coll.songs_from_album( $album )
 #
 # Return all AMC::Item::Songs appearing in $album.
 #
@@ -241,7 +242,7 @@ sub _do_songs_from_album {
 
 
 #
-# event: coll.songs_from_album_partial($string);
+# event: coll.songs_from_album_partial( $string )
 #
 # Return all AMC::Item::Songs appearing in album containing $string.
 #
@@ -256,7 +257,7 @@ sub _do_songs_from_album_partial {
 
 
 #
-# event: coll.songs_with_title($title);
+# event: coll.songs_with_title( $title )
 #
 # Return all AMC::Item::Songs which title is exactly $title.
 #
@@ -271,7 +272,7 @@ sub _do_songs_with_title {
 
 
 #
-# event: coll.songs_with_title_partial($string);
+# event: coll.songs_with_title_partial( $string )
 #
 # Return all AMC::Item::Songs where $string is part of the title.
 #
@@ -294,26 +295,163 @@ __END__
 POE::Component::Client::MPD::Collection - module handling collection commands
 
 
+
 =head1 DESCRIPTION
 
-C<POCOCM::Collection> is responsible for handling collection-related
-commands. To achieve those commands, send the corresponding event to
-the POCOCM session you created: it will be responsible for dispatching
-the event where it is needed.
+C<POCOCM::Collection> is responsible for handling general purpose
+commands. They are in a dedicated module to achieve easier code
+maintenance.
+
+To achieve those commands, send the corresponding event to the POCOCM
+session you created: it will be responsible for dispatching the event
+where it is needed. Under no circumstance should you call directly subs
+or methods from this module directly.
+
+Read POCOCM's pod to learn how to deal with answers from those commands.
+
 
 
 =head1 PUBLIC EVENTS
 
-The following is a list of general purpose events accepted by POCOCM.
+The following is a list of collection-related events accepted by POCOCM.
 
 
 =head2 Retrieving songs & directories
 
+
+=over 4
+
+=item * coll.all_items( [$path] )
+
+Return all C<Audio::MPD::Common::Item>s (both songs & directories)
+currently known by mpd.
+
+If C<$path> is supplied (relative to mpd root), restrict the retrieval to
+songs and dirs in this directory.
+
+
+=item * coll.all_items_simple( [$path] )
+
+Return all C<Audio::MPD::Common::Item>s (both songs & directories)
+currently known by mpd.
+
+If C<$path> is supplied (relative to mpd root), restrict the retrieval
+to songs and dirs in this directory.
+
+B</!\ Warning>: the C<Audio::MPD::Common::Item::Song> objects will only
+have their attribute file filled. Any other attribute will be empty, so
+don't use this sub for any other thing than a quick scan!
+
+
+=item * coll.items_in_dir( [$path] )
+
+Return the items in the given C<$path>. If no C<$path> supplied, do it on mpd's
+root directory.
+
+Note that this sub does not work recusrively on all directories.
+
+
+=back
+
+
+
 =head2 Retrieving the whole collection
+
+
+=over 4
+
+=item * coll.all_albums()
+
+Return the list of all albums (strings) currently known by mpd.
+
+
+=item * coll.all_artists()
+
+Return the list of all artists (strings) currently known by mpd.
+
+
+=item * coll.all_titles()
+
+Return the list of all titles (strings) currently known by mpd.
+
+
+=item * coll.all_files()
+
+Return a mpd_result event with the list of all filenames (strings)
+currently known by mpd.
+
+
+=back
+
+
 
 =head2 Picking songs
 
+
+=over 4
+
+=item * coll.song( $path )
+
+Return the C<Audio::MPD::Common::Item::Song> which correspond to
+C<$path>.
+
+
+=item * coll.songs_with_filename_partial( $string )
+
+Return the C<Audio::MPD::Common::Item::Song>s containing C<$string> in
+their path.
+
+
+=back
+
+
+
 =head2 Songs, albums & artists relations
+
+
+=over 4
+
+=item * coll.albums_by_artist( $artist )
+
+Return all albums (strings) performed by C<$artist> or where C<$artist>
+participated.
+
+
+=item * coll.songs_by_artist( $artist )
+
+Return all C<Audio::MPD::Common::Item::Song>s performed by C<$artist>.
+
+
+=item * coll.songs_by_artist_partial( $artist )
+
+Return all C<Audio::MPD::Common::Item::Song>s performed by C<$artist>.
+
+
+=item * coll.songs_from_album( $album )
+
+Return all C<Audio::MPD::Common::Item::Song>s appearing in C<$album>.
+
+
+=item * coll.songs_from_album_partial( $string )
+
+Return all C<Audio::MPD::Common::Item::Song>s appearing in album
+containing C<$string>.
+
+
+=item * coll.songs_with_title( $title )
+
+Return all C<Audio::MPD::Common::Item::Song>s which title is exactly
+C<$title>.
+
+
+=item * coll.songs_with_title_partial( $string )
+
+Return all C<Audio::MPD::Common::Item::Song>s where C<$string> is part
+of the title.
+
+
+=back
+
 
 
 =head1 SEE ALSO
@@ -323,9 +461,11 @@ MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 
+
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
+
 
 
 =head1 COPYRIGHT & LICENSE
