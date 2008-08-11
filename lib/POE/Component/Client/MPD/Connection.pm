@@ -285,7 +285,7 @@ sub _onpriv_ConnectError {
     } else {
         # yup, it was our last chance.
         $event = 'mpd_connect_error_fatal';
-        $msg   = 'too many failed attempts! message was: ';
+        $msg   = 'Too many failed attempts! error was: ';
     }
 
     # signal that there was a problem during connection
