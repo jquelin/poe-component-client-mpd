@@ -14,10 +14,10 @@ use warnings;
 use POE;
 use Test::More;
 
-my @songs = qw[
+my @songs = qw{
     title.ogg dir1/title-artist-album.ogg
     dir1/title-artist.ogg dir2/album.ogg
-];
+};
 my $nb;
 my $nbtests = 26;
 my @tests   = (

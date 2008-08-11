@@ -16,7 +16,7 @@ use warnings;
 use Audio::MPD::Common::Stats;
 use Audio::MPD::Common::Status;
 use Carp;
-use List::MoreUtils qw[ firstidx ];
+use List::MoreUtils qw{ firstidx };
 use POE;
 use POE::Component::Client::MPD::Commands;
 use POE::Component::Client::MPD::Collection;
@@ -373,7 +373,7 @@ POE::Component::Client::MPD - a full-blown mpd client library
 
 =head1 SYNOPSIS
 
-    use POE qw[ Component::Client::MPD ];
+    use POE qw{ Component::Client::MPD };
     POE::Component::Client::MPD->spawn( {
         host     => 'localhost',
         port     => 6600,

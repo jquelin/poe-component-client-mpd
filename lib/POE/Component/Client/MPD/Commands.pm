@@ -15,7 +15,7 @@ use warnings;
 use POE;
 use POE::Component::Client::MPD::Message;
 
-use base qw[ Class::Accessor::Fast ];
+use base qw{ Class::Accessor::Fast };
 
 
 # -- MPD interaction: general commands

@@ -62,7 +62,7 @@ sub check_urlhandlers {
 sub check_version {
     my ($msg, $vers) = @_;
     SKIP: {
-        my $output = qx[mpd --version 2>/dev/null];
+        my $output = qx{mpd --version 2>/dev/null};
         skip 'need mpd installed', 2 unless $output =~ /^mpd .* ([\d.]+)\n/;
         check_success($msg);
         is($vers, $1, 'mpd version grabbed during connection is correct');

@@ -39,7 +39,7 @@ sub _start {
 }
 
 sub _check {
-    my @procs = grep { /\smpd\s/ } grep { !/grep/ } qx[ ps -ef ];
+    my @procs = grep { /\smpd\s/ } grep { !/grep/ } qx{ ps -ef };
     is( scalar @procs, 0, 'kill shuts down mpd' );
 }
 

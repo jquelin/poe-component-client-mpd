@@ -12,7 +12,7 @@ use 5.010;
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Connection ];
+use POE qw{ Component::Client::MPD::Connection };
 use Readonly;
 use Test::More;
 

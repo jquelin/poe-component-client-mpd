@@ -15,12 +15,12 @@ use POE;
 use Test::More;
 
 my $plvers;
-my @songs = qw[
+my @songs = qw{
     title.ogg
     dir1/title-artist-album.ogg
     dir1/title-artist.ogg
     dir2/album.ogg
-];
+};
 my $nbtests = 20;
 my @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]

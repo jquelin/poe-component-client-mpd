@@ -16,7 +16,7 @@ use warnings;
 use POE;
 use POE::Component::Client::MPD::Message;
 
-use base qw[ Class::Accessor::Fast ];
+use base qw{ Class::Accessor::Fast };
 
 
 # -- Collection: retrieving songs & directories
@@ -34,7 +34,7 @@ sub _do_all_items {
     my ($self, $k, $h, $msg) = @_;
     my $path = $msg->params->[0] // '';
 
-    $msg->_commands ( [ qq[listallinfo "$path"] ] );
+    $msg->_commands ( [ qq{listallinfo "$path"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -57,7 +57,7 @@ sub _do_all_items_simple {
     my ($self, $k, $h, $msg) = @_;
     my $path = $msg->params->[0] // '';
 
-    $msg->_commands ( [ qq[listall "$path"] ] );
+    $msg->_commands ( [ qq{listall "$path"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -74,7 +74,7 @@ sub _do_items_in_dir {
     my ($self, $k, $h, $msg) = @_;
     my $path = $msg->params->[0] // '';
 
-    $msg->_commands ( [ qq[lsinfo "$path"] ] );
+    $msg->_commands ( [ qq{lsinfo "$path"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -156,7 +156,7 @@ sub _do_song {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[find filename "$what"] ] );
+    $msg->_commands ( [ qq{find filename "$what"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $msg->_transform( $AS_SCALAR );
     $k->post( $h->{socket}, 'send', $msg );
@@ -172,7 +172,7 @@ sub _do_songs_with_filename_partial {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[search filename "$what"] ] );
+    $msg->_commands ( [ qq{search filename "$what"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -190,7 +190,7 @@ sub _do_albums_by_artist {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[list album "$what"] ] );
+    $msg->_commands ( [ qq{list album "$what"} ] );
     $msg->_cooking  ( $STRIP_FIRST );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -205,7 +205,7 @@ sub _do_songs_by_artist {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[find artist "$what"] ] );
+    $msg->_commands ( [ qq{find artist "$what"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -220,7 +220,7 @@ sub _do_songs_by_artist_partial {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[search artist "$what"] ] );
+    $msg->_commands ( [ qq{search artist "$what"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -235,7 +235,7 @@ sub _do_songs_from_album {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[find album "$what"] ] );
+    $msg->_commands ( [ qq{find album "$what"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -250,7 +250,7 @@ sub _do_songs_from_album_partial {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[search album "$what"] ] );
+    $msg->_commands ( [ qq{search album "$what"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -265,7 +265,7 @@ sub _do_songs_with_title {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[find title "$what"] ] );
+    $msg->_commands ( [ qq{find title "$what"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }
@@ -280,7 +280,7 @@ sub _do_songs_with_title_partial {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq[search title "$what"] ] );
+    $msg->_commands ( [ qq{search title "$what"} ] );
     $msg->_cooking  ( $AS_ITEMS );
     $k->post( $h->{socket}, 'send', $msg );
 }

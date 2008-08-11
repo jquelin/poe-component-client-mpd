@@ -250,7 +250,7 @@ sub _do_load {
     my $playlist = $msg->params->[0];
 
     $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ qq[load "$playlist"] ] );
+    $msg->_commands ( [ qq{load "$playlist"} ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -266,7 +266,7 @@ sub _do_save {
     my $playlist = $msg->params->[0];
 
     $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ qq[save "$playlist"] ] );
+    $msg->_commands ( [ qq{save "$playlist"} ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -281,7 +281,7 @@ sub _do_rm {
     my $playlist = $msg->params->[0];
 
     $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ qq[rm "$playlist"] ] );
+    $msg->_commands ( [ qq{rm "$playlist"} ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 

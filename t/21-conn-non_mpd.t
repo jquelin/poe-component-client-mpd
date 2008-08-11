@@ -11,11 +11,11 @@
 use strict;
 use warnings;
 
-use POE qw[ Component::Client::MPD::Connection ];
+use POE qw{ Component::Client::MPD::Connection };
 use Readonly;
 use Test::More;
 
-my $sendmail_running = grep { /:25\s.*LISTEN/ } qx[ netstat -an ];
+my $sendmail_running = grep { /:25\s.*LISTEN/ } qx{ netstat -an };
 plan skip_all => 'need some sendmail server running' unless $sendmail_running;
 plan tests => 1;
 

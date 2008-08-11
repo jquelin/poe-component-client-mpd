@@ -12,7 +12,7 @@ use strict;
 use warnings;
 
 use POE;
-use FindBin qw[ $Bin ];
+use FindBin qw{ $Bin };
 use Test::More;
 
 

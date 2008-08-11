@@ -12,15 +12,15 @@ package POE::Component::Client::MPD::Test;
 use strict;
 use warnings;
 
-use FindBin qw[ $Bin ];
+use FindBin qw{ $Bin };
 use POE;
 use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
-use base qw[ Exporter ];
-our @EXPORT = qw[ customize_test_mpd_configuration start_test_mpd stop_test_mpd ];
+use base qw{ Exporter };
+our @EXPORT = qw{ customize_test_mpd_configuration start_test_mpd stop_test_mpd };
 
 
 Readonly my $ALIAS    => 'tester';
@@ -107,7 +107,7 @@ sub customize_test_mpd_configuration {
 # Start the fake mpd, and die if there were any error.
 #
 sub start_test_mpd {
-    my $output = qx[mpd $CONFIG 2>&1];
+    my $output = qx{mpd $CONFIG 2>&1};
     die "could not start fake mpd: $output\n" if $output;
     sleep 1;   # wait 1 second to let mpd start.
     return 1;
@@ -140,7 +140,7 @@ sub stop_test_mpd {
 #
 sub _stop_user_mpd_if_needed {
     # check if mpd is running.
-    my $is_running = grep { /mpd$/ } qx[ ps -e ];
+    my $is_running = grep { /mpd$/ } qx{ ps -e };
 
     return 0 unless $is_running; # mpd does not run - nothing to do.
 
