@@ -14,12 +14,17 @@ use warnings;
 
 use Readonly;
 
-use base qw[ Class::Accessor::Fast Exporter ];
-__PACKAGE__->mk_accessors( qw[
-    data error request
-    _answer _commands _cooking _transform _from _request _dispatch _params
-    _post _pre_event _pre_from _pre_data _post_to _post_event
-] );
+use base qw{ Class::Accessor::Fast Exporter };
+__PACKAGE__->mk_accessors( qw{
+    request params status
+    _data _commands _cooking _transform _post _from
+} );
+
+our @EXPORT = qw{
+    $SEND $DISCARD $SLEEP1
+    $RAW $AS_ITEMS $AS_KV $STRIP_FIRST
+    $AS_SCALAR $AS_STATS $AS_STATUS
+};
 
 
 # constants for _answer
@@ -34,18 +39,11 @@ Readonly our $AS_KV       => 2; # data is to be returned as kv (hash)
 Readonly our $STRIP_FIRST => 3; # data should have its first field stripped
 
 # constants for _transform
-Readonly our $AS_SCALAR => 0; # transform data from list to scalar
-Readonly our $AS_STATS  => 1; # transform data from kv to amc-stats
-Readonly our $AS_STATUS => 2; # transform data from kv to amc-status
+Readonly our $AS_SCALAR => 0; # transform data: return first elem instead of full list
+Readonly our $AS_STATS  => 1; # transform data: from kv to amc-stats
+Readonly our $AS_STATUS => 2; # transform data: from kv to amc-status
 
 
-our @EXPORT = qw[
-    $SEND $DISCARD $SLEEP1
-    $RAW $AS_ITEMS $AS_KV $STRIP_FIRST
-    $AS_SCALAR $AS_STATS $AS_STATUS
-];
-
-#our ($VERSION) = '$Rev: 5645 $' =~ /(\d+)/;
 
 1;
 
@@ -76,15 +74,19 @@ The other public methods are the following accessors:
 
 =over 4
 
-=item * data()
+=item * request()
 
-The data returned by mpd, as an array reference.
+The event sent to POCOCM.
 
 
-=item * error()
+=item * params()
 
-Set if there was some error returned by mpd. Always assured to be C<undef>
-if everything went fine.
+The params of the event to POCOCM, as sent by client.
+
+
+=item * status()
+
+The status of the request. True for success, False in case of error.
 
 
 =back
