@@ -49,6 +49,8 @@ our $VERSION = '0.8.1';
 #     If none given, defaults to C<MPD_PASSWORD> env var. If this var
 #     isn't set, defaults to empty string.
 #   - alias: an optional string to alias the newly created POE session.
+#   - status_msgs_to: session to whom to send connection status.
+#     optional (although recommended), no default.
 #
 sub spawn {
     my ($type, $args) = @_;
@@ -279,9 +281,11 @@ sub _onpriv_start {
     $h->{alias} = delete $params{alias};
     $k->alias_set($h->{alias}) if defined $h->{alias};
 
-    $h->{password} = delete $params{password};
-    $h->{socket}   = POE::Component::Client::MPD::Connection->spawn(\%params);
+    # store args for ourself.
+    $h->{status_msgs_to} = $args->{status_msgs_to};
+    $h->{socket}         = POE::Component::Client::MPD::Connection->spawn(\%params);
 
+    # create objects to treat dispatched events.
     $h->{mpd}        = POE::Component::Client::MPD->new;
     $h->{commands}   = POE::Component::Client::MPD::Commands->new;
     $h->{playlist}   = POE::Component::Client::MPD::Playlist->new;
@@ -401,6 +405,12 @@ to C<MPD_PASSWORD> environment variable. If this var isn't set, defaults to C<>.
 =item * alias
 
 An optional string to alias the newly created POE session.
+
+
+=item * status_msgs_to
+
+A session (name or id) to whom to send connection status to. Optional,
+although recommended. No default.
 
 
 =back
