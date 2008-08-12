@@ -20,12 +20,11 @@ use POE::Component::Client::TCP;
 use Readonly;
 
 
-#
-# -- METHODS
+#--
+# CLASS METHODS
 #
 
-#--
-# public methods
+# -- public methods
 
 #
 # my $id = POE::Component::Client::MPD::Connection->spawn(\%params);
@@ -74,13 +73,11 @@ sub spawn {
 }
 
 
-#
-# -- SUBS
-#
-
 #--
-# private subs
+# SUBS
+#
 
+# -- private subs
 
 #
 # _got_data($kernel, $heap, $input);
@@ -189,12 +186,11 @@ sub _got_first_input_line {
 
 
 
-#
-# -- EVENTS HANDLERS
+#--
+# EVENTS HANDLERS
 #
 
-#--
-# protected events
+# -- protected events
 
 #
 # event: disconnect()
@@ -222,8 +218,7 @@ sub _onprot_send {
 }
 
 
-#--
-# private events
+# -- private events
 
 #
 # event: Started($id)
