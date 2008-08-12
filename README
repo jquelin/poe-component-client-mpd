@@ -9,10 +9,6 @@ Read more about MPD on http://www.musicpd.org/
 Read more about POE on http://poe.perl.org/
 
 
-POCOCOM is currently a work-in-progress!
-It is not supposed to be complete, nor to be clean or a state-of-the-art
-poe module.
-
 
 INSTALLATION
 ============
@@ -33,6 +29,16 @@ Or, using Module::Builder:
     ./Build install
 
 
+If mpd is running, you can force the full non-regression test suite to be ran
+by using:
+    MPD_TEST_OVERRIDE=1 make test
+
+
+You can also try to install it directly as a package for your favorite Linux
+distribution:
+    - mandriva:  perl-POE-Component-Client-MPD
+
+
 
 SUPPORT AND DOCUMENTATION
 =========================
@@ -45,7 +51,7 @@ command.
 You can also look for information at:
   . Search CPAN
         http://search.cpan.org/dist/POE-Component-Client-MPD
-  . CPAN Request Tracker:
+  . Open bugs for this module:
         http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD
   . AnnoCPAN, annotated CPAN documentation:
         http://annocpan.org/dist/POE-Component-Client-MPD

@@ -670,8 +670,6 @@ not specified then the perl module will try and seek to C<$time> in the
 current song.
 
 
-
-
 =back
 
 
@@ -686,7 +684,7 @@ section C<SEE ALSO>
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
+Jerome Quelin, C<< <jquelin@cpan.org> >>
 
 
 

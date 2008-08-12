@@ -510,7 +510,9 @@ L<http://www.musicpd.org>, or its wiki L<http://mpd.wikia.com>.
 C<POE::Component::Client::MPD development> takes place on C<< <audio-mpd
 at googlegroups.com> >>: feel free to join us. (use
 L<http://groups.google.com/group/audio-mpd> to sign in). Our git
-repository is located at L<git://repo.or.cz/poe-component-client-mpd.git>.
+repository is located at
+L<git://repo.or.cz/poe-component-client-mpd.git>, and can be browsed at
+L<http://repo.or.cz/w/poe-component-client-mpd.git>.
 
 
 You can also look for information on this module at:
@@ -525,7 +527,7 @@ L<http://annocpan.org/dist/POE-Component-Client-MPD>
 
 L<http://cpanratings.perl.org/d/POE-Component-Client-MPD>
 
-=item * RT: CPAN's request tracker
+=item * Open bugs
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD>
 
@@ -535,7 +537,7 @@ L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD>
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
+Jerome Quelin, C<< <jquelin@cpan.org> >>
 
 
 
