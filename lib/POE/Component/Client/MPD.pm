@@ -245,13 +245,15 @@ sub _onprot_mpd_data {
 }
 
 
-=pod
+=begin FIXME
 
 sub _onprot_mpd_error {
     # send error.
     my $msg = $_[ARG0];
     $_[KERNEL]->post( $msg->_from, 'mpd_error', $msg );
 }
+
+=end FIXME
 
 =cut
 
@@ -307,12 +309,6 @@ sub _connected {
     # send password information
 }
 
-=end FIXME
-
-=cut
-
-
-=pod
 
 #
 # event: _send( $msg )
@@ -329,6 +325,8 @@ sub _onpriv_send {
     }
     $k->post( $_[HEAP]->{_socket}, 'send', $msg );
 }
+
+=end FIXME
 
 =cut
 
@@ -469,7 +467,7 @@ Those events allow to drive the POCOCM session.
 
 =item * disconnect()
 
-Request the POCOCM to be shutdown. Leave mpd running. Generally called
+Request the POCOCM to be shutdown. Leave mpd running. Generally sent
 when one wants to exit her program.
 
 
