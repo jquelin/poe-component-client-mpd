@@ -59,14 +59,14 @@ sub spawn {
         args          => [ $args ],
         inline_states => {
             # private events
-            '_start'             => \&_onpriv_start,
+            '_start'         => \&_onpriv_start,
             # protected events
             'mpd_connect_error_fatal'     => \&_onprot_mpd_connect_error,
             'mpd_connect_error_retriable' => \&_onprot_mpd_connect_error,
             'mpd_connected'               => \&_onprot_mpd_connected,
             'mpd_disconnected'            => \&_onprot_mpd_disconnected,
-            'mpd_data'      =>  \&_onprot_mpd_data,
-            'mpd_error'     =>  sub {use Data::Dumper;say Dumper(\@_)},#\&_onprot_conn_error,
+            'mpd_data'       =>  \&_onprot_mpd_data,
+            'mpd_error'      =>  \&_onprot_mpd_error,
             # public events
             'disconnect'     => \&_onpub_disconnect,
             '_default'       => \&POE::Component::Client::MPD::_onpub_default,
