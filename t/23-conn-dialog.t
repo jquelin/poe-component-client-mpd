@@ -17,32 +17,31 @@ use POE::Component::Client::MPD::Message;
 use Readonly;
 use Test::More;
 
+Readonly my $ALIAS => 'tester';
+
 
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test dont_start_poe => 1';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
-plan tests => 25;
+plan tests => 29;
 
 
 # tests to be run
 my @tests = (
-    [ 'bad command', $RAW,         '_mpd_error', \&_check_bad_command      ],
-    [ 'status',      $RAW,         '_mpd_data',  \&_check_data_raw         ],
-    [ 'lsinfo',      $AS_ITEMS,    '_mpd_data',  \&_check_data_as_items    ],
-    [ 'stats',       $STRIP_FIRST, '_mpd_data',  \&_check_data_strip_first ],
-    [ 'stats',       $AS_KV,       '_mpd_data',  \&_check_data_as_kv       ],
+    [ 'bad command', $RAW,         'mpd_error', \&_check_bad_command      ],
+    [ 'status',      $RAW,         'mpd_data',  \&_check_data_raw         ],
+    [ 'lsinfo',      $AS_ITEMS,    'mpd_data',  \&_check_data_as_items    ],
+    [ 'stats',       $STRIP_FIRST, 'mpd_data',  \&_check_data_strip_first ],
+    [ 'stats',       $AS_KV,       'mpd_data',  \&_check_data_as_kv       ],
 );
-
-Readonly my $ALIAS => 'tester';
 my $id = POE::Session->create(
     inline_states => {
         # private events
         _start     => \&_onpriv_start,
         _next_test => \&_onpriv_next_test,
         # protected events
-        _mpd_data    => \&_onprot_mpd_result,
-        _mpd_error   => \&_onprot_mpd_result,
-        _mpd_version => \&_onprot_mpd_version,
+        mpd_data   => \&_onprot_mpd_result,
+        mpd_error  => \&_onprot_mpd_result,
     }
 );
 my $conn = POE::Component::Client::MPD::Connection->spawn( {
@@ -59,22 +58,26 @@ exit;
 # private subs
 
 sub _check_bad_command {
-    like($_[0]->error, qr/unknown command "bad"/, 'unknown command');
+    like($_[1], qr/unknown command "bad"/, 'unknown command');
 }
 sub _check_data_as_items {
-    isa_ok( $_, 'Audio::MPD::Common::Item',
-            '$AS_ITEMS cooks as items' ) for @{ $_[0]->data };
+    is($_[1], undef, 'no error message');
+    isa_ok($_, 'Audio::MPD::Common::Item',
+            '$AS_ITEMS returns') for @{ $_[0]->_data };
 }
 sub _check_data_as_kv {
-    my %h = @{ $_[0]->data };
+    is($_[1], undef, 'no error message');
+    my %h = @{ $_[0]->_data };
     unlike( $h{$_}, qr/\D/, '$AS_KV cooks as a hash' ) for keys %h;
     # stats return numerical data as second field.
 }
 sub _check_data_raw {
-    isnt(scalar @{ $_[0]->data }, 0, 'commands return stuff' );
+    is($_[1], undef, 'no error message');
+    isnt(scalar @{ $_[0]->_data }, 0, 'commands return stuff' );
 }
 sub _check_data_strip_first {
-    unlike( $_, qr/\D/, '$STRIP_FIRST return only 2nd field' ) for @{ $_[0]->data };
+    is($_[1], undef, 'no error message');
+    unlike( $_, qr/\D/, '$STRIP_FIRST return only 2nd field' ) for @{ $_[0]->_data };
     # stats return numerical data as second field.
 }
 
@@ -89,20 +92,12 @@ sub _check_data_strip_first {
 # Called when mpd talks back, with $msg as a pococm-message param.
 #
 sub _onprot_mpd_result {
-    is( $_[STATE], $tests[0][2], "got a $tests[0][2] event" );
-    $tests[0][3]->( $_[ARG0] );         # check if everything went fine
-    shift @tests;                       # remove test being played
-    $_[KERNEL]->yield( '_next_test' );  # call next test
-}
+    my ($k, $state, $arg0, $arg1) = @_[KERNEL, STATE, ARG0, ARG1];
 
-
-#
-# event: _mpd_version( $version )
-#
-# Called when mpd gives its $version.
-#
-sub _onprot_mpd_version {
-    $_[KERNEL]->yield( '_next_test' );
+    is($state, $tests[0][2], "got a $tests[0][2] event");
+    $tests[0][3]->($arg0, $arg1);   # check if everything went fine
+    shift @tests;                   # remove test being played
+    $k->yield( '_next_test' );      # call next test
 }
 
 
@@ -115,7 +110,9 @@ sub _onprot_mpd_version {
 # Called when the poe session has started.
 #
 sub _onpriv_start {
-    $_[KERNEL]->alias_set($ALIAS); # increment refcount
+    my $k = $_[KERNEL];
+    $k->alias_set($ALIAS);        # increment refcount
+    $k->delay('_next_test'=>1);   # launch the first test
 }
 
 
