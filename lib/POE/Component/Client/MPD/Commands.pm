@@ -496,7 +496,7 @@ The following is a list of general purpose events accepted by POCOCM.
 =item * version()
 
 Return mpd's version number as advertised during connection. Note that
-mpd returns *protocol* version when connected. This protocol version can
+mpd returns B<protocol> version when connected. This protocol version can
 differ from the real mpd version. eg, mpd version 0.13.2 is "speaking"
 and thus advertising version 0.13.0.
 
