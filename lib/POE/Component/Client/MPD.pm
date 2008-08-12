@@ -261,17 +261,18 @@ sub _onprot_mpd_data {
 }
 
 
-=begin FIXME
-
+#
+# Event: mpd_error( $msg, $errstr )
+#
+# Received when mpd didn't understood a command.
+#
 sub _onprot_mpd_error {
-    # send error.
-    my $msg = $_[ARG0];
-    $_[KERNEL]->post( $msg->_from, 'mpd_error', $msg );
+    my ($k, $msg, $errstr) = @_[KERNEL, ARG0, ARG1];
+
+    $msg->status(0); # failure
+    $k->post( $msg->_from, 'mpd_error', $msg, $errstr );
 }
 
-=end FIXME
-
-=cut
 
 
 # -- private events
