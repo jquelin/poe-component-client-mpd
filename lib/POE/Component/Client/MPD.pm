@@ -61,8 +61,8 @@ sub spawn {
             # private events
             '_start'             => \&_onpriv_start,
             # protected events
-            #'mpd_connect_error_fatal'     => \&_onprot_conn_connect_error_fatal,
-            #'mpd_connect_error_retriable' => \&_onprot_conn_connect_error_retriable,
+            'mpd_connect_error_fatal'     => \&_onprot_mpd_connect_error,
+            'mpd_connect_error_retriable' => \&_onprot_mpd_connect_error,
             'mpd_connected'               => \&_onprot_mpd_connected,
             'mpd_disconnected'            => \&_onprot_mpd_disconnected,
             'mpd_data'      =>  \&_onprot_mpd_data,
@@ -179,6 +179,23 @@ sub _onpub_disconnect {
 
 
 # -- protected events.
+
+#
+# event: mpd_connect_error_retriable( $reason )
+# event: mpd_connect_error_fatal( $reason )
+#
+# Called when pococm-conn could not connect to a mpd server. It can be
+# either retriable, or fatal. In bth case, we just need to forward the
+# error to our peer session.
+#
+sub _onprot_mpd_connect_error {
+    my ($k, $h, $reason) = @_[KERNEL, HEAP, ARG0];
+
+    my $peer = $h->{status_msgs_to};
+    return unless defined $peer;
+    $k->post($peer, 'mpd_connect_error_fatal', $reason);
+}
+
 
 #
 # event: mpd_connected( $version )
