@@ -70,11 +70,6 @@ sub spawn {
             # public events
             'disconnect'     => \&_onpub_disconnect,
             '_default'       => \&POE::Component::Client::MPD::_onpub_default,
-
-            '_mpd_data'      => \&_onprot_mpd_data,
-            '_mpd_error'     => \&_onprot_mpd_error,
-            '_mpd_version'   => \&_onprot_mpd_version,
-            '_version'       => \&_onprot_version,
         },
     );
     return $session->ID;
