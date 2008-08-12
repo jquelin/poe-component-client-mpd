@@ -417,9 +417,25 @@ although recommended. No default.
 
 
 
-=head1 PUBLIC EVENTS
+=head1 PUBLIC EVENTS ACCEPTED
 
-For a list of public events that you can send to a POCOCM session, check:
+POCOCM accepts two types of events: some are used to drive the mpd
+server, others will change the pococm status.
+
+
+=head2 MPD-related events
+
+The goal of a POCOCM session is to drive a remote MPD server. This can
+be achieved by a lot of events. Due to their sheer number, they have
+been regrouped logically in modules.
+
+However, note that to use those events, you need to send them to the
+POCOCM session that you created with C<spawn()> (see above). Indeed, the
+logical split is only internal: you are to use the same peer.
+
+
+For a list of public events that update and/or query MPD, see embedded
+pod in:
 
 =over 4
 
@@ -438,6 +454,23 @@ with C<pl.>.
 
 C<POCOCM::Collection> for collection-related commands. Those events
 begin with C<coll.>.
+
+
+=back
+
+
+
+=head2 POCOCM-related events
+
+Those events allow to drive the POCOCM session.
+
+
+=over 4
+
+=item * disconnect()
+
+Request the POCOCM to be shutdown. Leave mpd running. Generally called
+when one wants to exit her program.
 
 
 =back
