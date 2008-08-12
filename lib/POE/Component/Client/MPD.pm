@@ -200,6 +200,10 @@ sub _onprot_mpd_connect_error {
 sub _onprot_mpd_connected {
     my ($k, $h, $version) = @_[KERNEL, HEAP, ARG0];
     $h->{version} = $version;
+
+    my $peer = $h->{status_msgs_to};
+    return unless defined $peer;
+    $k->post($peer, 'mpd_connected');
     # FIXME: send password information to mpd
     # FIXME: send status information to peer
 }
