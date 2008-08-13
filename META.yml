@@ -1,6 +1,6 @@
 ---
 name: POE-Component-Client-MPD
-version: 0.8.1
+version: 0.9.0
 author:
   - 'Jerome Quelin <jquelin@cpan.org>'
 abstract: a full-blown mpd client library
@@ -9,26 +9,31 @@ resources:
   license: http://dev.perl.org/licenses/
 requires:
   Audio::MPD::Common: 0
-  Class::Accessor: 0
-  List::MoreUtils: 0
+  Carp: 0
+  Class::Accessor::Fast: 0
+  Exporter: 0
   POE: 0
+  POE::Component::Client::TCP: 0
   Readonly: 0
-  perl: 5.008
+  perl: 5.010
 build_requires:
   Audio::MPD::Common: 0
-  Class::Accessor: 0
-  List::MoreUtils: 0
+  Carp: 0
+  Class::Accessor::Fast: 0
+  Exporter: 0
+  FindBin: 0
   POE: 0
+  POE::Component::Client::TCP: 0
   Readonly: 0
   Test::More: 0
-  perl: 5.008
+  perl: 5.010
 recommends:
   Test::Pod: 0
   Test::Pod::Coverage: 0
 provides:
   POE::Component::Client::MPD:
     file: lib/POE/Component/Client/MPD.pm
-    version: 0.8.1
+    version: 0.9.0
   POE::Component::Client::MPD::Collection:
     file: lib/POE/Component/Client/MPD/Collection.pm
   POE::Component::Client::MPD::Commands:

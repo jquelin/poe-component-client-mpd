@@ -3,6 +3,7 @@ Revision history for POE-Component-Client-MPD
 High-level changelog
 ====================
 
+0.9.x  api + internals simplification
 0.8.x  new design with 3 public sessions
 0.7.x  using common classes in audio::mpd::common
 0.6.x  pococm-coll implementation
@@ -16,6 +17,20 @@ High-level changelog
 
 Low-level changelog
 ===================
+
+0.9.0 Wed Aug 13 10:33:12 CEST 2008
+ - api simplification:
+     . all events sent to same session
+     . all events do get an answer
+     . some status events are fired
+ - internals simplification:
+     . using plain subs / methods if it doesn't imply latency penality
+       poe-wide, instead of message passing
+     . removed old, rotting code
+ - doc overhaul
+ - warning: perl 5.10 needed
+
+**
 
 0.8.1 Mon Nov 26 12:47:19 CET 2007
  - kwalitee/cpants release

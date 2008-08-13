@@ -25,7 +25,8 @@ use POE::Component::Client::MPD::Playlist;
 
 use base qw{ Class::Accessor::Fast };
 
-our $VERSION = '0.8.1';
+our $VERSION = '0.9.0';
+
 
 #--
 # CLASS METHODS
