@@ -480,6 +480,70 @@ when one wants to exit her program.
 
 
 
+=head1 PUBLIC EVENTS FIRED
+
+A POCOCM session will fire events, either to answer an incoming event,
+or to inform about some changes regarding the remote MPD server.
+
+
+=head2 Answer events
+
+For each incoming event received by the POCOCM session, it will fire
+back one of the following answers:
+
+
+=over 4
+
+=item * mpd_result( $msg, $answer )
+
+Indicates a success. C<$msg> is a C<POCOCM::Message> object with the
+original request, to identify the issued command (see C<POCOCM::Message>
+pod for more information). Its C<status()> attribute is true, further
+confirming success.
+
+C<$answer> is what has been answered by the MPD server. Depending on the
+command, it can be either:
+
+=over 4
+
+=item * C<undef>: commands C<play>, etc.
+
+=item * an C<Audio::MPD::Common::Stats> object: command C<stats>
+
+=item * an C<Audio::MPD::Common::Status> object: command C<status>
+
+=item * an C<Audio::MPD::Common::Item> object: commands C<song>, etc.
+
+=item * an array reference: commands C<coll.files>, etc.
+
+=item * etc.
+
+=back
+
+Refer to the documentation of each event to know what type of answer you
+can expect.
+
+
+=item * mpd_error( $msg, $errstr )
+
+Indicates a failure. C<$msg> is a C<POCOCM::Message> object with the
+original request, to identify the issued command (see C<POCOCM::Message>
+pod for more information). Its C<status()> attribute is false, further
+confirming failure.
+
+C<$errstr> is what the error message as returned been answered by the
+MPD server.
+
+
+=back
+
+
+
+=head2 Auto-generated events
+
+To be written.
+
+
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-poe-component-client-mpd at
