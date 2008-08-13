@@ -312,20 +312,8 @@ sub _onpriv_start {
 }
 
 
+
 =begin FIXME
-
-#
-# _connected()
-#
-# received when the poe::component::client::tcp is (re-)connected to the
-# mpd server.
-#
-sub _connected {
-    my ($self, $k) = @_[OBJECT, KERNEL];
-    $k->post($_[HEAP]{_socket}, 'send', 'status' );
-    # send password information
-}
-
 
 #
 # event: _send( $msg )
