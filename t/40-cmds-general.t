@@ -13,7 +13,7 @@ use warnings;
 
 use Test::More;
 
-my $nbtests = 11;
+my $nbtests = 10;
 my @tests   = (
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
@@ -54,8 +54,7 @@ sub check_update  {
 sub check_urlhandlers {
     my ($msg, $handlers) = @_;
     check_success($msg);
-    is(scalar @$handlers,         1, 'only one url handler supported');
-    is($handlers->[0],    'http://', 'only http is supported by now');
+    is(scalar @$handlers, 0, 'no url handler supported by default');
 }
 
 sub check_version {
