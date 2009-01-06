@@ -20,7 +20,7 @@ WriteMakefile(
     ABSTRACT_FROM => 'lib/POE/Component/Client/MPD.pm',
     PL_FILES      => {},
     PREREQ_PM     => {
-        'Audio::MPD::Common'          => 0,
+        'Audio::MPD::Common'          => '0.1.4',
         'Carp'                        => 0,
         'Class::Accessor::Fast'       => 0,
         'Exporter'                    => 0,

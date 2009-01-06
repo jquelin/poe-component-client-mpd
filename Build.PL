@@ -14,7 +14,7 @@ use Module::Build;
 
 my %requires = (
     'perl'                        => '5.010',
-    'Audio::MPD::Common'          => 0,
+    'Audio::MPD::Common'          => '0.1.4',
     'Carp'                        => 0,
     'Class::Accessor::Fast'       => 0,
     'Exporter'                    => 0,
