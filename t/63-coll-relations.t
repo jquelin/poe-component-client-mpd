@@ -55,8 +55,9 @@ sub check_success {
 sub check_albums_by_artist {
     my ($msg, $items) = @_;
     check_success($msg);
-    is(scalar @$items, 1, 'albums_by_artist() return the album');
-    is($items->[0], 'our album', 'albums_by_artist() return plain strings');
+    # mpd 0.14 returns empty strings too
+    is(scalar @$items, 2, 'albums_by_artist() return the album');
+    is($items->[1], 'our album', 'albums_by_artist() return plain strings');
 }
 
 sub check_songs_by_artist {
