@@ -101,6 +101,7 @@ sub _got_data {
             # output to build an amc-item.
             my ($k,$v) = split /:\s+/, $input, 2;
             $k = lc $k;
+            $k =~ s/-/_/;
 
             if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
                 # build a new amc-item
