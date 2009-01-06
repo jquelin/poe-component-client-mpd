@@ -47,21 +47,24 @@ sub check_success {
 sub check_all_albums {
     my ($msg, $items) = @_;
     check_success($msg);
-    is(scalar @$items, 1, 'all_albums() return the albums');
-    is($items->[0], 'our album', 'all_albums() return strings');
+    # mpd 0.14 returns empty strings too
+    is(scalar @$items, 2, 'all_albums() return the albums');
+    is($items->[1], 'our album', 'all_albums() return strings');
 }
 
 sub check_all_artists {
     my ($msg, $items) = @_;
     check_success($msg);
-    is(scalar @$items, 1, 'all_artists() return the artists');
+    # mpd 0.14 returns empty strings too
+    is(scalar @$items, 2, 'all_artists() return the artists');
     is($items->[0], 'dir1-artist', 'all_artists() return strings');
 }
 
 sub check_all_titles {
     my ($msg, $items) = @_;
     check_success($msg);
-    is(scalar @$items, 3, 'all_titles() return the titles');
+    # mpd 0.14 returns empty strings too
+    is(scalar @$items, 4, 'all_titles() return the titles');
     like( $items->[0], qr/-title$/, 'all_titles() return strings');
 }
 
