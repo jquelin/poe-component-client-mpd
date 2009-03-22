@@ -1,6 +1,6 @@
 ---
 name: POE-Component-Client-MPD
-version: 0.9.1
+version: 0.9.2
 author:
   - 'Jerome Quelin <jquelin@cpan.org>'
 abstract: a full-blown mpd client library
@@ -33,7 +33,7 @@ recommends:
 provides:
   POE::Component::Client::MPD:
     file: lib/POE/Component/Client/MPD.pm
-    version: 0.9.1
+    version: 0.9.2
   POE::Component::Client::MPD::Collection:
     file: lib/POE/Component/Client/MPD/Collection.pm
   POE::Component::Client::MPD::Commands:
@@ -46,7 +46,7 @@ provides:
     file: lib/POE/Component/Client/MPD/Playlist.pm
   POE::Component::Client::MPD::Test:
     file: lib/POE/Component/Client/MPD/Test.pm
-generated_by: Module::Build version 0.31
+generated_by: Module::Build version 0.32
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2
