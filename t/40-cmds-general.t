@@ -54,7 +54,10 @@ sub check_update  {
 sub check_urlhandlers {
     my ($msg, $handlers) = @_;
     check_success($msg);
-    is(scalar @$handlers, 0, 'no url handler supported by default');
+    TODO: {
+        local $TODO = 'test depending on mpd compilation flags';
+        is(scalar @$handlers, 0, 'no url handler supported by default');
+    }
 }
 
 sub check_version {
