@@ -298,16 +298,18 @@ POE::Component::Client::MPD::Collection - module handling collection commands
 
 =head1 DESCRIPTION
 
-C<POCOCM::Collection> is responsible for handling general purpose
-commands. They are in a dedicated module to achieve easier code
-maintenance.
+L<POE::Component::Client::MPD::Collection> is responsible for handling
+general purpose commands. They are in a dedicated module to achieve
+easier code maintenance.
 
-To achieve those commands, send the corresponding event to the POCOCM
-session you created: it will be responsible for dispatching the event
-where it is needed. Under no circumstance should you call directly subs
-or methods from this module directly.
+To achieve those commands, send the corresponding event to the
+L<POE::Component::Client::MPD> session you created: it will be
+responsible for dispatching the event where it is needed. Under no
+circumstance should you call directly subs or methods from this
+module directly.
 
-Read POCOCM's pod to learn how to deal with answers from those commands.
+Read L<POE::Component::Client::MPD>'s pod to learn how to deal with
+answers from those commands.
 
 
 
@@ -323,7 +325,7 @@ The following is a list of collection-related events accepted by POCOCM.
 
 =item * coll.all_items( [$path] )
 
-Return all C<Audio::MPD::Common::Item>s (both songs & directories)
+Return all L<Audio::MPD::Common::Item>s (both songs & directories)
 currently known by mpd.
 
 If C<$path> is supplied (relative to mpd root), restrict the retrieval to
@@ -332,13 +334,13 @@ songs and dirs in this directory.
 
 =item * coll.all_items_simple( [$path] )
 
-Return all C<Audio::MPD::Common::Item>s (both songs & directories)
+Return all L<Audio::MPD::Common::Item>s (both songs & directories)
 currently known by mpd.
 
 If C<$path> is supplied (relative to mpd root), restrict the retrieval
 to songs and dirs in this directory.
 
-B</!\ Warning>: the C<Audio::MPD::Common::Item::Song> objects will only
+B</!\ Warning>: the L<Audio::MPD::Common::Item::Song> objects will only
 have their attribute file filled. Any other attribute will be empty, so
 don't use this sub for any other thing than a quick scan!
 
@@ -392,13 +394,13 @@ currently known by mpd.
 
 =item * coll.song( $path )
 
-Return the C<Audio::MPD::Common::Item::Song> which correspond to
+Return the L<Audio::MPD::Common::Item::Song> which correspond to
 C<$path>.
 
 
 =item * coll.songs_with_filename_partial( $string )
 
-Return the C<Audio::MPD::Common::Item::Song>s containing C<$string> in
+Return the L<Audio::MPD::Common::Item::Song>s containing C<$string> in
 their path.
 
 
@@ -419,34 +421,34 @@ participated.
 
 =item * coll.songs_by_artist( $artist )
 
-Return all C<Audio::MPD::Common::Item::Song>s performed by C<$artist>.
+Return all L<Audio::MPD::Common::Item::Song>s performed by C<$artist>.
 
 
 =item * coll.songs_by_artist_partial( $artist )
 
-Return all C<Audio::MPD::Common::Item::Song>s performed by C<$artist>.
+Return all L<Audio::MPD::Common::Item::Song>s performed by C<$artist>.
 
 
 =item * coll.songs_from_album( $album )
 
-Return all C<Audio::MPD::Common::Item::Song>s appearing in C<$album>.
+Return all L<Audio::MPD::Common::Item::Song>s appearing in C<$album>.
 
 
 =item * coll.songs_from_album_partial( $string )
 
-Return all C<Audio::MPD::Common::Item::Song>s appearing in album
+Return all L<Audio::MPD::Common::Item::Song>s appearing in album
 containing C<$string>.
 
 
 =item * coll.songs_with_title( $title )
 
-Return all C<Audio::MPD::Common::Item::Song>s which title is exactly
+Return all L<Audio::MPD::Common::Item::Song>s which title is exactly
 C<$title>.
 
 
 =item * coll.songs_with_title_partial( $string )
 
-Return all C<Audio::MPD::Common::Item::Song>s where C<$string> is part
+Return all L<Audio::MPD::Common::Item::Song>s where C<$string> is part
 of the title.
 
 
@@ -457,7 +459,7 @@ of the title.
 =head1 SEE ALSO
 
 For all related information (bug reporting, mailing-list, pointers to
-MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
+MPD and POE, etc.), refer to L<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 

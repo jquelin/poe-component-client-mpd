@@ -470,9 +470,9 @@ POE::Component::Client::MPD::Commands - module handling basic mpd commands
 
 =head1 DESCRIPTION
 
-C<POCOCM::Commands> is responsible for handling general purpose
-commands. They are in a dedicated module to achieve easier code
-maintenance.
+L<POE::Component::Client::MPD::Commands> is responsible for handling
+general purpose commands. They are in a dedicated module to achieve
+easier code maintenance.
 
 To achieve those commands, send the corresponding event to the POCOCM
 session you created: it will be responsible for dispatching the event
@@ -556,31 +556,31 @@ Disable the specified audio output. C<$output> is the ID of the audio output.
 
 =item * stats()
 
-Return an C<Audio::MPD::Common::Stats> object with the current
+Return an L<Audio::MPD::Common::Stats> object with the current
 statistics of MPD.
 
 
 =item * status ()
 
-Return an C<Audio::MPD::Common::Status> object with the current
+Return an L<Audio::MPD::Common::Status> object with the current
 status of MPD.
 
 
 =item * current()
 
-Return an C<Audio::MPD::Common::Item::Song> representing the song
+Return an L<Audio::MPD::Common::Item::Song> representing the song
 currently playing.
 
 
 =item * song( [$song] )
 
-Return an C<Audio::MPD::Common::Item::Song> representing the song number
+Return an L<Audio::MPD::Common::Item::Song> representing the song number
 C<$song>. If C<$song> is not supplied, returns the current song.
 
 
 =item * songid( [$songid] )
 
-Return an C<Audio::MPD::Common::Item::Song> representing the song id
+Return an L<Audio::MPD::Common::Item::Song> representing the song id
 C<$songid>. If C<$songid> is not supplied, returns the current song.
 
 
@@ -677,7 +677,7 @@ current song.
 =head1 SEE ALSO
 
 For all related information (bug reporting, mailing-list, pointers to
-MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
+MPD and POE, etc.), refer to L<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 

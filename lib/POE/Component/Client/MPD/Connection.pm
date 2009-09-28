@@ -476,7 +476,7 @@ answered with the error message C<$errstr>.
 =head1 SEE ALSO
 
 For all related information (bug reporting, mailing-list, pointers to
-MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
+MPD and POE, etc.), refer to L<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 

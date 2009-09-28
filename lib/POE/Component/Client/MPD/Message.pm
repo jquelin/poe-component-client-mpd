@@ -61,8 +61,8 @@ POE::Component::Client::MPD::Message - a message from POCOCM
 
 =head1 DESCRIPTION
 
-C<POCOCM::Message> is more a placeholder for a hash ref with some pre-defined
-keys.
+L<POE::Component::Client::MPD::Message> is more a placeholder for a hash
+ref with some pre-defined keys.
 
 
 =head1 PUBLIC METHODS
@@ -96,7 +96,7 @@ The status of the request. True for success, False in case of error.
 =head1 SEE ALSO
 
 For all related information (bug reporting, mailing-list, pointers to
-MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
+MPD and POE, etc.), refer to L<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 

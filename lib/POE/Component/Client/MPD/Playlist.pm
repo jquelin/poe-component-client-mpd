@@ -23,7 +23,7 @@ use base qw{ Class::Accessor::Fast };
 #
 # event: pl.as_items()
 #
-# Return an array of C<Audio::MPD::Common::Item::Song>s, one for each of
+# Return an array of L<Audio::MPD::Common::Item::Song>s, one for each of
 # the songs in the current playlist.
 #
 sub _do_as_items {
@@ -299,9 +299,9 @@ POE::Component::Client::MPD::Playlist - module handling playlist commands
 
 =head1 DESCRIPTION
 
-C<POCOCM::Playlist> is responsible for handling general purpose
-commands. They are in a dedicated module to achieve easier code
-maintenance.
+L<POE::Component::Client::MPD::Playlist> is responsible for handling
+general purpose commands. They are in a dedicated module to achieve
+easier code maintenance.
 
 To achieve those commands, send the corresponding event to the POCOCM
 session you created: it will be responsible for dispatching the event
@@ -324,13 +324,13 @@ The following is a list of playlist-related events accepted by POCOCM.
 
 =item * pl.as_items()
 
-Return an array of C<Audio::MPD::Common::Item::Song>s, one for each of
+Return an array of L<Audio::MPD::Common::Item::Song>s, one for each of
 the songs in the current playlist.
 
 
 =item * pl.items_changed_since( $plversion )
 
-Return a list with all the songs (as C<Audio::MPD::Common::Item::Song>
+Return a list with all the songs (as L<Audio::MPD::Common::Item::Song>
 objects) added to the playlist since playlist C<$plversion>.
 
 
@@ -438,7 +438,7 @@ Delete playlist named C<$playlist> from MPD's playlist directory.
 =head1 SEE ALSO
 
 For all related information (bug reporting, mailing-list, pointers to
-MPD and POE, etc.), refer to C<POE::Component::Client::MPD>'s pod,
+MPD and POE, etc.), refer to L<POE::Component::Client::MPD>'s pod,
 section C<SEE ALSO>
 
 

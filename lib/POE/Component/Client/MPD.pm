@@ -449,19 +449,19 @@ pod in:
 
 =item *
 
-C<POCOCM::Commands> for general commands
+L<POE::Component::Client::MPD::Commands> for general commands
 
 
 =item *
 
-C<POCOCM::Playlist> for playlist-related commands. Those events begin
-with C<pl.>.
+L<POE::Component::Client::MPD::Playlist> for playlist-related commands.
+Those events begin with C<pl.>.
 
 
 =item *
 
-C<POCOCM::Collection> for collection-related commands. Those events
-begin with C<coll.>.
+L<POE::Component::Client::MPD::Collection> for collection-related
+commands. Those events begin with C<coll.>.
 
 
 =back
@@ -501,10 +501,12 @@ back one of the following answers:
 
 =item * mpd_result( $msg, $answer )
 
-Indicates a success. C<$msg> is a C<POCOCM::Message> object with the
-original request, to identify the issued command (see C<POCOCM::Message>
-pod for more information). Its C<status()> attribute is true, further
-confirming success.
+Indicates a success. C<$msg> is a
+L<POE::Component::Client::MPD::Message> object with the original
+request, to identify the issued command (see
+L<POE::Component::Client::MPD::Message> pod for more information). Its
+C<status()> attribute is true, further confirming success.
+
 
 C<$answer> is what has been answered by the MPD server. Depending on the
 command, it can be either:
@@ -513,11 +515,11 @@ command, it can be either:
 
 =item * C<undef>: commands C<play>, etc.
 
-=item * an C<Audio::MPD::Common::Stats> object: command C<stats>
+=item * an L<Audio::MPD::Common::Stats> object: command C<stats>
 
-=item * an C<Audio::MPD::Common::Status> object: command C<status>
+=item * an L<Audio::MPD::Common::Status> object: command C<status>
 
-=item * an C<Audio::MPD::Common::Item> object: commands C<song>, etc.
+=item * an L<Audio::MPD::Common::Item> object: commands C<song>, etc.
 
 =item * an array reference: commands C<coll.files>, etc.
 
@@ -531,10 +533,12 @@ can expect.
 
 =item * mpd_error( $msg, $errstr )
 
-Indicates a failure. C<$msg> is a C<POCOCM::Message> object with the
-original request, to identify the issued command (see C<POCOCM::Message>
-pod for more information). Its C<status()> attribute is false, further
-confirming failure.
+Indicates a failure. C<$msg> is a
+L<POE::Component::Client::MPD::Message> object with the original
+request, to identify the issued command (see
+L<POE::Component::Client::MPD::Message> pod for more information). Its
+C<status()> attribute is false, further confirming failure.
+
 
 C<$errstr> is what the error message as returned been answered by the
 MPD server.
@@ -579,7 +583,7 @@ your bug as I make changes.
 You can find more information on the mpd project on its homepage at
 L<http://www.musicpd.org>, or its wiki L<http://mpd.wikia.com>.
 
-C<POE::Component::Client::MPD development> takes place on C<< <audio-mpd
+L<POE::Component::Client::MPD> development takes place on C<< <audio-mpd
 at googlegroups.com> >>: feel free to join us. (use
 L<http://groups.google.com/group/audio-mpd> to sign in). Our git
 repository is located at
