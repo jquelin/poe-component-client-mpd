@@ -4,8 +4,11 @@
 use warnings;
 use strict;
 
-use lib 'lib';
-use POE qw{ Component::Client::MPD };
+use FindBin qw{ $Bin };
+use lib "$Bin/../lib";
+
+use POE;
+use POE::Component::Client::MPD;
 
 POE::Component::Client::MPD->spawn( {alias => 'mpd'} );
 POE::Session->create(
