@@ -352,10 +352,11 @@ POE::Component::Client::MPD - a full-blown mpd client library
 
     use POE qw{ Component::Client::MPD };
     POE::Component::Client::MPD->spawn( {
-        host     => 'localhost',
-        port     => 6600,
-        password => 's3kr3t',  # mpd password
-        alias    => 'mpd',     # poe alias
+        host           => 'localhost',
+        port           => 6600,
+        password       => 's3kr3t',  # mpd password
+        alias          => 'mpd',     # poe alias
+        status_msgs_to => 'myapp',   # session to send status info to
     } );
 
     # ... later on ...
@@ -414,7 +415,10 @@ An optional string to alias the newly created POE session.
 =item * status_msgs_to
 
 A session (name or id) to whom to send connection status to. Optional,
-although recommended. No default.
+although recommended. No default. When this is done, pococm will send
+*additional* events to the session, such as: C<mpd_connected> when
+pococm is connected, C<mpd_disconnected> when pococm is disconnected,
+etc. You thus need to register some handlers for those events.
 
 
 =back
