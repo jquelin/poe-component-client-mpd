@@ -1,23 +1,14 @@
 ---
 name: POE-Component-Client-MPD
-version: 0.9.2
+version: v0.9.3
 author:
   - 'Jerome Quelin <jquelin@cpan.org>'
 abstract: a full-blown mpd client library
 license: perl
 resources:
   license: http://dev.perl.org/licenses/
-requires:
-  Audio::MPD::Common: 0.1.4
-  Carp: 0
-  Class::Accessor::Fast: 0
-  Exporter: 0
-  POE: 0
-  POE::Component::Client::TCP: 0
-  Readonly: 0
-  perl: 5.010
 build_requires:
-  Audio::MPD::Common: 0.1.4
+  Audio::MPD::Common: v0.1.4
   Carp: 0
   Class::Accessor::Fast: 0
   Exporter: 0
@@ -27,13 +18,24 @@ build_requires:
   Readonly: 0
   Test::More: 0
   perl: 5.010
+requires:
+  Audio::MPD::Common: v0.1.4
+  Carp: 0
+  Class::Accessor::Fast: 0
+  Exporter: 0
+  POE: 0
+  POE::Component::Client::TCP: 0
+  Readonly: 0
+  perl: 5.010
 recommends:
   Test::Pod: 0
   Test::Pod::Coverage: 0
+configure_requires:
+  Module::Build: 0.35
 provides:
   POE::Component::Client::MPD:
     file: lib/POE/Component/Client/MPD.pm
-    version: 0.9.2
+    version: v0.9.3
   POE::Component::Client::MPD::Collection:
     file: lib/POE/Component/Client/MPD/Collection.pm
   POE::Component::Client::MPD::Commands:
@@ -46,7 +48,7 @@ provides:
     file: lib/POE/Component/Client/MPD/Playlist.pm
   POE::Component::Client::MPD::Test:
     file: lib/POE/Component/Client/MPD/Test.pm
-generated_by: Module::Build version 0.32
+generated_by: Module::Build version 0.35
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4

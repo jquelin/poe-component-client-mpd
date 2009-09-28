@@ -18,6 +18,10 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.9.3 Mon Sep 28 17:28:06 2009
+ - reorder inheritance to work around exporter bug
+ - wrote some doc on events fired by pococm
+
 0.9.2 Sun Mar 22 18:26:37 CET 2009
  -rt #44456 - changing test to todo (depends on mpd's compilation flags)
 
