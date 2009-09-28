@@ -546,7 +546,22 @@ MPD server.
 
 =head2 Auto-generated events
 
-To be written.
+The following events are fired by pococm:
+
+=over 4
+
+=item * mpd_connect_error_fatal( $reason )
+
+Called when pococm-conn could not connect to a mpd server. It can be
+either retriable, or fatal. Check C<$reason> for more information.
+
+
+=item * mpd_connected()
+
+Called when pococm-conn made sure we're talking to a mpd server.
+
+=back
+
 
 
 =head1 BUGS
