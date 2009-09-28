@@ -1,8 +1,8 @@
-package POE::Component::Client::MPD;
-
 use 5.010;
 use strict;
 use warnings;
+
+package POE::Component::Client::MPD;
 
 use Audio::MPD::Common::Stats;
 use Audio::MPD::Common::Status;

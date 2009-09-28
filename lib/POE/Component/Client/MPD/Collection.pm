@@ -1,8 +1,8 @@
-package POE::Component::Client::MPD::Collection;
-
 use 5.010;
 use strict;
 use warnings;
+
+package POE::Component::Client::MPD::Collection;
 
 use POE;
 use POE::Component::Client::MPD::Message;

@@ -1,7 +1,8 @@
-package POE::Component::Client::MPD::Test;
-
+use 5.010;
 use strict;
 use warnings;
+
+package POE::Component::Client::MPD::Test;
 
 use FindBin qw{ $Bin };
 use POE;

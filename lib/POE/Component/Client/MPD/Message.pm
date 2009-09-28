@@ -1,7 +1,8 @@
-package POE::Component::Client::MPD::Message;
-
+use 5.010;
 use strict;
 use warnings;
+
+package POE::Component::Client::MPD::Message;
 
 use Readonly;
 
