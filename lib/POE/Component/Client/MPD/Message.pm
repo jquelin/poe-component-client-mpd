@@ -14,7 +14,7 @@ use warnings;
 
 use Readonly;
 
-use base qw{ Class::Accessor::Fast Exporter };
+use base qw{ Exporter Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{
     request params status
     _data _commands _cooking _transform _post _from
