@@ -297,12 +297,12 @@ sub _onpriv_ConnectError {
 #
 sub _onpriv_Disconnected {
     my ($k, $h) = @_[KERNEL, HEAP];
-    return unless $h->{auto_reconnect};
 
     # signal that we're disconnected
     $k->post($h->{session}, 'mpd_disconnected');
 
     # auto-reconnect in $retry_wait seconds
+    return unless $h->{auto_reconnect};
     $k->delay_add('reconnect' => $h->{retry_wait});
 }
 
