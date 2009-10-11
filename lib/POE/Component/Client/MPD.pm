@@ -581,9 +581,7 @@ L<POE::Component::Client::MPD> development takes place on C<< <audio-mpd
 at googlegroups.com> >>: feel free to join us. (use
 L<http://groups.google.com/group/audio-mpd> to sign in). Our git
 repository is located at
-L<git://repo.or.cz/poe-component-client-mpd.git>, and can be browsed at
-L<http://repo.or.cz/w/poe-component-client-mpd.git>.
-
+L<http://github.com/jquelin/poe-component-client-mpd.git>.
 
 You can also look for information on this module at:
 
@@ -603,19 +601,3 @@ L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD>
 
 =back
 
-
-
-=head1 AUTHOR
-
-Jerome Quelin, C<< <jquelin@cpan.org> >>
-
-
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2007-2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut
