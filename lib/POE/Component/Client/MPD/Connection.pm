@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Connection;
+# ABSTRACT: module handling the tcp connection with mpd
 
 use Audio::MPD::Common::Item;
 use POE;
@@ -326,12 +327,6 @@ sub _onpriv_ServerInput {
 1;
 
 __END__
-
-=head1 NAME
-
-POE::Component::Client::MPD::Connection - module handling the tcp connection with mpd
-
-
 
 =head1 DESCRIPTION
 

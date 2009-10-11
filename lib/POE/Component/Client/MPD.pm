@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 package POE::Component::Client::MPD;
+# ABSTRACT: full-blown poe-aware mpd client library
 
 use Audio::MPD::Common::Stats;
 use Audio::MPD::Common::Status;
@@ -332,13 +333,6 @@ sub _onpriv_send {
 1;
 
 __END__
-
-
-=head1 NAME
-
-POE::Component::Client::MPD - a full-blown mpd client library
-
-
 
 =head1 SYNOPSIS
 

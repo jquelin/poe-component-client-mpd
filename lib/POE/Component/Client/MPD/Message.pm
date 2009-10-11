@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Message;
+# ABSTRACT: a message from POCOCM
 
 use Readonly;
 
@@ -40,11 +41,6 @@ Readonly our $AS_STATUS => 2; # transform data: from kv to amc-status
 1;
 
 __END__
-
-=head1 NAME
-
-POE::Component::Client::MPD::Message - a message from POCOCM
-
 
 =head1 SYNOPSIS
 

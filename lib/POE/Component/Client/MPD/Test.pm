@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Test;
+# ABSTRACT: automate launching of fake mdp for testing purposes
 
 use FindBin qw{ $Bin };
 use POE;
@@ -200,11 +201,6 @@ sub _onpriv_start {
 1;
 
 __END__
-
-=head1 NAME
-
-POE::Component::Client::MPD::Test - automate launching of fake mdp for testing purposes
-
 
 =head1 SYNOPSIS
 

@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Collection;
+# ABSTRACT: module handling collection commands
 
 use POE;
 use POE::Component::Client::MPD::Message;
@@ -281,12 +282,6 @@ sub _do_songs_with_title_partial {
 
 __END__
 
-=head1 NAME
-
-POE::Component::Client::MPD::Collection - module handling collection commands
-
-
-
 =head1 DESCRIPTION
 
 L<POE::Component::Client::MPD::Collection> is responsible for handling
@@ -444,5 +439,4 @@ of the title.
 
 
 =back
-
 

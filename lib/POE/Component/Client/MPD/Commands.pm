@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Commands;
+# ABSTRACT: module handling basic mpd commands
 
 use POE;
 use POE::Component::Client::MPD::Message;
@@ -453,12 +454,6 @@ sub _do_seekid {
 1;
 
 __END__
-
-=head1 NAME
-
-POE::Component::Client::MPD::Commands - module handling basic mpd commands
-
-
 
 =head1 DESCRIPTION
 

@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Playlist;
+# ABSTRACT: module handling playlist commands
 
 use POE;
 use POE::Component::Client::MPD::Message;
@@ -282,12 +283,6 @@ sub _do_rm {
 1;
 
 __END__
-
-=head1 NAME
-
-POE::Component::Client::MPD::Playlist - module handling playlist commands
-
-
 
 =head1 DESCRIPTION
 
