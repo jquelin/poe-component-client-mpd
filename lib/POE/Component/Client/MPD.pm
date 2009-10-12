@@ -218,6 +218,9 @@ sub _onprot_mpd_connected {
 #
 sub _onprot_mpd_disconnected {
     my ($k, $h, $version) = @_[KERNEL, HEAP, ARG0];
+    my $peer = $h->{status_msgs_to};
+    return unless defined $peer;
+    $k->post($peer, 'mpd_disconnected');
 }
 
 
