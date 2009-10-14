@@ -31,7 +31,7 @@ sub import { # this will be run when pococm::Test will be use-d.
     $was_running = _stop_user_mpd_if_needed();
     $start_ok    = start_test_mpd();
 
-    END {
+    END { ## no critic
         stop_test_mpd() if $start_ok;
         return unless $was_running;   # no need to restart
         system 'mpd 2>/dev/null';     # restart user mpd
