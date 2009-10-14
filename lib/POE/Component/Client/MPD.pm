@@ -553,21 +553,12 @@ Called when pococm-conn made sure we're talking to a mpd server.
 =back
 
 
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-poe-component-client-mpd at
-rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=POE-Component-Client-MPD>.
-I will be notified, and then you'll automatically be notified of progress on
-your bug as I make changes.
-
-
-
 =head1 SEE ALSO
 
 You can find more information on the mpd project on its homepage at
-L<http://www.musicpd.org>, or its wiki L<http://mpd.wikia.com>.
+L<http://www.musicpd.org>, or its wiki L<http://mpd.wikia.com>. You
+may want to have a look at L<Audio::MPD>, a non-POE aware module to
+access MPD.
 
 L<POE::Component::Client::MPD> development takes place on C<< <audio-mpd
 at googlegroups.com> >>: feel free to join us. (use
