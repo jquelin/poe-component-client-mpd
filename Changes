@@ -18,6 +18,11 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.9.4 Wed Oct 14 16:58:19 2009
+ - mpd_disconnected now sent to listening peer (torsten schwinn)
+ - sending disconnect event even if no auto-reconnect
+ - migrated to dist::zilla (transparent for end user)
+
 0.9.3 Mon Sep 28 17:28:06 2009
  - reorder inheritance to work around exporter bug
  - wrote some doc on events fired by pococm
