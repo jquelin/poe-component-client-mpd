@@ -18,6 +18,9 @@ High-level changelog
 Low-level changelog
 ===================
 
+0.9.5 Mon Nov  2 17:10:07 CET 2009
+ - adding missing require
+
 0.9.4 Wed Oct 14 16:58:19 2009
  - mpd_disconnected now sent to listening peer (torsten schwinn)
  - sending disconnect event even if no auto-reconnect
