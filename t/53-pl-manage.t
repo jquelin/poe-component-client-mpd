@@ -4,11 +4,22 @@ use 5.010;
 use strict;
 use warnings;
 
-use FindBin qw{ $Bin };
+use POE;
+use POE::Component::Client::MPD;
+use POE::Component::Client::MPD::Test;
 use Test::More;
 
-my $nbtests = 11;
-my @tests   = (
+# are we able to test module?
+eval 'use Test::Corpus::Audio::MPD';
+plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
+
+plan tests => 11;
+
+# launch fake mpd
+POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+
+# launch the tests
+POE::Component::Client::MPD::Test->new( { tests => [
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # load
@@ -23,12 +34,8 @@ my @tests   = (
     # rm
     [ 'pl.rm',       ['test-jq'], 0, \&check_success ],
     [ 'status',               [], 0, \&check_rm      ],
-);
-
-
-# are we able to test module?
-eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
-diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+] } );
+POE::Kernel->run;
 exit;
 
 #--
@@ -48,11 +55,13 @@ sub check_load {
 sub check_save {
     my ($msg, $status) = @_;
     check_success($msg);
-    ok(-f "$Bin/mpd-test/playlists/test-jq.m3u", 'pl.save() creates a playlist');
+    my $pdir = playlist_dir();
+    ok(-f "$pdir/test-jq.m3u", 'pl.save() creates a playlist');
 }
 
 sub check_rm {
     my ($msg, $status) = @_;
     check_success($msg);
-    ok(! -f "$Bin/mpd-test/playlists/test-jq.m3u", 'rm() removes a playlist');
+    my $pdir = playlist_dir();
+    ok(! -f "$pdir/test-jq.m3u", 'rm() removes a playlist');
 }
