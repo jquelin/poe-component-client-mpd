@@ -15,6 +15,32 @@ use Readonly;
 
 Readonly my $K => $poe_kernel;
 
+=attr alias
+
+The session alias. Defaults to C<tester>.
+
+=attr tests
+
+The list (array ref) of tests to run. It is required in the constructor
+call. Each list item is an array reference with the following sub-items:
+
+=over 4
+
+=item * event - the event to send to the
+L<POE::Component::Client::MPD> session
+
+=item * args - event arguments (an array reference)
+
+=item * sleep - number of seconds to wait before calling next events
+
+=item * callback - a sub reference to check the results of current
+event. The real tests should be done in this sub. It will be called with
+the message received and the message payload.
+
+=back
+
+=cut
+
 has alias => ( ro, isa=>Str, default=>'tester' );
 has tests => (
     ro, auto_deref, required,
@@ -45,11 +71,12 @@ sub START {
 
 # -- public events
 
-#
-# event: next_test()
-#
-# Called to schedule the next test.
-#
+=event next_test( )
+
+Called to schedule the next test.
+
+=cut
+
 event next_test => sub {
     my $self = shift;
 
@@ -67,11 +94,13 @@ event next_test => sub {
 };
 
 
-#
-# event: mpd_result( $msg )
-#
-# Called when mpd talks back, with $msg as a pococm-message param.
-#
+=event mpd_result( $msg )
+
+Called when mpd talks back, with C<$msg> as a
+L<POE::Component::Client::MPD::Message> param.
+
+=cut
+
 event mpd_result => sub {
     my ($self, $msg, $results) = @_[OBJECT, ARG0, ARG1];
     my $test = $self->get_test(0);
@@ -90,33 +119,27 @@ __END__
 
 =head1 SYNOPSIS
 
-    POE::Component::Client::MPD::Test->new( tests => [
+    POE::Component::Client::MPD->spawn( ... );
+    POE::Component::Client::MPD::Test->new( { tests => [
         [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ],
         ...
-    ] );
+    ] } );
+    POE::Kernel->run;
 
 
 =head1 DESCRIPTION
 
-=head2 General usage
+This module implements a L<POE::Session> used to schedule tests
+according to a plan, calling hooks used to check whether a given test
+was successful.
 
-This module will try to launch a new mpd server for testing purposes. This
-mpd server will then be used during POE::Component::Client::MPD tests.
+To use it, you need to first spawn a L<POE::Component::Client::MPD>
+session - it's this session that will be tested. And don't forget to
+call L<POE>'s mainloop!
 
-In order to achieve this, the module will create a fake mpd.conf file with
-the correct pathes (ie, where you untarred the module tarball). It will then
-check if some mpd server is already running, and stop it if the
-MPD_TEST_OVERRIDE environment variable is true (die otherwise). Last it will
-run the test mpd with its newly created configuration file.
+Once started, it will fire the first event to the
+L<MPD|POE::Component::Client::MPD> session, wait for the return message,
+call the check callback, and wait a bit... before starting again with
+the next event in the list.
 
-Everything described above is done automatically when the module is C<use>-d.
-
-
-Once the tests are run, the mpd server will be shut down, and the original
-one will be relaunched (if there was one).
-
-Note that the test mpd will listen to C<localhost>, so you are on the safe
-side. Note also that the test suite comes with its own ogg files - and yes,
-we can redistribute them since it's only some random voice recordings :-)
-
-
+When all events have been sent, the session will shut down itself.
