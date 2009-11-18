@@ -85,6 +85,9 @@ event mpd_result => sub {
 
 __END__
 
+=for Pod::Coverage::TrustPod
+    START
+
 =head1 SYNOPSIS
 
     POE::Component::Client::MPD::Test->new( tests => [
