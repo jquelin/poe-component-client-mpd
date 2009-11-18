@@ -44,13 +44,12 @@ the message received and the message payload.
 has alias => ( ro, isa=>Str, default=>'tester' );
 has tests => (
     ro, auto_deref, required,
-    isa=>ArrayRef,
-    traits     => ['Array'],
-    handles    => {
-        #tests => 'elements',
-        get_test  => 'get',
+    isa      => ArrayRef,
+    traits   => [ 'Array' ],
+    handles  => {
+        peek     => [ get => 0 ],
         pop_test => 'shift',
-        nbtests   => 'count',
+        nbtests  => 'count',
     },
 );
 
@@ -87,7 +86,7 @@ event next_test => sub {
     }
 
     # post next event.
-    my $test = $self->get_test(0);
+    my $test  = $self->peek;
     my $event = $test->[0];
     my $args  = $test->[1];
     $K->post( 'mpd', $event, @$args );
@@ -103,10 +102,11 @@ L<POE::Component::Client::MPD::Message> param.
 
 event mpd_result => sub {
     my ($self, $msg, $results) = @_[OBJECT, ARG0, ARG1];
-    my $test = $self->get_test(0);
-    $test->[3]->($msg, $results);             # check if everything went fine
-    $K->delay_set('next_test'=>$test->[2]);   # call next test after some time
-    $self->pop_test;                          # remove test being played
+    my $test = $self->peek;
+
+    $test->[3]->($msg, $results);               # check if everything went fine
+    $K->delay_set( next_test => $test->[2] );   # call next test after some time
+    $self->pop_test;                            # remove test being played
 };
 
 
