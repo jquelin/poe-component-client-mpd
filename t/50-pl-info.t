@@ -36,6 +36,8 @@ POE::Component::Client::MPD::Test->new( { tests => [
 
 ] } );
 POE::Kernel->run;
+exit;
+
 #--
 
 sub check_success {
