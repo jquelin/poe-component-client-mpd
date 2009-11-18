@@ -4,52 +4,111 @@ use 5.010;
 use strict;
 use warnings;
 
-use POE;
-use POE::Component::Client::MPD::Connection;
+# -- test session
+{
+    package My::Session;
+    use MooseX::Has::Sugar;
+    use MooseX::POE;
+    use MooseX::Types::Moose qw{ ArrayRef };
+    use POE::Component::Client::MPD::Message;
+    use Readonly;
+    use Test::More;
+
+    Readonly my $ALIAS => 'tester';
+    Readonly my $K     => $poe_kernel;
+
+    has tests => (
+        ro, auto_deref, required,
+        isa=>ArrayRef,
+        traits     => ['Array'],
+        handles    => {
+            #tests => 'elements',
+            get_test => 'get',
+            pop_test => 'shift',
+            nbtests  => 'count',
+        },
+    );
+
+
+    # -- initializers
+
+    # event: _start()
+    # called when the poe session has started.
+    sub START {
+        $K->alias_set( $ALIAS );        # refcount++
+        $K->delay( _next_test => 1 );   # launch the first test
+    }
+
+    # -- public events
+
+    # event: _mpd_data ( $msg )
+    # event: _mpd_error( $msg )
+    # called when mpd talks back, with $msg as a pococm-message param.
+    sub _mpd_result {
+        my ($self, $state, $arg0, $arg1) = @_[OBJECT, STATE, ARG0, ARG1];
+
+        my $test  = $self->pop_test;   # remove test being played
+        my $event = $test->[2];
+        is($state, $event, "got a $event event");
+        $test->[3]->($arg0, $arg1);   # check if everything went fine
+        $K->yield( '_next_test' );    # call next test
+    }
+    event mpd_data  => \&_mpd_result;
+    event mpd_error => \&_mpd_result;
+
+    # -- private events
+
+    # event: _next_test()
+    # called to schedule the next test.
+    event _next_test => sub {
+        my $self = shift;
+        if ( $self->nbtests == 0 ) { # no more tests.
+            $K->alias_remove($ALIAS);
+            $K->post( _mpd_conn => 'disconnect' );
+            return;
+        }
+
+        # post next event.
+        my $msg = POE::Component::Client::MPD::Message->new({});
+        my $test = $self->get_test(0);
+        $msg->_commands( [ $test->[0] ] );
+        $msg->_cooking (   $test->[1]   );
+        $K->post( _mpd_conn => 'send', $msg );
+    };
+    no Moose;
+    __PACKAGE__->meta->make_immutable;
+    1;
+}
+
+# -- main tester
+package main;
 use POE::Component::Client::MPD::Message;
-use Readonly;
+use POE::Component::Client::MPD::Connection;
 use Test::More;
-
-Readonly my $ALIAS => 'tester';
-
 
 # are we able to test module?
 eval 'use Test::Corpus::Audio::MPD';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 plan tests => 29;
 
-
 # tests to be run
-my @tests = (
+My::Session->new( { tests => [
     [ 'bad command', $RAW,         'mpd_error', \&_check_bad_command      ],
     [ 'status',      $RAW,         'mpd_data',  \&_check_data_raw         ],
     [ 'lsinfo',      $AS_ITEMS,    'mpd_data',  \&_check_data_as_items    ],
     [ 'stats',       $STRIP_FIRST, 'mpd_data',  \&_check_data_strip_first ],
     [ 'stats',       $AS_KV,       'mpd_data',  \&_check_data_as_kv       ],
-);
-my $id = POE::Session->create(
-    inline_states => {
-        # private events
-        _start     => \&_onpriv_start,
-        _next_test => \&_onpriv_next_test,
-        # protected events
-        mpd_data   => \&_onprot_mpd_result,
-        mpd_error  => \&_onprot_mpd_result,
-    }
-);
-my $conn = POE::Component::Client::MPD::Connection->spawn( {
+] } );
+POE::Component::Client::MPD::Connection->spawn( {
     host => 'localhost',
     port => 6600,
-    id   => $id,
+    id   => 'tester',
 } );
-my $msg  = POE::Component::Client::MPD::Message->new({});
 POE::Kernel->run;
 exit;
 
-
 #--
 # private subs
-
 sub _check_bad_command {
     like($_[1], qr/unknown command "bad"/, 'unknown command');
 }
@@ -73,59 +132,3 @@ sub _check_data_strip_first {
     unlike( $_, qr/\D/, '$STRIP_FIRST return only 2nd field' ) for @{ $_[0]->_data };
     # stats return numerical data as second field.
 }
-
-
-#--
-# protected events
-
-#
-# event: _mpd_data ( $msg )
-# event: _mpd_error( $msg )
-#
-# Called when mpd talks back, with $msg as a pococm-message param.
-#
-sub _onprot_mpd_result {
-    my ($k, $state, $arg0, $arg1) = @_[KERNEL, STATE, ARG0, ARG1];
-
-    is($state, $tests[0][2], "got a $tests[0][2] event");
-    $tests[0][3]->($arg0, $arg1);   # check if everything went fine
-    shift @tests;                   # remove test being played
-    $k->yield( '_next_test' );      # call next test
-}
-
-
-#--
-# private events
-
-#
-# event: _start()
-#
-# Called when the poe session has started.
-#
-sub _onpriv_start {
-    my $k = $_[KERNEL];
-    $k->alias_set($ALIAS);        # increment refcount
-    $k->delay('_next_test'=>1);   # launch the first test
-}
-
-
-#
-# event: _next_test()
-#
-# Called to schedule the next test.
-#
-sub _onpriv_next_test {
-    my $k = $_[KERNEL];
-
-    if ( scalar @tests == 0 ) { # no more tests.
-        $k->alias_remove($ALIAS);
-        $k->post( $conn, 'disconnect' );
-        return;
-    }
-
-    # post next event.
-    $msg->_commands( [ $tests[0][0] ] );
-    $msg->_cooking (   $tests[0][1]   );
-    $k->post( $conn, 'send', $msg );
-}
-
