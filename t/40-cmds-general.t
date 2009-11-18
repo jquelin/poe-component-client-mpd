@@ -4,10 +4,21 @@ use 5.010;
 use strict;
 use warnings;
 
+use POE;
+use POE::Component::Client::MPD;
+use POE::Component::Client::MPD::Test;
 use Test::More;
 
-my $nbtests = 10;
-my @tests   = (
+# are we able to test module?
+eval 'use Test::Corpus::Audio::MPD';
+plan skip_all=>$@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+plan tests => 10;
+
+# launch fake mpd
+POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+
+# launch the tests
+POE::Component::Client::MPD::Test->new( { tests => [
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # updatedb
@@ -23,12 +34,8 @@ my @tests   = (
 
     # urlhandlers
     [ 'urlhandlers', [],       0, \&check_urlhandlers ],
-);
-
-
-# are we able to test module?
-eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
-diag($@), plan skip_all=>$@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+] } );
+POE::Kernel->run;
 exit;
 
 #--
@@ -47,10 +54,7 @@ sub check_update  {
 sub check_urlhandlers {
     my ($msg, $handlers) = @_;
     check_success($msg);
-    TODO: {
-        local $TODO = 'test depending on mpd compilation flags';
-        is(scalar @$handlers, 0, 'no url handler supported by default');
-    }
+    is(scalar @$handlers, 1, 'no url handler supported by default');
 }
 
 sub check_version {
