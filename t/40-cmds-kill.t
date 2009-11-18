@@ -28,7 +28,8 @@ use warnings;
 }
 # -- main test
 package main;
-use POE qw{ Component::Client::MPD };
+use POE;
+use POE::Component::Client::MPD;
 use Test::More;
 
 eval 'use Test::Corpus::Audio::MPD';
