@@ -7,7 +7,7 @@ use warnings;
 use POE qw{ Component::Client::MPD };
 use Test::More;
 
-eval 'use POE::Component::Client::MPD::Test dont_start_poe=>1';
+eval 'use Test::Corpus::Audio::MPD';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 plan tests => 1;
 
