@@ -18,6 +18,8 @@ High-level changelog
 Low-level changelog
 ===================
 
+ - using Test::Corpus::Audio::MPD for tests
+
 0.9.6 Sun Nov  8 09:50:18 CET 2009
  - skipping test compile
 
