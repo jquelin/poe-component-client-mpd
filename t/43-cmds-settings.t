@@ -4,10 +4,21 @@ use 5.010;
 use strict;
 use warnings;
 
+use POE;
+use POE::Component::Client::MPD;
+use POE::Component::Client::MPD::Test;
 use Test::More;
 
-my $nbtests = 30;
-my @tests   = (
+# are we able to test module?
+eval 'use Test::Corpus::Audio::MPD';
+plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
+plan tests => 30;
+
+# launch fake mpd
+POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+
+# launch the tests
+POE::Component::Client::MPD::Test->new( { tests => [
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # repeat
@@ -35,12 +46,8 @@ my @tests   = (
     [ 'status', [],   0, \&check_random_is_on  ],
     [ 'random', [],   1, \&check_success       ],
     [ 'status', [],   0, \&check_random_is_off ],
-);
-
-
-# are we able to test module?
-eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
-diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+] } );
+POE::Kernel->run;
 exit;
 
 #--
