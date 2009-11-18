@@ -19,11 +19,10 @@ use warnings;
 
     has tests => (
         ro, auto_deref, required,
-        isa=>ArrayRef,
-        traits     => ['Array'],
-        handles    => {
-            #tests => 'elements',
-            get_test => 'get',
+        isa     =>ArrayRef,
+        traits  => ['Array'],
+        handles => {
+            peek     => [ get => 0 ],
             pop_test => 'shift',
             nbtests  => 'count',
         },
@@ -70,7 +69,7 @@ use warnings;
 
         # post next event.
         my $msg = POE::Component::Client::MPD::Message->new({});
-        my $test = $self->get_test(0);
+        my $test = $self->peek;
         $msg->_commands( [ $test->[0] ] );
         $msg->_cooking (   $test->[1]   );
         $K->post( _mpd_conn => 'send', $msg );
