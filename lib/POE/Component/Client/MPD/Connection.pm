@@ -45,6 +45,7 @@ sub spawn {
         RemotePort    => $args->{port},
         Filter        => 'POE::Filter::Line',
         Args          => [ $args ],
+        Alias         => '_mpd_conn',
 
 
         ServerError  => sub { }, # quiet errors
