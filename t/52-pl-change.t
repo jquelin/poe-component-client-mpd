@@ -4,17 +4,26 @@ use 5.010;
 use strict;
 use warnings;
 
+use POE;
+use POE::Component::Client::MPD;
+use POE::Component::Client::MPD::Test;
 use Test::More;
 
-my $plvers;
+# are we able to test module?
+eval 'use Test::Corpus::Audio::MPD';
+plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
+plan tests => 20;
+
+# launch fake mpd
+POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+
+# launch the tests
 my @songs   = qw{
-    title.ogg
-    dir1/title-artist-album.ogg
-    dir1/title-artist.ogg
-    dir2/album.ogg
+    title.ogg dir1/title-artist-album.ogg
+    dir1/title-artist.ogg dir2/album.ogg
 };
-my $nbtests = 20;
-my @tests   = (
+POE::Component::Client::MPD::Test->new( { tests => [
+
     # [ 'event', [ $arg1, $arg2, ... ], $sleep, \&check_results ]
 
     # pl.swapid
@@ -41,18 +50,18 @@ my @tests   = (
     [ 'pl.as_items',      [], 0, \&check_2ndpos  ],
 
     # pl.shuffle
-    [ 'status',           [], 0, sub { $plvers=$_[1]->playlist; } ],
-    [ 'pl.shuffle',       [], 0, \&check_success                  ],
-    [ 'status',           [], 0, \&check_shuffle                  ],
-);
-
-
-# are we able to test module?
-eval 'use POE::Component::Client::MPD::Test nbtests=>$nbtests, tests=>\@tests';
-diag($@), plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
+    [ 'status',           [], 0, \&get_plvers    ],
+    [ 'pl.shuffle',       [], 0, \&check_success ],
+    [ 'status',           [], 0, \&check_shuffle ],
+] } );
+POE::Kernel->run;
 exit;
 
 #--
+
+my $plvers;
+
+sub get_plvers { $plvers=$_[1]->playlist; }
 
 sub check_success {
     my ($msg) = @_;
