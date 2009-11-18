@@ -110,24 +110,24 @@ sub check_seek1 {
     my ($msg, $status) = @_;
     check_success($msg);
     is($status->song, 2, 'seek() can change the current track');
-    TODO: {
-        local $TODO = "detection method doesn't always work - depends on timing";
+    SKIP: {
+        skip "detection method doesn't always work - depends on timing", 1;
         is($status->time->sofar_secs, 1, 'seek() seeks in the song');
     }
 }
 sub check_seek2 {
     my ($msg, $status) = @_;
     check_success($msg);
-    TODO: {
-        local $TODO = "detection method doesn't always work - depends on timing";
+    SKIP: {
+        skip "detection method doesn't always work - depends on timing", 1;
         is($_[1]->time->sofar_secs, 0, 'seek() defaults to beginning of song');
     }
 }
 sub check_seek3 {
     my ($msg, $status) = @_;
     check_success($msg);
-    TODO: {
-        local $TODO = "detection method doesn't always work - depends on timing";
+    SKIP: {
+        skip "detection method doesn't always work - depends on timing", 1;
         is($_[1]->time->sofar_secs, 1, 'seek() defaults to current song ');
     }
 }
@@ -135,24 +135,24 @@ sub check_seekid1 {
     my ($msg, $status) = @_;
     check_success($msg);
     is($status->songid, 1, 'seekid() can change the current track');
-    TODO: {
-        local $TODO = "detection method doesn't always work - depends on timing";
+    SKIP: {
+        skip "detection method doesn't always work - depends on timing", 1;
         is($status->time->sofar_secs, 1, 'seekid() seeks in the song');
     }
 }
 sub check_seekid2 {
     my ($msg, $status) = @_;
     check_success($msg);
-    TODO: {
-        local $TODO = "detection method doesn't always work - depends on timing";
+    SKIP: {
+        skip "detection method doesn't always work - depends on timing", 1;
         is($_[1]->time->sofar_secs, 0, 'seekid() defaults to beginning of song');
     }
 }
 sub check_seekid3 {
     my ($msg, $status) = @_;
     check_success($msg);
-    TODO: {
-        local $TODO = "detection method doesn't always work - depends on timing";
+    SKIP: {
+        skip "detection method doesn't always work - depends on timing", 1;
         is($_[1]->time->sofar_secs, 1, 'seekid() defaults to current song');
     }
 }
