@@ -87,5 +87,3 @@ sub check_output_enable {
     check_success($msg);
     is($status->error, undef, 'enabling output' );
 }
-
-

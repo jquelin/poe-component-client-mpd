@@ -40,4 +40,3 @@ sub _onpriv_mpd_connect_error_fatal {
     $k->alias_remove($ALIAS); # increment refcount
     $k->post($conn, 'disconnect');
 }
-

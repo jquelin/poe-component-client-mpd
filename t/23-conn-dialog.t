@@ -19,7 +19,7 @@ use warnings;
 
     has tests => (
         ro, auto_deref, required,
-        isa     =>ArrayRef,
+        isa     => ArrayRef,
         traits  => ['Array'],
         handles => {
             peek     => [ get => 0 ],
