@@ -76,8 +76,8 @@ sub check_volume_relative_neg {
 sub check_output_disable {
     my ($msg, $status) = @_;
     check_success($msg);
-    TODO: {
-        local $TODO = "detection method doesn't always work - depends on timing";
+    SKIP: {
+        skip "detection method doesn't always work - depends on timing", 1;
         like($status->error, qr/^problems/, 'disabling output' );
     }
 }
