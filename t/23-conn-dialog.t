@@ -16,7 +16,7 @@ Readonly my $ALIAS => 'tester';
 # are we able to test module?
 eval 'use POE::Component::Client::MPD::Test dont_start_poe => 1';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
-plan tests => 29;
+plan tests => 36;
 
 
 # tests to be run
