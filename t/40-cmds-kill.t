@@ -4,6 +4,29 @@ use 5.010;
 use strict;
 use warnings;
 
+# -- test session
+package My::Session;
+use MooseX::POE;
+use Test::More;
+sub START {
+    POE::Kernel->alias_set( 'tester' );     # refcount++
+    POE::Kernel->delay_set( kill => 0.5 );  # FIXME: use connected event to start tests in pococm-test
+}
+event check => sub {
+    my @procs = grep { /\smpd\s/ } grep { !/grep/ } qx{ ps -ef };
+    is( scalar @procs, 0, 'kill shuts down mpd' );
+};
+event kill => sub {
+    POE::Kernel->delay_set( check => 1 );
+    POE::Kernel->post( mpd => 'kill' );
+    POE::Kernel->alias_remove( 'tester' );   # refcount--
+};
+no Moose;
+__PACKAGE__->meta->make_immutable;
+1;
+
+# -- main test
+package main;
 use POE qw{ Component::Client::MPD };
 use Test::More;
 
@@ -12,33 +35,6 @@ plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 plan tests => 1;
 
 POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
-my $id = POE::Session->create(
-    inline_states => {
-        _start    => \&_start,
-        _check    => \&_check,
-        _kill     => \&_kill,
-    }
-);
+My::Session->new;
 POE::Kernel->run;
 exit;
-
-#--
-
-sub _start {
-    my $k = $_[KERNEL];
-    $k->alias_set('tester');      # refcount++
-    $k->delay_set('_kill' => 0.5);  # FIXME: use connected event to start tests in pococm-test
-}
-
-sub _check {
-    my @procs = grep { /\smpd\s/ } grep { !/grep/ } qx{ ps -ef };
-    is( scalar @procs, 0, 'kill shuts down mpd' );
-}
-
-sub _kill {
-    my $k = $_[KERNEL];
-    $k->delay_set('_check' => 1);
-    $k->post('mpd', 'kill');
-    $k->alias_remove('tester');      # refcount--
-}
-
