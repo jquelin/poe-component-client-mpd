@@ -24,6 +24,8 @@ all the shenanigans to change the export names.
 
 Current types defined and exported:
 
+=over 4
+
 =item * C<Cooking> - a simple enum to know what to do about that data
 
 =over 4
@@ -51,5 +53,7 @@ C<Audio::MPD::Common::Stats>
 
 =item * C<as_status> - transform the data from key/value to
 C<Audio::MPD::Common::Status>
+
+=back
 
 =back
