@@ -556,19 +556,29 @@ Called when pococm-conn made sure we're talking to a mpd server.
 =head1 SEE ALSO
 
 You can find more information on the mpd project on its homepage at
-L<http://www.musicpd.org>, or its wiki L<http://mpd.wikia.com>. You
-may want to have a look at L<Audio::MPD>, a non-POE aware module to
+L<http://www.musicpd.org>, or its wiki L<http://mpd.wikia.com>. You may
+want to have a look at L<Audio::MPD>, a non-L<POE> aware module to
 access MPD.
 
-L<POE::Component::Client::MPD> development takes place on C<< <audio-mpd
-at googlegroups.com> >>: feel free to join us. (use
-L<http://groups.google.com/group/audio-mpd> to sign in). Our git
-repository is located at
-L<http://github.com/jquelin/poe-component-client-mpd.git>.
-
-You can also look for information on this module at:
+You can look for information on this module at:
 
 =over 4
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/POE-Component-Client-MPD>
+
+=item * See open / report bugs
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD>
+
+=item * Mailing-list (same as L<Audio::MPD>)
+
+L<http://groups.google.com/group/audio-mpd>
+
+=item * Git repository
+
+L<http://github.com/jquelin/poe-component-client-mpd>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
@@ -578,9 +588,4 @@ L<http://annocpan.org/dist/POE-Component-Client-MPD>
 
 L<http://cpanratings.perl.org/d/POE-Component-Client-MPD>
 
-=item * Open bugs
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD>
-
 =back
-
