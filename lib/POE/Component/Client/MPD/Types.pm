@@ -7,10 +7,9 @@ package POE::Component::Client::MPD::Types;
 
 use Moose::Util::TypeConstraints;
 use Sub::Exporter -setup => { exports => [ qw{
-    Answer Cooking Transform
+    Cooking Transform
 } ] };
 
-enum Answer    => qw{ send discard };
 enum Cooking   => qw{ raw as_items as_kv strip_first };
 enum Transform => qw{ as_scalar as_stats as_status };
 
@@ -24,20 +23,6 @@ exports them. It is using L<Sub::Exporter> underneath, so you can use
 all the shenanigans to change the export names.
 
 Current types defined and exported:
-
-=over 4
-
-=item * C<Answer> - a simple enum to know what to do about the message.
-Possible values are:
-
-=over 4
-
-=item * C<send> - send the message back to client
-
-=item * C<discard> - trash mpd's answer
-
-=back
-
 
 =item * C<Cooking> - a simple enum to know what to do about that data
 
