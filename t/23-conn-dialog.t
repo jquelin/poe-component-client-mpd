@@ -68,10 +68,12 @@ use warnings;
         }
 
         # post next event.
-        my $msg = POE::Component::Client::MPD::Message->new({});
+        my $msg = POE::Component::Client::MPD::Message->new({
+            request => 'foo', params=>[],
+        });
         my $test = $self->peek;
-        $msg->_commands( [ $test->[0] ] );
-        $msg->_cooking (   $test->[1]   );
+        $msg->_set_commands( [ $test->[0] ] );
+        $msg->_set_cooking (   $test->[1]   );
         $K->post( _mpd_conn => 'send', $msg );
     };
     no Moose;
@@ -92,11 +94,11 @@ plan tests => 29;
 
 # tests to be run
 My::Session->new( { tests => [
-    [ 'bad command', $RAW,         'mpd_error', \&_check_bad_command      ],
-    [ 'status',      $RAW,         'mpd_data',  \&_check_data_raw         ],
-    [ 'lsinfo',      $AS_ITEMS,    'mpd_data',  \&_check_data_as_items    ],
-    [ 'stats',       $STRIP_FIRST, 'mpd_data',  \&_check_data_strip_first ],
-    [ 'stats',       $AS_KV,       'mpd_data',  \&_check_data_as_kv       ],
+    [ 'bad command', 'raw',         'mpd_error', \&_check_bad_command      ],
+    [ 'status',      'raw',         'mpd_data',  \&_check_data_raw         ],
+    [ 'lsinfo',      'as_items',    'mpd_data',  \&_check_data_as_items    ],
+    [ 'stats',       'strip_first', 'mpd_data',  \&_check_data_strip_first ],
+    [ 'stats',       'as_kv',       'mpd_data',  \&_check_data_as_kv       ],
 ] } );
 POE::Component::Client::MPD::Connection->spawn( {
     host => 'localhost',

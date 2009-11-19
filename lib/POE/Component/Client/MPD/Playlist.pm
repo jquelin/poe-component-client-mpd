@@ -22,8 +22,8 @@ use base qw{ Class::Accessor::Fast };
 sub _do_as_items {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'playlistinfo' ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ 'playlistinfo' ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -38,8 +38,8 @@ sub _do_items_changed_since {
     my ($self, $k, $h, $msg) = @_;
     my $plid = $msg->params->[0];
 
-    $msg->_commands ( [ "plchanges $plid" ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ "plchanges $plid" ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -62,8 +62,8 @@ sub _do_add {
         map( qq{add "$_"}, @pathes ),
         'command_list_end',
     );
-    $msg->_commands ( \@commands );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( \@commands );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -83,8 +83,8 @@ sub _do_delete {
         map( qq{delete $_}, reverse sort {$a<=>$b} @numbers ),
         'command_list_end',
     );
-    $msg->_commands ( \@commands );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( \@commands );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -105,8 +105,8 @@ sub _do_deleteid {
         map( qq{deleteid $_}, @songids ),
         'command_list_end',
     );
-    $msg->_commands ( \@commands );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( \@commands );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -119,8 +119,8 @@ sub _do_deleteid {
 sub _do_clear {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'clear' ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ 'clear' ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -135,7 +135,7 @@ sub _do_crop {
 
     if ( not defined $msg->_data ) {
         # no status yet - fire an event
-        $msg->_post( 'pl.crop' );
+        $msg->_set_post( 'pl.crop' );
         $h->{mpd}->_dispatch($k, $h, 'status', $msg);
         return;
     }
@@ -149,8 +149,8 @@ sub _do_crop {
         'command_list_end'
     );
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( \@commands );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( \@commands );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -165,8 +165,8 @@ sub _do_crop {
 sub _do_shuffle {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ 'shuffle' ] );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( [ 'shuffle' ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -180,8 +180,8 @@ sub _do_swap {
     my ($self, $k, $h, $msg) = @_;
     my ($from, $to) = @{ $msg->params }[0,1];
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ "swap $from $to" ] );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( [ "swap $from $to" ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -195,8 +195,8 @@ sub _do_swapid {
     my ($self, $k, $h, $msg) = @_;
     my ($from, $to) = @{ $msg->params }[0,1];
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ "swapid $from $to" ] );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( [ "swapid $from $to" ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -210,8 +210,8 @@ sub _do_move {
     my ($self, $k, $h, $msg) = @_;
     my ($song, $pos) = @{ $msg->params }[0,1];
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ "move $song $pos" ] );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( [ "move $song $pos" ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -225,8 +225,8 @@ sub _do_moveid {
     my ($self, $k, $h, $msg) = @_;
     my ($songid, $pos) = @{ $msg->params }[0,1];
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ "moveid $songid $pos" ] );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( [ "moveid $songid $pos" ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -242,8 +242,8 @@ sub _do_load {
     my ($self, $k, $h, $msg) = @_;
     my $playlist = $msg->params->[0];
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ qq{load "$playlist"} ] );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( [ qq{load "$playlist"} ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -258,8 +258,8 @@ sub _do_save {
     my ($self, $k, $h, $msg) = @_;
     my $playlist = $msg->params->[0];
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ qq{save "$playlist"} ] );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( [ qq{save "$playlist"} ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -273,8 +273,8 @@ sub _do_rm {
     my ($self, $k, $h, $msg) = @_;
     my $playlist = $msg->params->[0];
 
-    $msg->_cooking  ( $RAW );
-    $msg->_commands ( [ qq{rm "$playlist"} ] );
+    $msg->_set_cooking  ( 'raw' );
+    $msg->_set_commands ( [ qq{rm "$playlist"} ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 

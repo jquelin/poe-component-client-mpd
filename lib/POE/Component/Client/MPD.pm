@@ -225,19 +225,19 @@ sub _onprot_mpd_data {
 
     # transform data if needed.
     given ($msg->_transform) {
-        when ($AS_SCALAR) {
+        when ('as_scalar') {
             my $data = $msg->_data->[0];
-            $msg->_data($data);
+            $msg->_set_data($data);
         }
-        when ($AS_STATS) {
+        when ('as_stats') {
             my %stats = @{ $msg->_data };
             my $stats = Audio::MPD::Common::Stats->new( \%stats );
-            $msg->_data($stats);
+            $msg->_set_data($stats);
         }
-        when ($AS_STATUS) {
+        when ('as_status') {
             my %status = @{ $msg->_data };
             my $status = Audio::MPD::Common::Status->new( \%status );
-            $msg->_data($status);
+            $msg->_set_data($status);
         };
     }
 
@@ -245,7 +245,7 @@ sub _onprot_mpd_data {
     # check for post-callback.
     if ( defined $msg->_post ) {
         my $event = $msg->_post;    # save postback.
-        $msg->_post( undef );       # remove postback.
+        $msg->_set_post( undef );   # remove postback.
         $h->{mpd}->_dispatch($k, $h, $event, $msg);
         return;
     }
@@ -263,7 +263,7 @@ sub _onprot_mpd_data {
 sub _onprot_mpd_error {
     my ($k, $msg, $errstr) = @_[KERNEL, ARG0, ARG1];
 
-    $msg->status(0); # failure
+    $msg->set_status(0); # failure
     $k->post( $msg->_from, 'mpd_error', $msg, $errstr );
 }
 

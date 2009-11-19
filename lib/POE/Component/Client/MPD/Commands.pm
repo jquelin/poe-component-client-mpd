@@ -23,7 +23,7 @@ use base qw{ Class::Accessor::Fast };
 #
 sub _do_version {
     my ($self, $k, $h, $msg) = @_;
-    $msg->status(1);
+    $msg->set_status(1);
     $k->post( $msg->_from, 'mpd_result', $msg, $h->{version} );
 }
 
@@ -36,8 +36,8 @@ sub _do_version {
 sub _do_kill {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'kill' ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ 'kill' ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
     $k->delay_set('disconnect'=>1);
 }
@@ -54,8 +54,8 @@ sub _do_updatedb {
     my ($self, $k, $h, $msg) = @_;
     my $path = $msg->params->[0] // '';
 
-    $msg->_commands( [ qq{update "$path"} ] );
-    $msg->_cooking ( $RAW );
+    $msg->_set_commands( [ qq{update "$path"} ] );
+    $msg->_set_cooking ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -68,8 +68,8 @@ sub _do_updatedb {
 sub _do_urlhandlers {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'urlhandlers' ] );
-    $msg->_cooking  ( $STRIP_FIRST );
+    $msg->_set_commands ( [ 'urlhandlers' ] );
+    $msg->_set_cooking  ( 'strip_first' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -91,7 +91,7 @@ sub _do_volume {
         my ($op, $delta) = ($1, $2);
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
-            $msg->_post( 'volume' );
+            $msg->_set_post( 'volume' );
             $h->{mpd}->_dispatch($k, $h, 'status', $msg);
             return;
         }
@@ -103,8 +103,8 @@ sub _do_volume {
         $volume = $msg->params->[0];
     }
 
-    $msg->_commands ( [ "setvol $volume" ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ "setvol $volume" ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -118,8 +118,8 @@ sub _do_output_enable {
     my ($self, $k, $h, $msg) = @_;
     my $output = $msg->params->[0];
 
-    $msg->_commands ( [ "enableoutput $output" ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ "enableoutput $output" ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -133,8 +133,8 @@ sub _do_output_disable {
     my ($self, $k, $h, $msg) = @_;
     my $output = $msg->params->[0];
 
-    $msg->_commands ( [ "disableoutput $output" ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ "disableoutput $output" ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -151,9 +151,9 @@ sub _do_output_disable {
 sub _do_stats {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'stats' ] );
-    $msg->_cooking  ( $AS_KV );
-    $msg->_transform( $AS_STATS );
+    $msg->_set_commands ( [ 'stats' ] );
+    $msg->_set_cooking  ( 'as_kv' );
+    $msg->_set_transform( 'as_stats' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -166,9 +166,9 @@ sub _do_stats {
 sub _do_status {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'status' ] );
-    $msg->_cooking  ( $AS_KV );
-    $msg->_transform( $AS_STATUS );
+    $msg->_set_commands ( [ 'status' ] );
+    $msg->_set_cooking  ( 'as_kv' );
+    $msg->_set_transform( 'as_status' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -183,9 +183,9 @@ sub _do_status {
 sub _do_current {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'currentsong' ] );
-    $msg->_cooking  ( $AS_ITEMS );
-    $msg->_transform( $AS_SCALAR );
+    $msg->_set_commands ( [ 'currentsong' ] );
+    $msg->_set_cooking  ( 'as_items' );
+    $msg->_set_transform( 'as_scalar' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -200,9 +200,9 @@ sub _do_song {
     my ($self, $k, $h, $msg) = @_;
     my $song = $msg->params->[0];
 
-    $msg->_commands ( [ defined $song ? "playlistinfo $song" : 'currentsong' ] );
-    $msg->_cooking  ( $AS_ITEMS );
-    $msg->_transform( $AS_SCALAR );
+    $msg->_set_commands ( [ defined $song ? "playlistinfo $song" : 'currentsong' ] );
+    $msg->_set_cooking  ( 'as_items' );
+    $msg->_set_transform( 'as_scalar' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -217,9 +217,9 @@ sub _do_songid {
     my ($self, $k, $h, $msg) = @_;
     my $song = $msg->params->[0];
 
-    $msg->_commands ( [ defined $song ? "playlistid $song" : 'currentsong' ] );
-    $msg->_cooking  ( $AS_ITEMS );
-    $msg->_transform( $AS_SCALAR );
+    $msg->_set_commands ( [ defined $song ? "playlistid $song" : 'currentsong' ] );
+    $msg->_set_cooking  ( 'as_items' );
+    $msg->_set_transform( 'as_scalar' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -241,7 +241,7 @@ sub _do_repeat {
     } else {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
-            $msg->_post( 'repeat' );
+            $msg->_set_post( 'repeat' );
             $h->{mpd}->_dispatch($k, $h, 'status', $msg);
             return;
         }
@@ -249,8 +249,8 @@ sub _do_repeat {
         $mode = $msg->_data->repeat ? 0 : 1; # negate current value
     }
 
-    $msg->_cooking ( $RAW );
-    $msg->_commands( [ "repeat $mode" ] );
+    $msg->_set_cooking ( 'raw' );
+    $msg->_set_commands( [ "repeat $mode" ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -265,8 +265,8 @@ sub _do_fade {
     my ($self, $k, $h, $msg) = @_;
     my $seconds = $msg->params->[0] // 0;
 
-    $msg->_commands ( [ "crossfade $seconds" ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ "crossfade $seconds" ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -286,7 +286,7 @@ sub _do_random {
     } else {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
-            $msg->_post( 'random' );
+            $msg->_set_post( 'random' );
             $h->{mpd}->_dispatch($k, $h, 'status', $msg);
             return;
         }
@@ -294,8 +294,8 @@ sub _do_random {
         $mode = $msg->_data->random ? 0 : 1; # negate current value
     }
 
-    $msg->_cooking ( $RAW );
-    $msg->_commands( [ "random $mode" ] );
+    $msg->_set_cooking ( 'raw' );
+    $msg->_set_commands( [ "random $mode" ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -313,8 +313,8 @@ sub _do_play {
     my ($self, $k, $h, $msg) = @_;
 
     my $number = $msg->params->[0] // '';
-    $msg->_commands ( [ "play $number" ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ "play $number" ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -329,8 +329,8 @@ sub _do_playid {
     my ($self, $k, $h, $msg) = @_;
 
     my $number = $msg->params->[0] // '';
-    $msg->_commands ( [ "playid $number" ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ "playid $number" ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -347,8 +347,8 @@ sub _do_pause {
     my ($self, $k, $h, $msg) = @_;
 
     my $state = $msg->params->[0] // '';
-    $msg->_commands ( [ "pause $state" ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ "pause $state" ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -361,8 +361,8 @@ sub _do_pause {
 sub _do_stop {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'stop' ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ 'stop' ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -375,8 +375,8 @@ sub _do_stop {
 sub _do_next {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'next' ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ 'next' ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -389,8 +389,8 @@ sub _do_next {
 sub _do_prev {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'previous' ] );
-    $msg->_cooking  ( $RAW );
+    $msg->_set_commands ( [ 'previous' ] );
+    $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -409,7 +409,7 @@ sub _do_seek {
     if ( not defined $song )  {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
-            $msg->_post( 'seek' );
+            $msg->_set_post( 'seek' );
             $h->{mpd}->_dispatch($k, $h, 'status', $msg);
             return;
         }
@@ -417,8 +417,8 @@ sub _do_seek {
         $song = $msg->_data->song;
     }
 
-    $msg->_cooking ( $RAW );
-    $msg->_commands( [ "seek $song $time" ] );
+    $msg->_set_cooking ( 'raw' );
+    $msg->_set_commands( [ "seek $song $time" ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -437,7 +437,7 @@ sub _do_seekid {
     if ( not defined $songid )  {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
-            $msg->_post( 'seekid' );
+            $msg->_set_post( 'seekid' );
             $h->{mpd}->_dispatch($k, $h, 'status', $msg);
             return;
         }
@@ -445,8 +445,8 @@ sub _do_seekid {
         $songid = $msg->_data->songid;
     }
 
-    $msg->_cooking ( $RAW );
-    $msg->_commands( [ "seekid $songid $time" ] );
+    $msg->_set_cooking ( 'raw' );
+    $msg->_set_commands( [ "seekid $songid $time" ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
 

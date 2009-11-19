@@ -84,12 +84,12 @@ sub _got_data {
     my $msg = $h->{fifo}[0];
 
     given ($msg->_cooking) {
-        when ($RAW) {
+        when ('raw') {
             # nothing to do, just push the data.
             push @{ $h->{incoming} }, $input;
         }
 
-        when ($AS_ITEMS) {
+        when ('as_items') {
             # Lots of POCOCM methods are sending commands and then parse the
             # output to build an amc-item.
             my ($k,$v) = split /:\s+/, $input, 2;
@@ -106,7 +106,7 @@ sub _got_data {
             $h->{incoming}[-1]->$k($v);
         }
 
-        when ($AS_KV) {
+        when ('as_kv') {
             # Lots of POCOCM methods are sending commands and then parse the
             # output to get a list of key / value (with the colon ":" acting
             # as separator).
@@ -114,7 +114,7 @@ sub _got_data {
             push @{ $h->{incoming} }, @data;
         }
 
-        when ($STRIP_FIRST) {
+        when ('strip_first') {
             # Lots of POCOCM methods are sending commands and then parse the
             # output to remove the first field (with the colon ":" acting as
             # separator).
@@ -135,8 +135,8 @@ sub _got_data_eot {
     my ($k, $h) = @_;
     my $session = $h->{session};
     my $msg     = shift @{ $h->{fifo} };     # remove completed msg
-    $msg->_data($h->{incoming});             # complete message with data
-    $msg->status(1);                         # success
+    $msg->_set_data($h->{incoming});         # complete message with data
+    $msg->set_status(1);                     # success
     $k->post($session, 'mpd_data', $msg);    # signal poe session
     $h->{incoming} = [];                     # reset incoming data
 }

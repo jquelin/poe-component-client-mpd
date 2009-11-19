@@ -26,8 +26,8 @@ sub _do_all_items {
     my ($self, $k, $h, $msg) = @_;
     my $path = $msg->params->[0] // '';
 
-    $msg->_commands ( [ qq{listallinfo "$path"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{listallinfo "$path"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -49,8 +49,8 @@ sub _do_all_items_simple {
     my ($self, $k, $h, $msg) = @_;
     my $path = $msg->params->[0] // '';
 
-    $msg->_commands ( [ qq{listall "$path"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{listall "$path"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -66,8 +66,8 @@ sub _do_items_in_dir {
     my ($self, $k, $h, $msg) = @_;
     my $path = $msg->params->[0] // '';
 
-    $msg->_commands ( [ qq{lsinfo "$path"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{lsinfo "$path"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -87,8 +87,8 @@ sub _do_items_in_dir {
 sub _do_all_albums {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'list album' ] );
-    $msg->_cooking  ( $STRIP_FIRST );
+    $msg->_set_commands ( [ 'list album' ] );
+    $msg->_set_cooking  ( 'strip_first' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -101,8 +101,8 @@ sub _do_all_albums {
 sub _do_all_artists {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'list artist' ] );
-    $msg->_cooking  ( $STRIP_FIRST );
+    $msg->_set_commands ( [ 'list artist' ] );
+    $msg->_set_cooking  ( 'strip_first' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -115,8 +115,8 @@ sub _do_all_artists {
 sub _do_all_titles {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'list title' ] );
-    $msg->_cooking  ( $STRIP_FIRST );
+    $msg->_set_commands ( [ 'list title' ] );
+    $msg->_set_cooking  ( 'strip_first' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -130,8 +130,8 @@ sub _do_all_titles {
 sub _do_all_files {
     my ($self, $k, $h, $msg) = @_;
 
-    $msg->_commands ( [ 'list filename' ] );
-    $msg->_cooking  ( $STRIP_FIRST );
+    $msg->_set_commands ( [ 'list filename' ] );
+    $msg->_set_cooking  ( 'strip_first' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -148,9 +148,9 @@ sub _do_song {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{find filename "$what"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
-    $msg->_transform( $AS_SCALAR );
+    $msg->_set_commands ( [ qq{find filename "$what"} ] );
+    $msg->_set_cooking  ( 'as_items' );
+    $msg->_set_transform( 'as_scalar' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -164,8 +164,8 @@ sub _do_songs_with_filename_partial {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{search filename "$what"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{search filename "$what"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -182,8 +182,8 @@ sub _do_albums_by_artist {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{list album "$what"} ] );
-    $msg->_cooking  ( $STRIP_FIRST );
+    $msg->_set_commands ( [ qq{list album "$what"} ] );
+    $msg->_set_cooking  ( 'strip_first' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -197,8 +197,8 @@ sub _do_songs_by_artist {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{find artist "$what"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{find artist "$what"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -212,8 +212,8 @@ sub _do_songs_by_artist_partial {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{search artist "$what"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{search artist "$what"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -227,8 +227,8 @@ sub _do_songs_from_album {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{find album "$what"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{find album "$what"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -242,8 +242,8 @@ sub _do_songs_from_album_partial {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{search album "$what"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{search album "$what"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -257,8 +257,8 @@ sub _do_songs_with_title {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{find title "$what"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{find title "$what"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
@@ -272,8 +272,8 @@ sub _do_songs_with_title_partial {
     my ($self, $k, $h, $msg) = @_;
     my $what = $msg->params->[0];
 
-    $msg->_commands ( [ qq{search title "$what"} ] );
-    $msg->_cooking  ( $AS_ITEMS );
+    $msg->_set_commands ( [ qq{search title "$what"} ] );
+    $msg->_set_cooking  ( 'as_items' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
