@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Test;
-# ABSTRACT: automate launching of fake mdp for testing purposes
+# ABSTRACT: automate pococ-mpd testing
 
 use Moose 0.92;
 use MooseX::Has::Sugar;
