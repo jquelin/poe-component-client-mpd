@@ -23,8 +23,9 @@ has _transform => ( rw, isa=>'Transform' );
 has _post      => ( rw, isa=>'Maybe[Str]' );
 has _from      => ( rw, isa=>Str );
 
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
-
 __END__
 
 =head1 SYNOPSIS
