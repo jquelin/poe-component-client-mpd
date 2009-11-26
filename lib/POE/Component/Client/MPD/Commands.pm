@@ -7,12 +7,11 @@ package POE::Component::Client::MPD::Commands;
 
 use Moose;
 use MooseX::Has::Sugar;
-use MooseX::Types::Moose qw{ Str };
 use POE;
 
 use POE::Component::Client::MPD::Message;
 
-has socket => ( ro, required, isa=>Str );
+has mpd => ( ro, required, weak_ref, );# isa=>'POE::Component::Client::MPD' );
 
 
 # -- MPD interaction: general commands

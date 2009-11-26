@@ -300,9 +300,9 @@ sub _onpriv_start {
 
     # create objects to treat dispatched events.
     $h->{mpd}        = POE::Component::Client::MPD->new;
-    $h->{commands}   = POE::Component::Client::MPD::Commands->new({socket=>$h->{socket}});
-    $h->{playlist}   = POE::Component::Client::MPD::Playlist->new({socket=>$h->{socket}});
-    $h->{collection} = POE::Component::Client::MPD::Collection->new({socket=>$h->{socket}});
+    $h->{commands}   = POE::Component::Client::MPD::Commands->new({mpd=>$h});
+    $h->{playlist}   = POE::Component::Client::MPD::Playlist->new({mpd=>$h});
+    $h->{collection} = POE::Component::Client::MPD::Collection->new({mpd=>$h});
 }
 
 
