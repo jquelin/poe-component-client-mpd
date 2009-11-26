@@ -302,7 +302,7 @@ sub _onpriv_start {
     $h->{mpd}        = POE::Component::Client::MPD->new;
     $h->{commands}   = POE::Component::Client::MPD::Commands->new({socket=>$h->{socket}});
     $h->{playlist}   = POE::Component::Client::MPD::Playlist->new({socket=>$h->{socket}});
-    $h->{collection} = POE::Component::Client::MPD::Collection->new;
+    $h->{collection} = POE::Component::Client::MPD::Collection->new({socket=>$h->{socket}});
 }
 
 

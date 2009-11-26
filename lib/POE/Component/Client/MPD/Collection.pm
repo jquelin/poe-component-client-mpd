@@ -5,10 +5,14 @@ use warnings;
 package POE::Component::Client::MPD::Collection;
 # ABSTRACT: module handling collection commands
 
+use Moose;
+use MooseX::Has::Sugar;
+use MooseX::Types::Moose qw{ Str };
 use POE;
+
 use POE::Component::Client::MPD::Message;
 
-use base qw{ Class::Accessor::Fast };
+has socket => ( ro, required, isa=>Str );
 
 
 # -- Collection: retrieving songs & directories
@@ -278,8 +282,9 @@ sub _do_songs_with_title_partial {
 }
 
 
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
-
 __END__
 
 =head1 DESCRIPTION
