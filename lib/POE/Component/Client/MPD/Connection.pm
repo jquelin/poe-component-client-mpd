@@ -62,11 +62,11 @@ sub new {
         Alias         => '_mpd_conn',
 
         ServerError  => sub { }, # quiet errors
-        Started      => \&_onpriv_Started,
-        Connected    => \&_onpriv_Connected,
-        ConnectError => \&_onpriv_ConnectError,
-        Disconnected => \&_onpriv_Disconnected,
-        ServerInput  => \&_onpriv_ServerInput,
+        Started      => \&_Started,
+        Connected    => \&_Connected,
+        ConnectError => \&_ConnectError,
+        Disconnected => \&_Disconnected,
+        ServerInput  => \&_ServerInput,
 
         InlineStates => {
             send       => \&send,         # send data
@@ -120,7 +120,7 @@ sub send {
 # established. Receives the session $id of the poe-session that will be our
 # peer during the life of this session.
 #
-sub _onpriv_Started {
+sub _Started {
     my ($h, $args) = @_[HEAP, ARG0];
 
     # storing params
@@ -139,7 +139,7 @@ sub _onpriv_Started {
 #
 # Called whenever the tcp connection is established.
 #
-sub _onpriv_Connected {
+sub _Connected {
     my $h = $_[HEAP];
     $h->{fifo}         = [];                 # reset current messages
     $h->{incoming}     = [];                 # reset incoming data
@@ -155,7 +155,7 @@ sub _onpriv_Connected {
 # due to mpd server not started, or wrong host / port, etc. Receives
 # the $syscall that failed, as well as $errno and $errstr.
 #
-sub _onpriv_ConnectError {
+sub _ConnectError {
     my ($k, $h, $syscall, $errno, $errstr) = @_[KERNEL, HEAP, ARG0, ARG1, ARG2];
     return unless $h->{auto_reconnect};
 
@@ -187,7 +187,7 @@ sub _onpriv_ConnectError {
 #
 # Called whenever the tcp connection is broken / finished.
 #
-sub _onpriv_Disconnected {
+sub _Disconnected {
     my ($k, $h) = @_[KERNEL, HEAP];
 
     # signal that we're disconnected
@@ -205,7 +205,7 @@ sub _onpriv_Disconnected {
 # Called whenever the tcp peer sends data over the wires, with the $input
 # transmitted given as param.
 #
-sub _onpriv_ServerInput {
+sub _ServerInput {
     my ($k, $h, $input) = @_[KERNEL, HEAP, ARG0];
 
     # did we check we were talking to a mpd server?
