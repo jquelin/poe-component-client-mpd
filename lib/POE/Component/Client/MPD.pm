@@ -13,12 +13,15 @@ use MooseX::Has::Sugar;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::Types::Moose qw{ Int Str };
 use POE;
+use Readonly;
 
 use POE::Component::Client::MPD::Commands;
 use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::MPD::Playlist;
+
+Readonly my $K => $poe_kernel;
 
 
 =attr host
@@ -151,26 +154,26 @@ sub spawn {
 # -- private methods
 
 sub _dispatch {
-    my ($self, $k, $h, $event, $msg) = @_;
+    my ($self, $h, $event, $msg) = @_;
 
     # dispatch the event.
     given ($event) {
         # playlist commands
         when (/^pl\.(.*)$/) {
             my $meth = "_do_$1";
-            $h->{playlist}->$meth($k, $h, $msg);
+            $h->{playlist}->$meth($K, $h, $msg);
         }
 
         # collection commands
         when (/^coll\.(.*)$/) {
             my $meth = "_do_$1";
-            $h->{collection}->$meth($k, $h, $msg);
+            $h->{collection}->$meth($K, $h, $msg);
         }
 
         # basic commands
         default {
             my $meth = "_do_$event";
-            $h->{commands}->$meth($k, $h, $msg);
+            $h->{commands}->$meth($K, $h, $msg);
         }
     }
 }
@@ -186,7 +189,7 @@ sub _dispatch {
 # catch-all handler for pococm events that drive mpd.
 #
 sub _onpub_default {
-    my ($k, $h, $event, $params) = @_[KERNEL, HEAP, ARG0, ARG1];
+    my ($h, $event, $params) = @_[HEAP, ARG0, ARG1];
 
     # check if event is handled.
     my @events_commands = qw{
@@ -225,7 +228,7 @@ sub _onpub_default {
     } );
 
     # dispatch the event so it is handled by the correct object/method.
-    $h->{mpd}->_dispatch($k, $h, $event, $msg);
+    $h->{mpd}->_dispatch($h, $event, $msg);
 }
 
 
@@ -235,9 +238,9 @@ sub _onpub_default {
 # Request the pococm to be shutdown. Leave mpd running.
 #
 sub _onpub_disconnect {
-    my ($k,$h) = @_[KERNEL, HEAP];
-    $k->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
-    $k->post( $h->{socket}, 'disconnect' );                 # pococm-conn
+    my $h = $_[HEAP];
+    $K->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
+    $K->post( $h->{socket}, 'disconnect' );                 # pococm-conn
 }
 
 
@@ -252,11 +255,11 @@ sub _onpub_disconnect {
 # error to our peer session.
 #
 sub _onprot_mpd_connect_error {
-    my ($k, $h, $reason) = @_[KERNEL, HEAP, ARG0];
+    my ($h, $reason) = @_[HEAP, ARG0];
 
     my $peer = $h->{status_msgs_to};
     return unless defined $peer;
-    $k->post($peer, 'mpd_connect_error_fatal', $reason);
+    $K->post($peer, 'mpd_connect_error_fatal', $reason);
 }
 
 
@@ -266,12 +269,12 @@ sub _onprot_mpd_connect_error {
 # Called when pococm-conn made sure we're talking to a mpd server.
 #
 sub _onprot_mpd_connected {
-    my ($k, $h, $version) = @_[KERNEL, HEAP, ARG0];
+    my ($h, $version) = @_[HEAP, ARG0];
     $h->{version} = $version;
 
     my $peer = $h->{status_msgs_to};
     return unless defined $peer;
-    $k->post($peer, 'mpd_connected');
+    $K->post($peer, 'mpd_connected');
     # FIXME: send password information to mpd
     # FIXME: send status information to peer
 }
@@ -284,10 +287,10 @@ sub _onprot_mpd_connected {
 # Called when pococm-conn got disconnected by mpd.
 #
 sub _onprot_mpd_disconnected {
-    my ($k, $h, $version) = @_[KERNEL, HEAP, ARG0];
+    my ($h, $version) = @_[HEAP, ARG0];
     my $peer = $h->{status_msgs_to};
     return unless defined $peer;
-    $k->post($peer, 'mpd_disconnected');
+    $K->post($peer, 'mpd_disconnected');
 }
 
 
@@ -298,7 +301,7 @@ sub _onprot_mpd_disconnected {
 # Received when mpd finished to send back some data.
 #
 sub _onprot_mpd_data {
-    my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
+    my ($h, $msg) = @_[HEAP, ARG0];
 
     # transform data if needed.
     given ($msg->_transform) {
@@ -323,12 +326,12 @@ sub _onprot_mpd_data {
     if ( defined $msg->_post ) {
         my $event = $msg->_post;    # save postback.
         $msg->_set_post( undef );   # remove postback.
-        $h->{mpd}->_dispatch($k, $h, $event, $msg);
+        $h->{mpd}->_dispatch($h, $event, $msg);
         return;
     }
 
     # send result.
-    $k->post($msg->_from, 'mpd_result', $msg, $msg->_data);
+    $K->post($msg->_from, 'mpd_result', $msg, $msg->_data);
 }
 
 
@@ -338,10 +341,10 @@ sub _onprot_mpd_data {
 # Received when mpd didn't understood a command.
 #
 sub _onprot_mpd_error {
-    my ($k, $msg, $errstr) = @_[KERNEL, ARG0, ARG1];
+    my ($msg, $errstr) = @_[ARG0, ARG1];
 
     $msg->set_status(0); # failure
-    $k->post( $msg->_from, 'mpd_error', $msg, $errstr );
+    $K->post( $msg->_from, 'mpd_error', $msg, $errstr );
 }
 
 
@@ -355,7 +358,7 @@ sub _onprot_mpd_error {
 # to %params, same as spawn() received.
 #
 sub _onpriv_start {
-    my ($k, $h, $args) = @_[KERNEL, HEAP, ARG0];
+    my ($h, $args) = @_[HEAP, ARG0];
 
     # set up connection details.
     $args = {} unless defined $args;
@@ -367,9 +370,8 @@ sub _onpriv_start {
         id       => $_[SESSION]->ID,   # required for connection
     );
 
-    # set an alias (for easier communication) if requested.
     $h->{alias} = delete $params{alias};
-    $k->alias_set($h->{alias}) if defined $h->{alias};
+    $K->alias_set($h->{alias}) if defined $h->{alias};    # refcount++
 
     # store args for ourself.
     $h->{status_msgs_to} = $args->{status_msgs_to};

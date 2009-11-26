@@ -101,7 +101,7 @@ sub _do_volume {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'volume' );
-            $h->{mpd}->_dispatch($k, $h, 'status', $msg);
+            $h->{mpd}->_dispatch($h, 'status', $msg);
             return;
         }
 
@@ -261,7 +261,7 @@ sub _do_repeat {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'repeat' );
-            $h->{mpd}->_dispatch($k, $h, 'status', $msg);
+            $h->{mpd}->_dispatch($h, 'status', $msg);
             return;
         }
 
@@ -309,7 +309,7 @@ sub _do_random {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'random' );
-            $h->{mpd}->_dispatch($k, $h, 'status', $msg);
+            $h->{mpd}->_dispatch($h, 'status', $msg);
             return;
         }
 
@@ -439,7 +439,7 @@ sub _do_seek {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'seek' );
-            $h->{mpd}->_dispatch($k, $h, 'status', $msg);
+            $h->{mpd}->_dispatch($h, 'status', $msg);
             return;
         }
 
@@ -469,7 +469,7 @@ sub _do_seekid {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'seekid' );
-            $h->{mpd}->_dispatch($k, $h, 'status', $msg);
+            $h->{mpd}->_dispatch($h, 'status', $msg);
             return;
         }
 
