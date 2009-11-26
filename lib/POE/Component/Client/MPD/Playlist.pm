@@ -5,10 +5,14 @@ use warnings;
 package POE::Component::Client::MPD::Playlist;
 # ABSTRACT: module handling playlist commands
 
+use Moose;
+use MooseX::Has::Sugar;
+use MooseX::Types::Moose qw{ Str };
 use POE;
+
 use POE::Component::Client::MPD::Message;
 
-use base qw{ Class::Accessor::Fast };
+has socket => ( ro, required, isa=>Str );
 
 
 # -- Playlist: retrieving information
@@ -278,10 +282,9 @@ sub _do_rm {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-
-
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
-
 __END__
 
 =head1 DESCRIPTION
