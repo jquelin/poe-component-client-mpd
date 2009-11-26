@@ -10,6 +10,7 @@ use Audio::MPD::Common::Status;
 use Carp;
 use Moose;
 use MooseX::Has::Sugar;
+use MooseX::SemiAffordanceAccessor;
 use MooseX::Types::Moose qw{ Int Str };
 use POE;
 
@@ -18,6 +19,69 @@ use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::MPD::Playlist;
+
+
+=attr host
+
+The hostname where MPD is running. Defaults to environment var
+C<MPD_HOST>, then to 'localhost'. Note that C<MPD_HOST> can be of
+the form C<password@host:port> (each of C<password@> or C<:port> can
+be omitted).
+
+=attr port
+
+The port that MPD server listens to. Defaults to environment var
+C<MPD_PORT>, then to parsed C<MPD_HOST> (cf above), then to 6600.
+
+=attr password
+
+The password to access special MPD functions. Defaults to environment
+var C<MPD_PASSWORD>, then to parsed C<MPD_HOST> (cf above), then to
+empty string.
+
+=attr conntype
+
+Change how the connection to mpd server is handled. It should be of a
+C<CONNTYPE> type (cf L<Audio::MPD::Types>). Use either the C<reuse>
+string to reuse the same connection or C<once> to open a new connection
+per command (default).
+
+=cut
+
+has host       => ( ro, lazy_build, isa=>Str );
+has password   => ( ro, lazy_build );
+has port       => ( ro, lazy_build, isa=>Int );
+
+has _collection => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Collection' );
+has _commands   => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Commands' );
+has _playlist   => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Playlist'   );
+has version     => ( rw );
+
+has _socket    => ( rw, isa=>Str );
+
+
+#
+# my ($passwd, $host, $port) = _parse_env_var();
+#
+# parse MPD_HOST environment variable, and extract its components. the
+# canonical format of MPD_HOST is passwd@host:port.
+#
+sub _parse_env_var {
+    return (undef, undef, undef) unless defined $ENV{MPD_HOST};
+    return ($1, $2, $3)    if $ENV{MPD_HOST} =~ /^([^@]+)\@([^:@]+):(\d+)$/; # passwd@host:port
+    return ($1, $2, undef) if $ENV{MPD_HOST} =~ /^([^@]+)\@([^:@]+)$/;       # passwd@host
+    return (undef, $1, $2) if $ENV{MPD_HOST} =~ /^([^:@]+):(\d+)$/;          # host:port
+    return (undef, $ENV{MPD_HOST}, undef);
+}
+
+sub _build_host     { return ( _parse_env_var() )[1] || 'localhost'; }
+sub _build_port     { return $ENV{MPD_PORT}     || ( _parse_env_var() )[2] || 6600; }
+sub _build_password { return $ENV{MPD_PASSWORD} || ( _parse_env_var() )[0] || '';   }
+
+sub _build__collection { POE::Component::Client::MPD::Collection->new(mpd=>$_[0]); }
+sub _build__commands   { POE::Component::Client::MPD::Commands  ->new(mpd=>$_[0]); }
+sub _build__playlist   { POE::Component::Client::MPD::Playlist  ->new(mpd=>$_[0]); }
+
 
 
 #--
