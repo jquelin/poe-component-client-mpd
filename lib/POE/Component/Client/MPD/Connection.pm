@@ -78,123 +78,6 @@ sub new {
 }
 
 
-#--
-# SUBS
-#
-
-# -- private subs
-
-#
-# _got_data($kernel, $heap, $input);
-#
-# called when receiving another piece of data.
-#
-sub _got_data {
-    my ($k, $h, $input) = @_;
-
-    # regular data, to be cooked (if needed) and stored.
-    my $msg = $h->{fifo}[0];
-
-    given ($msg->_cooking) {
-        when ('raw') {
-            # nothing to do, just push the data.
-            push @{ $h->{incoming} }, $input;
-        }
-
-        when ('as_items') {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to build an amc-item.
-            my ($k,$v) = split /:\s+/, $input, 2;
-            $k = lc $k;
-            $k =~ s/-/_/;
-
-            if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
-                # build a new amc-item
-                my $item = Audio::MPD::Common::Item->new( $k => $v );
-                push @{ $h->{incoming} }, $item;
-            }
-
-            # just complete the current amc-item
-            $h->{incoming}[-1]->$k($v);
-        }
-
-        when ('as_kv') {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to get a list of key / value (with the colon ":" acting
-            # as separator).
-            my @data = split(/:\s+/, $input, 2);
-            push @{ $h->{incoming} }, @data;
-        }
-
-        when ('strip_first') {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to remove the first field (with the colon ":" acting as
-            # separator).
-            $input = ( split(/:\s+/, $input, 2) )[1];
-            push @{ $h->{incoming} }, $input;
-        }
-    }
-}
-
-
-#
-# _got_data_eot($kernel, $heap)
-#
-# called when the stream of data is finished. used to send the received
-# data.
-#
-sub _got_data_eot {
-    my ($k, $h) = @_;
-    my $session = $h->{session};
-    my $msg     = shift @{ $h->{fifo} };     # remove completed msg
-    $msg->_set_data($h->{incoming});         # complete message with data
-    $msg->set_status(1);                     # success
-    $k->post($session, 'mpd_data', $msg);    # signal poe session
-    $h->{incoming} = [];                     # reset incoming data
-}
-
-
-#
-# _got_error($kernel, $heap, $errstr);
-#
-# called when the mpd server reports an error. used to report the error
-# to the pococm.
-#
-sub _got_error {
-    my ($k, $h, $errstr) = @_;
-
-    my $session = $h->{session};
-    my $msg     = shift @{ $h->{fifo} };
-    $k->post($session, 'mpd_error', $msg, $errstr);
-}
-
-
-#
-# _got_first_input_line($kernel, $heap, $input);
-#
-# called when the mpd server fires the first line. used to check whether
-# we are talking to a regular mpd server.
-#
-sub _got_first_input_line {
-    my ($k, $h, $input) = @_;
-
-    if ( $input =~ /^OK MPD (.*)$/ ) {
-        $h->{is_mpd} = 1;  # remote server *is* a mpd sever
-        $k->post($h->{session}, 'mpd_connected', $1);
-    } else {
-        # oops, it appears that it's not a mpd server...
-        $k->post(
-            $h->{session}, 'mpd_connect_error_fatal',
-            "Not a mpd server - welcome string was: '$input'",
-        );
-    }
-}
-
-
-
-#--
-# EVENTS HANDLERS
-#
 
 # -- public events
 
@@ -336,6 +219,119 @@ sub _onpriv_ServerInput {
         when ( /^OK$/ )      { _got_data_eot($k, $h);     }
         when ( /^ACK (.*)/ ) { _got_error($k, $h, $1);    }
         default              { _got_data($k, $h, $input); }
+    }
+}
+
+
+#--
+# SUBS
+#
+
+# -- private subs
+
+#
+# _got_data($kernel, $heap, $input);
+#
+# called when receiving another piece of data.
+#
+sub _got_data {
+    my ($k, $h, $input) = @_;
+
+    # regular data, to be cooked (if needed) and stored.
+    my $msg = $h->{fifo}[0];
+
+    given ($msg->_cooking) {
+        when ('raw') {
+            # nothing to do, just push the data.
+            push @{ $h->{incoming} }, $input;
+        }
+
+        when ('as_items') {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to build an amc-item.
+            my ($k,$v) = split /:\s+/, $input, 2;
+            $k = lc $k;
+            $k =~ s/-/_/;
+
+            if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
+                # build a new amc-item
+                my $item = Audio::MPD::Common::Item->new( $k => $v );
+                push @{ $h->{incoming} }, $item;
+            }
+
+            # just complete the current amc-item
+            $h->{incoming}[-1]->$k($v);
+        }
+
+        when ('as_kv') {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to get a list of key / value (with the colon ":" acting
+            # as separator).
+            my @data = split(/:\s+/, $input, 2);
+            push @{ $h->{incoming} }, @data;
+        }
+
+        when ('strip_first') {
+            # Lots of POCOCM methods are sending commands and then parse the
+            # output to remove the first field (with the colon ":" acting as
+            # separator).
+            $input = ( split(/:\s+/, $input, 2) )[1];
+            push @{ $h->{incoming} }, $input;
+        }
+    }
+}
+
+
+#
+# _got_data_eot($kernel, $heap)
+#
+# called when the stream of data is finished. used to send the received
+# data.
+#
+sub _got_data_eot {
+    my ($k, $h) = @_;
+    my $session = $h->{session};
+    my $msg     = shift @{ $h->{fifo} };     # remove completed msg
+    $msg->_set_data($h->{incoming});         # complete message with data
+    $msg->set_status(1);                     # success
+    $k->post($session, 'mpd_data', $msg);    # signal poe session
+    $h->{incoming} = [];                     # reset incoming data
+}
+
+
+#
+# _got_error($kernel, $heap, $errstr);
+#
+# called when the mpd server reports an error. used to report the error
+# to the pococm.
+#
+sub _got_error {
+    my ($k, $h, $errstr) = @_;
+
+    my $session = $h->{session};
+    my $msg     = shift @{ $h->{fifo} };
+    $k->post($session, 'mpd_error', $msg, $errstr);
+}
+
+
+#
+# _got_first_input_line($kernel, $heap, $input);
+#
+# called when the mpd server fires the first line. used to check whether
+# we are talking to a regular mpd server.
+#
+sub _got_first_input_line {
+    my ($k, $h, $input) = @_;
+
+    if ( $input =~ /^OK MPD (.*)$/ ) {
+        $h->{is_mpd} = 1;  # remote server *is* a mpd sever
+        $k->post($h->{session}, 'mpd_connected', $1);
+    } else {
+        # oops, it appears that it's not a mpd server...
+        $k->post(
+            $h->{session}, 'mpd_connect_error_fatal',
+            "Not a mpd server - welcome string was: '$input'",
+        );
     }
 }
 
