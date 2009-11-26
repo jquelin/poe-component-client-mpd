@@ -371,33 +371,9 @@ sub _onpriv_start {
     $h->{collection} = POE::Component::Client::MPD::Collection->new({mpd=>$h});
 }
 
-
-
-=begin FIXME
-
-#
-# event: _send( $msg )
-#
-# Event received to request message sending over tcp to mpd server.
-# $msg is a pococm-message partially filled.
-#
-sub _onpriv_send {
-    my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
-    if ( defined $msg->_pre_event ) {
-        $k->yield( $msg->_pre_event );        # fire wanted pre-event
-        push @{ $h->{pre_messages} }, $msg;   # store message
-        return;
-    }
-    $k->post( $_[HEAP]->{_socket}, 'send', $msg );
-}
-
-=end FIXME
-
-=cut
-
-
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
-
 __END__
 
 =head1 SYNOPSIS
