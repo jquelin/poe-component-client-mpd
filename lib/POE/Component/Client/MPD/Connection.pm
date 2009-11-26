@@ -13,53 +13,44 @@ use Readonly;
 use POE::Component::Client::MPD::Message; # for exported constants
 
 
-#--
-# CLASS METHODS
-#
+# -- attributes
+
+=attr host
+
+The hostname of the mpd server. Mandatory, no default.
+
+=attr port
+
+The port of the mpd server. Mandatory, no default.
+
+=attr id
+
+The POE session id of the peer to dialog with. Mandatory, no default.
+
+=attr max_retries
+
+How much time to attempt reconnection before giving up. Defaults to 5.
+
+=attr retry_wait
+
+How much time to wait (in seconds) before attempting socket
+reconnection. Defaults to 2.
+
+=cut
+
 
 # -- public methods
 
-=method my $id = POE::Component::Client::MPD::Connection->spawn( \%params );
+=method my $id = POE::Component::Client::MPD::Connection->new( \%params );
 
 This method will create a L<POE::Component::Client::TCP> session
 responsible for low-level communication with mpd.
 
 It will return the poe id of the session newly created.
 
-You should provide some arguments as a hash reference, where the hash keys are:
-
-=over 4
-
-=item * host
-
-The hostname of the mpd server. Mandatory, no default.
-
-=item * port
-
-The port of the mpd server. Mandatory, no default.
-
-=item * id
-
-The POE session id of the peer to dialog with. Mandatory, no default.
-
-=item * max_retries
-
-How much time to attempt reconnection before giving up. Defaults to 5.
-
-=item * retry_wait
-
-How much time to wait (in seconds) before attempting socket
-reconnection. Defaults to 2.
-
-=back
-
-The args without default are not supposed to be empty - ie, you will get
-an error if you don't follow those requirements! Yes, this is a private
-class, and you're not supposed to use it beyond pococm. :-)
-
 =cut
 
-sub spawn {
+sub new {
     my ($type, $args) = @_;
 
     # connect to mpd server.
@@ -69,7 +60,6 @@ sub spawn {
         Filter        => 'POE::Filter::Line',
         Args          => [ $args ],
         Alias         => '_mpd_conn',
-
 
         ServerError  => sub { }, # quiet errors
         Started      => \&_onpriv_Started,
@@ -81,7 +71,7 @@ sub spawn {
         InlineStates => {
             send       => \&send,         # send data
             disconnect => \&disconnect,   # force quit
-        }
+        },
     );
 
     return $id;
@@ -349,8 +339,10 @@ sub _onpriv_ServerInput {
     }
 }
 
+
 1;
 __END__
+
 
 =head1 DESCRIPTION
 
@@ -400,7 +392,7 @@ answered with success. The actual output should be looked up in
 C<$msg->_data>.
 
 
-=head2 mpd_disconnected()
+=head2 mpd_disconnected( )
 
 Fired when the socket has been disconnected for whatever reason. Note
 that this event is B<not> fired in the case of a programmed shutdown
