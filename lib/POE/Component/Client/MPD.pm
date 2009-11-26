@@ -82,6 +82,17 @@ sub _build__collection { POE::Component::Client::MPD::Collection->new(mpd=>$_[0]
 sub _build__commands   { POE::Component::Client::MPD::Commands  ->new(mpd=>$_[0]); }
 sub _build__playlist   { POE::Component::Client::MPD::Playlist  ->new(mpd=>$_[0]); }
 
+sub _build__socket {
+    my $self = shift;
+    POE::Component::Client::MPD::Connection->spawn( {
+        host     => $self->host,
+        port     => $self->port,
+        password => $self->password,
+        id       => $self->alias,
+    } );
+}
+
+
 
 
 #--
