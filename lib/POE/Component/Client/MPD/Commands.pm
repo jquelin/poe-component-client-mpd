@@ -17,14 +17,15 @@ has socket => ( ro, required, isa=>Str );
 
 # -- MPD interaction: general commands
 
-#
-# event: version()
-#
-# Return mpd's version number as advertised during connection.
-# Note that mpd returns *protocol* version when connected. This
-# protocol version can differ from the real mpd version. eg, mpd
-# version 0.13.2 is "speaking" and thus advertising version 0.13.0.
-#
+=ev_mpd_ctrl version( )
+
+Return mpd's version number as advertised during connection. Note that
+mpd returns B<protocol> version when connected. This protocol version can
+differ from the real mpd version. eg, mpd version 0.13.2 is "speaking"
+and thus advertising version 0.13.0.
+
+=cut
+
 sub _do_version {
     my ($self, $k, $h, $msg) = @_;
     $msg->set_status(1);
@@ -32,11 +33,12 @@ sub _do_version {
 }
 
 
-#
-# event: kill()
-#
-# Kill the mpd server, and request the pococm to be shutdown.
-#
+=ev_mpd_ctrl kill( )
+
+Kill the mpd server, and request the pococm to be shutdown.
+
+=cut
+
 sub _do_kill {
     my ($self, $k, $h, $msg) = @_;
 
@@ -47,16 +49,17 @@ sub _do_kill {
 }
 
 
-#
-# event: updatedb( [$path] )
-#
-# Force mpd to rescan its collection. If $path (relative to MPD's music
-# directory) is supplied, MPD will only scan it - otherwise, MPD will rescan
-# its whole collection.
-#
+=ev_mpd_ctrl updatedb( [$path] )
+
+Force mpd to rescan its collection. If C<$path> (relative to MPD's music
+directory) is supplied, MPD will only scan it - otherwise, MPD will
+rescan its whole collection.
+
+=cut
+
 sub _do_updatedb {
     my ($self, $k, $h, $msg) = @_;
-    my $path = $msg->params->[0] // '';
+    my $path = $msg->params->[0] // '';  # FIXME: padre//
 
     $msg->_set_commands( [ qq{update "$path"} ] );
     $msg->_set_cooking ( 'raw' );
@@ -64,11 +67,12 @@ sub _do_updatedb {
 }
 
 
-#
-# event: urlhandlers()
-#
-# Return an array of supported URL schemes.
-#
+=ev_mpd_ctrl urlhandlers( )
+
+Return an array of supported URL schemes.
+
+=cut
+
 sub _do_urlhandlers {
     my ($self, $k, $h, $msg) = @_;
 
@@ -80,13 +84,15 @@ sub _do_urlhandlers {
 
 # -- MPD interaction: handling volume & output
 
-#
-# event: volume( $volume )
-#
-# Sets the audio output volume percentage to absolute $volume.
-# If $volume is prefixed by '+' or '-' then the volume is changed relatively
-# by that value.
-#
+
+=ev_mpd_output volume( $volume )
+
+Sets the audio output volume percentage to absolute C<$volume>. If
+C<$volume> is prefixed by '+' or '-' then the volume is changed
+relatively by that value.
+
+=cut
+
 sub _do_volume {
     my ($self, $k, $h, $msg) = @_;
 
@@ -113,11 +119,13 @@ sub _do_volume {
 }
 
 
-#
-# event: output_enable( $output )
-#
-# Enable the specified audio output. $output is the ID of the audio output.
-#
+=ev_mpd_output output_enable( $output )
+
+Enable the specified audio output. C<$output> is the ID of the audio
+output.
+
+=cut
+
 sub _do_output_enable {
     my ($self, $k, $h, $msg) = @_;
     my $output = $msg->params->[0];
@@ -128,11 +136,12 @@ sub _do_output_enable {
 }
 
 
-#
-# event: output_disable( $output )
-#
-# Disable the specified audio output. $output is the ID of the audio output.
-#
+=ev_mpd_output output_disable( $output )
+
+Disable the specified audio output. C<$output> is the ID of the audio output.
+
+=cut
+
 sub _do_output_disable {
     my ($self, $k, $h, $msg) = @_;
     my $output = $msg->params->[0];
@@ -146,12 +155,13 @@ sub _do_output_disable {
 
 # -- MPD interaction: retrieving info from current state
 
-#
-# event: stats()
-#
-# Return an Audio::MPD::Common::Stats object with the current statistics
-# of MPD.
-#
+=ev_mpd_info stats( )
+
+Return an L<Audio::MPD::Common::Stats> object with the current
+statistics of MPD.
+
+=cut
+
 sub _do_stats {
     my ($self, $k, $h, $msg) = @_;
 
@@ -162,11 +172,13 @@ sub _do_stats {
 }
 
 
-#
-# event: status()
-#
-# Return an Audio::MPD::Common::Status object the current status of MPD.
-#
+=ev_mpd_info status( )
+
+Return an L<Audio::MPD::Common::Status> object with the current
+status of MPD.
+
+=cut
+
 sub _do_status {
     my ($self, $k, $h, $msg) = @_;
 
@@ -177,13 +189,13 @@ sub _do_status {
 }
 
 
+=ev_mpd_info current( )
 
-#
-# event: current()
-#
-# Return an Audio::MPD::Common::Item::Song representing the song
-# currently playing.
-#
+Return an L<Audio::MPD::Common::Item::Song> representing the song
+currently playing.
+
+=cut
+
 sub _do_current {
     my ($self, $k, $h, $msg) = @_;
 
@@ -194,12 +206,13 @@ sub _do_current {
 }
 
 
-#
-# event: song( [$song] )
-#
-# Return an Audio::MPD::Common::Item::Song representing the song number
-# $song. If $song is not supplied, returns the current song.
-#
+=ev_mpd_info song( [$song] )
+
+Return an L<Audio::MPD::Common::Item::Song> representing the song number
+C<$song>. If C<$song> is not supplied, returns the current song.
+
+=cut
+
 sub _do_song {
     my ($self, $k, $h, $msg) = @_;
     my $song = $msg->params->[0];
@@ -211,12 +224,13 @@ sub _do_song {
 }
 
 
-#
-# event: songid( [$songid] )
-#
-# Return an Audio::MPD::Common::Item::Song representing the song id
-# $songid. If $songid is not supplied, returns the current song.
-#
+=ev_mpd_info songid( [$songid] )
+
+Return an L<Audio::MPD::Common::Item::Song> representing the song id
+C<$songid>. If C<$songid> is not supplied, returns the current song.
+
+=cut
+
 sub _do_songid {
     my ($self, $k, $h, $msg) = @_;
     my $song = $msg->params->[0];
@@ -230,12 +244,14 @@ sub _do_songid {
 
 # -- MPD interaction: altering settings
 
-#
-# event: repeat( [$repeat] )
-#
-# Set the repeat mode to $repeat (1 or 0). If $repeat is not specified then
-# the repeat mode is toggled.
-#
+
+=ev_mpd_settings repeat( [$repeat] )
+
+Set the repeat mode to C<$repeat> (1 or 0). If C<$repeat> is not
+specified then the repeat mode is toggled.
+
+=cut
+
 sub _do_repeat {
     my ($self, $k, $h, $msg) = @_;
 
@@ -259,15 +275,17 @@ sub _do_repeat {
 }
 
 
-#
-# event: fade( [$seconds] )
-#
-# Enable crossfading and set the duration of crossfade between songs. If
-# $seconds is not specified or $seconds is 0, then crossfading is disabled.
-#
+=ev_mpd_settings fade( [$seconds] )
+
+Enable crossfading and set the duration of crossfade between songs. If
+C<$seconds> is not specified or C<$seconds> is 0, then crossfading is
+disabled.
+
+=cut
+
 sub _do_fade {
     my ($self, $k, $h, $msg) = @_;
-    my $seconds = $msg->params->[0] // 0;
+    my $seconds = $msg->params->[0] // 0;  # FIXME: padre//
 
     $msg->_set_commands ( [ "crossfade $seconds" ] );
     $msg->_set_cooking  ( 'raw' );
@@ -275,12 +293,13 @@ sub _do_fade {
 }
 
 
-#
-# event: random( [$random] )
-#
-# Set the random mode to $random (1 or 0). If $random is not specified then
-# the random mode is toggled.
-#
+=ev_mpd_settings random( [$random] )
+
+Set the random mode to C<$random> (1 or 0). If C<$random> is not
+specified then the random mode is toggled.
+
+=cut
+
 sub _do_random {
     my ($self, $k, $h, $msg) = @_;
 
@@ -304,64 +323,67 @@ sub _do_random {
 }
 
 
-
 # -- MPD interaction: controlling playback
 
-#
-# event: play( [$song] )
-#
-# Begin playing playlist at song number $song. If no argument supplied,
-# resume playing.
-#
+=ev_mpd_playback play( [$song] )
+
+Begin playing playlist at song number C<$song>. If no argument supplied,
+resume playing.
+
+=cut
+
 sub _do_play {
     my ($self, $k, $h, $msg) = @_;
 
-    my $number = $msg->params->[0] // '';
+    my $number = $msg->params->[0] // ''; # FIXME: padre//
     $msg->_set_commands ( [ "play $number" ] );
     $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
 
-#
-# event: playid( [$song] )
-#
-# Begin playing playlist at song ID $song. If no argument supplied,
-# resume playing.
-#
+=ev_mpd_playback playid( [$song] )
+
+Begin playing playlist at song ID C<$song>. If no argument supplied,
+resume playing.
+
+=cut
+
 sub _do_playid {
     my ($self, $k, $h, $msg) = @_;
 
-    my $number = $msg->params->[0] // '';
+    my $number = $msg->params->[0] // ''; # FIXME: padre//
     $msg->_set_commands ( [ "playid $number" ] );
     $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
 
-#
-# event: pause( [$sate] )
-#
-# Pause playback. If $state is 0 then the current track is unpaused, if
-# $state is 1 then the current track is paused.
-#
-# Note that if $state is not given, pause state will be toggled.
-#
+=ev_mpd_playback pause( [$sate] )
+
+Pause playback. If C<$state> is 0 then the current track is unpaused, if
+C<$state> is 1 then the current track is paused.
+
+Note that if C<$state> is not given, pause state will be toggled.
+
+=cut
+
 sub _do_pause {
     my ($self, $k, $h, $msg) = @_;
 
-    my $state = $msg->params->[0] // '';
+    my $state = $msg->params->[0] // '';  # FIXME: padre//
     $msg->_set_commands ( [ "pause $state" ] );
     $msg->_set_cooking  ( 'raw' );
     $k->post( $h->{socket}, 'send', $msg );
 }
 
 
-#
-# event: stop()
-#
-# Stop playback.
-#
+=ev_mpd_playback stop( )
+
+Stop playback.
+
+=cut
+
 sub _do_stop {
     my ($self, $k, $h, $msg) = @_;
 
@@ -371,11 +393,12 @@ sub _do_stop {
 }
 
 
-#
-# event: next()
-#
-# Play next song in playlist.
-#
+=ev_mpd_playback next( )
+
+Play next song in playlist.
+
+=cut
+
 sub _do_next {
     my ($self, $k, $h, $msg) = @_;
 
@@ -385,11 +408,12 @@ sub _do_next {
 }
 
 
-#
-# event: prev()
-#
-# Play previous song in playlist.
-#
+=ev_mpd_playback prev( )
+
+Play previous song in playlist.
+
+=cut
+
 sub _do_prev {
     my ($self, $k, $h, $msg) = @_;
 
@@ -399,12 +423,14 @@ sub _do_prev {
 }
 
 
-#
-# event: seek( $time, [$song] )
-#
-# Seek to $time seconds in song number $song. If $song number is not specified
-# then the perl module will try and seek to $time in the current song.
-#
+=ev_mpd_playback seek( $time, [$song] )
+
+Seek to C<$time> seconds in song number C<$song>. If C<$song> number is
+not specified then the perl module will try and seek to C<$time> in the
+current song.
+
+=cut
+
 sub _do_seek {
     my ($self, $k, $h, $msg) = @_;
 
@@ -427,12 +453,14 @@ sub _do_seek {
 }
 
 
-#
-# event: seekid( $time, [$songid] )
-#
-# Seek to $time seconds in song ID $songid. If $songid number is not specified
-# then the perl module will try and seek to $time in the current song.
-#
+=ev_mpd_playback seekid( $time, [$songid] )
+
+Seek to C<$time> seconds in song ID C<$songid>. If C<$songid> number is
+not specified then the perl module will try and seek to C<$time> in the
+current song.
+
+=cut
+
 sub _do_seekid {
     my ($self, $k, $h, $msg) = @_;
 
@@ -472,194 +500,4 @@ or methods from this module directly.
 
 Read POCOCM's pod to learn how to deal with answers from those commands.
 
-
-
-=head1 PUBLIC EVENTS
-
-The following is a list of general purpose events accepted by POCOCM.
-
-
-=head2 General commands
-
-
-=over 4
-
-=item * version()
-
-Return mpd's version number as advertised during connection. Note that
-mpd returns B<protocol> version when connected. This protocol version can
-differ from the real mpd version. eg, mpd version 0.13.2 is "speaking"
-and thus advertising version 0.13.0.
-
-
-=item * kill()
-
-Kill the mpd server, and request the pococm to be shutdown.
-
-
-=item * updatedb( [$path] )
-
-Force mpd to rescan its collection. If C<$path> (relative to MPD's music
-directory) is supplied, MPD will only scan it - otherwise, MPD will
-rescan its whole collection.
-
-
-=item * urlhandlers()
-
-Return an array of supported URL schemes.
-
-
-=back
-
-
-
-=head2 Handling volume & output
-
-
-=over 4
-
-=item * volume( $volume )
-
-Sets the audio output volume percentage to absolute C<$volume>. If
-C<$volume> is prefixed by '+' or '-' then the volume is changed
-relatively by that value.
-
-
-=item * output_enable( $output )
-
-Enable the specified audio output. C<$output> is the ID of the audio
-output.
-
-
-=item * output_disable( $output )
-
-Disable the specified audio output. C<$output> is the ID of the audio output.
-
-
-=back
-
-
-
-=head2 Retrieving info from current state
-
-
-=over 4
-
-=item * stats()
-
-Return an L<Audio::MPD::Common::Stats> object with the current
-statistics of MPD.
-
-
-=item * status ()
-
-Return an L<Audio::MPD::Common::Status> object with the current
-status of MPD.
-
-
-=item * current()
-
-Return an L<Audio::MPD::Common::Item::Song> representing the song
-currently playing.
-
-
-=item * song( [$song] )
-
-Return an L<Audio::MPD::Common::Item::Song> representing the song number
-C<$song>. If C<$song> is not supplied, returns the current song.
-
-
-=item * songid( [$songid] )
-
-Return an L<Audio::MPD::Common::Item::Song> representing the song id
-C<$songid>. If C<$songid> is not supplied, returns the current song.
-
-
-=back
-
-
-
-=head2 Altering settings
-
-
-=over 4
-
-=item * repeat( [$repeat] )
-
-Set the repeat mode to C<$repeat> (1 or 0). If C<$repeat> is not
-specified then the repeat mode is toggled.
-
-
-=item * fade( [$seconds] )
-
-Enable crossfading and set the duration of crossfade between songs. If
-C<$seconds> is not specified or C<$seconds> is 0, then crossfading is
-disabled.
-
-
-=item * random( [$random] )
-
-Set the random mode to C<$random> (1 or 0). If C<$random> is not
-specified then the random mode is toggled.
-
-
-=back
-
-
-
-=head2 Controlling playback
-
-
-=over 4
-
-=item * play( [$song] )
-
-Begin playing playlist at song number C<$song>. If no argument supplied,
-resume playing.
-
-
-=item * playid( [$song] )
-
-Begin playing playlist at song ID C<$song>. If no argument supplied,
-resume playing.
-
-
-=item * pause( [$sate] )
-
-Pause playback. If C<$state> is 0 then the current track is unpaused, if
-C<$state> is 1 then the current track is paused.
-
-Note that if C<$state> is not given, pause state will be toggled.
-
-
-=item * stop()
-
-Stop playback.
-
-
-=item * next()
-
-Play next song in playlist.
-
-
-=item * prev()
-
-Play previous song in playlist.
-
-
-=item * seek( $time, [$song] )
-
-Seek to C<$time> seconds in song number C<$song>. If C<$song> number is
-not specified then the perl module will try and seek to C<$time> in the
-current song.
-
-
-=item * seekid( $time, [$songid] )
-
-Seek to C<$time> seconds in song ID C<$songid>. If C<$songid> number is
-not specified then the perl module will try and seek to C<$time> in the
-current song.
-
-
-=back
-
+Following is a list of general purpose events accepted by POCOCM.
