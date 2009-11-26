@@ -19,24 +19,46 @@ use POE::Component::Client::MPD::Message; # for exported constants
 
 # -- public methods
 
-#
-# my $id = POE::Component::Client::MPD::Connection->spawn(\%params);
-#
-# This method will create a POE::Component::TCP session responsible for
-# low-level communication with mpd. It will return the poe id of the
-# session newly created.
-#
-# Arguments are passed as a hash reference, with the keys:
-#   - host:        hostname of the mpd server.
-#   - port:        port of the mpd server.
-#   - id:          poe session id of the peer to dialog with.
-#   - max_retries: number of retries before giving up. defaults to 5.
-#   - retry_wait:  time to wait before attempting to reconnect. defaults to 2.
-#
-# The args without default are not supposed to be empty - ie, you will
-# get an error if you don't follow this requirement! Yes, this is a
-# private class, and you're not supposed to use it beyond pococm. :-)
-#
+=method my $id = POE::Component::Client::MPD::Connection->spawn( \%params );
+
+This method will create a L<POE::Component::Client::TCP> session
+responsible for low-level communication with mpd.
+
+It will return the poe id of the session newly created.
+
+You should provide some arguments as a hash reference, where the hash keys are:
+
+=over 4
+
+=item * host
+
+The hostname of the mpd server. Mandatory, no default.
+
+=item * port
+
+The port of the mpd server. Mandatory, no default.
+
+=item * id
+
+The POE session id of the peer to dialog with. Mandatory, no default.
+
+=item * max_retries
+
+How much time to attempt reconnection before giving up. Defaults to 5.
+
+=item * retry_wait
+
+How much time to wait (in seconds) before attempting socket
+reconnection. Defaults to 2.
+
+=back
+
+The args without default are not supposed to be empty - ie, you will get
+an error if you don't follow those requirements! Yes, this is a private
+class, and you're not supposed to use it beyond pococm. :-)
+
+=cut
+
 sub spawn {
     my ($type, $args) = @_;
 
@@ -332,60 +354,13 @@ __END__
 
 =head1 DESCRIPTION
 
-This module will spawn a poe session responsible for low-level communication
-with mpd. It is written as a pococ-tcp, which is taking care of everything
-needed.
+This module will spawn a poe session responsible for low-level
+communication with mpd. It is written as a
+L<POE::Component::Client::TCP>, which is taking care of
+everything needed.
 
-Note that you're B<not> supposed to use this class directly: it's one of the
-helper class for POCOCM.
-
-
-
-=head1 PUBLIC METHODS
-
-=head2 spawn( \%params )
-
-This method will create a POE::Component::TCP session responsible for low-level
-communication with mpd.
-
-It will return the poe id of the session newly created.
-
-You should provide some arguments as a hash reference, where the hash keys are:
-
-=over 4
-
-=item * host
-
-The hostname of the mpd server. Mandatory, no default.
-
-
-=item * port
-
-The port of the mpd server. Mandatory, no default.
-
-
-=item * id
-
-The POE session id of the peer to dialog with. Mandatory, no default.
-
-
-=item * max_retries
-
-How much time to attempt reconnection before giving up. Defaults to 5.
-
-
-=item * retry_wait
-
-How much time to wait (in seconds) before attempting socket
-reconnection. Defaults to 2.
-
-
-=back
-
-
-The args without default are not supposed to be empty - ie, you will get
-an error if you don't follow those requirements! Yes, this is a private
-class, and you're not supposed to use it beyond pococm. :-)
+Note that you're B<not> supposed to use this class directly: it's one of
+the helper class for L<POE::Component::Client::MPD>.
 
 
 
