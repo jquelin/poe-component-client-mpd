@@ -17,12 +17,13 @@ has socket => ( ro, required, isa=>Str );
 
 # -- Playlist: retrieving information
 
-#
-# event: pl.as_items()
-#
-# Return an array of L<Audio::MPD::Common::Item::Song>s, one for each of
-# the songs in the current playlist.
-#
+=ev_play_info pl.as_items( )
+
+Return an array of L<Audio::MPD::Common::Item::Song>s, one for each of
+the songs in the current playlist.
+
+=cut
+
 sub _do_as_items {
     my ($self, $k, $h, $msg) = @_;
 
@@ -32,12 +33,13 @@ sub _do_as_items {
 }
 
 
-#
-# event: pl.items_changed_since( $plversion )
-#
-# Return a list with all the songs (as Audio::MPD::Common::Item::Song
-# objects) added to the playlist since playlist $plversion.
-#
+=ev_play_info pl.items_changed_since( $plversion )
+
+Return a list with all the songs (as L<Audio::MPD::Common::Item::Song>
+objects) added to the playlist since playlist C<$plversion>.
+
+=cut
+
 sub _do_items_changed_since {
     my ($self, $k, $h, $msg) = @_;
     my $plid = $msg->params->[0];
@@ -50,12 +52,14 @@ sub _do_items_changed_since {
 
 # -- Playlist: adding / removing songs
 
-#
-# event: pl.add( $path, $path, ... )
-#
-# Add the songs identified by $path (relative to MPD's music directory) to
-# the current playlist.
-#
+
+=ev_play_addrm pl.add( $path, $path, ... )
+
+Add the songs identified by C<$path> (relative to MPD's music directory)
+to the current playlist.
+
+=cut
+
 sub _do_add {
     my ($self, $k, $h, $msg) = @_;
 
@@ -72,11 +76,12 @@ sub _do_add {
 }
 
 
-#
-# event: pl.delete( $number, $number, ... )
-#
-# Remove song $number (starting from 0) from the current playlist.
-#
+=ev_play_addrm pl.delete( $number, $number, ... )
+
+Remove song C<$number> (starting from 0) from the current playlist.
+
+=cut
+
 sub _do_delete {
     my ($self, $k, $h, $msg) = @_;
 
@@ -93,12 +98,13 @@ sub _do_delete {
 }
 
 
-#
-# event: pl.deleteid( $songid, $songid, ... )
-#
-# Remove the specified $songid (as assigned by mpd when inserted in playlist)
-# from the current playlist.
-#
+=ev_play_addrm pl.deleteid( $songid, $songid, ... )
+
+Remove the specified C<$songid> (as assigned by mpd when inserted in
+playlist) from the current playlist.
+
+=cut
+
 sub _do_deleteid {
     my ($self, $k, $h, $msg) = @_;
 
@@ -115,11 +121,12 @@ sub _do_deleteid {
 }
 
 
-#
-# event: clear()
-#
-# Remove all the songs from the current playlist.
-#
+=ev_play_addrm clear( )
+
+Remove all the songs from the current playlist.
+
+=cut
+
 sub _do_clear {
     my ($self, $k, $h, $msg) = @_;
 
@@ -129,11 +136,12 @@ sub _do_clear {
 }
 
 
-#
-# event: crop()
-#
-#  Remove all of the songs from the current playlist *except* the current one.
-#
+=ev_play_addrm crop( )
+
+Remove all of the songs from the current playlist *except* the current one.
+
+=cut
+
 sub _do_crop {
     my ($self, $k, $h, $msg) = @_;
 
@@ -161,11 +169,13 @@ sub _do_crop {
 
 # -- Playlist: changing playlist order
 
-#
-# event: pl.shuffle()
-#
-# Shuffle the current playlist.
-#
+
+=ev_play_order pl.shuffle( )
+
+Shuffle the current playlist.
+
+=cut
+
 sub _do_shuffle {
     my ($self, $k, $h, $msg) = @_;
 
@@ -175,11 +185,13 @@ sub _do_shuffle {
 }
 
 
-#
-# event: pl.swap( $song1, $song2 )
-#
-# Swap positions of song number $song1 and $song2 in the current playlist.
-#
+=ev_play_order pl.swap( $song1, $song2 )
+
+Swap positions of song number C<$song1> and C<$song2> in the current
+playlist.
+
+=cut
+
 sub _do_swap {
     my ($self, $k, $h, $msg) = @_;
     my ($from, $to) = @{ $msg->params }[0,1];
@@ -190,11 +202,13 @@ sub _do_swap {
 }
 
 
-#
-# event: pl.swapid( $songid1, $songid2 )
-#
-# Swap positions of song id $songid1 and $songid2 in the current playlist.
-#
+=ev_play_order pl.swapid( $songid1, $songid2 )
+
+Swap positions of song id C<$songid1> and C<$songid2> in the current
+playlist.
+
+=cut
+
 sub _do_swapid {
     my ($self, $k, $h, $msg) = @_;
     my ($from, $to) = @{ $msg->params }[0,1];
@@ -205,11 +219,12 @@ sub _do_swapid {
 }
 
 
-#
-# event: pl.move( $song, $newpos )
-#
-# Move song number $song to the position $newpos.
-#
+=ev_play_order pl.move( $song, $newpos )
+
+Move song number C<$song> to the position C<$newpos>.
+
+=cut
+
 sub _do_move {
     my ($self, $k, $h, $msg) = @_;
     my ($song, $pos) = @{ $msg->params }[0,1];
@@ -220,11 +235,12 @@ sub _do_move {
 }
 
 
-#
-# event: pl.moveid( $songid, $newpos )
-#
-# Move song id $songid to the position $newpos.
-#
+=ev_play_order pl.moveid( $songid, $newpos )
+
+Move song id C<$songid> to the position C<$newpos>.
+
+=cut
+
 sub _do_moveid {
     my ($self, $k, $h, $msg) = @_;
     my ($songid, $pos) = @{ $msg->params }[0,1];
@@ -237,11 +253,13 @@ sub _do_moveid {
 
 # -- Playlist: managing playlists
 
-#
-# event: pl.load( $playlist )
-#
-# Load list of songs from specified $playlist file.
-#
+
+=ev_play_mgmt pl.load( $playlist )
+
+Load list of songs from specified C<$playlist> file.
+
+=cut
+
 sub _do_load {
     my ($self, $k, $h, $msg) = @_;
     my $playlist = $msg->params->[0];
@@ -252,12 +270,13 @@ sub _do_load {
 }
 
 
-#
-# event: pl.save( $playlist )
-#
-# Save the current playlist to a file called $playlist in MPD's
-# playlist directory.
-#
+=ev_play_mgmt pl.save( $playlist )
+
+Save the current playlist to a file called C<$playlist> in MPD's
+playlist directory.
+
+=cut
+
 sub _do_save {
     my ($self, $k, $h, $msg) = @_;
     my $playlist = $msg->params->[0];
@@ -268,11 +287,12 @@ sub _do_save {
 }
 
 
-#
-# event: pl.rm( $playlist )
-#
-# Delete playlist named $playlist from MPD's playlist directory.
-#
+=ev_play_mgmt pl.rm( $playlist )
+
+Delete playlist named C<$playlist> from MPD's playlist directory.
+
+=cut
+
 sub _do_rm {
     my ($self, $k, $h, $msg) = @_;
     my $playlist = $msg->params->[0];
@@ -281,6 +301,7 @@ sub _do_rm {
     $msg->_set_commands ( [ qq{rm "$playlist"} ] );
     $k->post( $h->{socket}, 'send', $msg );
 }
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
@@ -298,128 +319,7 @@ session you created: it will be responsible for dispatching the event
 where it is needed. Under no circumstance should you call directly subs
 or methods from this module directly.
 
-Read POCOCM's pod to learn how to deal with answers from those commands.
+Read L<POCOCM|POE::Component::Client::MPD>'s pod to learn how to deal
+with answers from those commands.
 
-
-
-=head1 PUBLIC EVENTS
-
-The following is a list of playlist-related events accepted by POCOCM.
-
-
-=head2 Retrieving information
-
-
-=over 4
-
-=item * pl.as_items()
-
-Return an array of L<Audio::MPD::Common::Item::Song>s, one for each of
-the songs in the current playlist.
-
-
-=item * pl.items_changed_since( $plversion )
-
-Return a list with all the songs (as L<Audio::MPD::Common::Item::Song>
-objects) added to the playlist since playlist C<$plversion>.
-
-
-=back
-
-
-
-=head2 Adding / removing songs
-
-
-=over 4
-
-=item * pl.add( $path, $path, ... )
-
-Add the songs identified by C<$path> (relative to MPD's music directory)
-to the current playlist.
-
-
-=item * pl.delete( $number, $number, ... )
-
-Remove song C<$number> (starting from 0) from the current playlist.
-
-
-=item * pl.deleteid( $songid, $songid, ... )
-
-Remove the specified C<$songid> (as assigned by mpd when inserted in
-playlist) from the current playlist.
-
-
-=item * clear()
-
-Remove all the songs from the current playlist.
-
-
-=item * crop()
-
-Remove all of the songs from the current playlist *except* the current one.
-
-
-=back
-
-
-
-=head2 Changing playlist order
-
-
-=over 4
-
-=item * pl.shuffle()
-
-Shuffle the current playlist.
-
-
-=item * pl.swap( $song1, $song2 )
-
-Swap positions of song number C<$song1> and C<$song2> in the current
-playlist.
-
-
-=item * pl.swapid( $songid1, $songid2 )
-
-Swap positions of song id C<$songid1> and C<$songid2> in the current
-playlist.
-
-
-=item * pl.move( $song, $newpos )
-
-Move song number C<$song> to the position C<$newpos>.
-
-
-=item * pl.moveid( $songid, $newpos )
-
-Move song id C<$songid> to the position C<$newpos>.
-
-
-=back
-
-
-
-=head2 Managing playlists
-
-
-=over 4
-
-=item * pl.load( $playlist )
-
-Load list of songs from specified C<$playlist> file.
-
-
-=item * pl.save( $playlist )
-
-Save the current playlist to a file called C<$playlist> in MPD's
-playlist directory.
-
-
-=item * pl.rm( $playlist )
-
-Delete playlist named C<$playlist> from MPD's playlist directory.
-
-
-=back
-
+Following is a list of playlist-related events accepted by POCOCM.
