@@ -41,7 +41,7 @@ reconnection. Defaults to 2.
 
 # -- public methods
 
-=method my $id = POE::Component::Client::MPD::Connection->new( \%params );
+=method my $id = POE::Component::Client::MPD::Connection->spawn( \%params );
 
 This method will create a L<POE::Component::Client::TCP> session
 responsible for low-level communication with mpd.
@@ -50,7 +50,7 @@ It will return the poe id of the session newly created.
 
 =cut
 
-sub new {
+sub spawn {
     my ($type, $args) = @_;
 
     # connect to mpd server.

@@ -296,7 +296,7 @@ sub _onpriv_start {
 
     # store args for ourself.
     $h->{status_msgs_to} = $args->{status_msgs_to};
-    $h->{socket}         = POE::Component::Client::MPD::Connection->new(\%params);
+    $h->{socket}         = POE::Component::Client::MPD::Connection->spawn(\%params);
 
     # create objects to treat dispatched events.
     $h->{mpd}        = POE::Component::Client::MPD->new;
