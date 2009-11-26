@@ -5,10 +5,14 @@ use warnings;
 package POE::Component::Client::MPD::Commands;
 # ABSTRACT: module handling basic mpd commands
 
+use Moose;
+use MooseX::Has::Sugar;
+use MooseX::Types::Moose qw{ Str };
 use POE;
+
 use POE::Component::Client::MPD::Message;
 
-use base qw{ Class::Accessor::Fast };
+has socket => ( ro, required, isa=>Str );
 
 
 # -- MPD interaction: general commands
@@ -450,9 +454,9 @@ sub _do_seekid {
     $k->post( $h->{socket}, 'send', $msg );
 }
 
-
+no Moose;
+__PACKAGE__->meta->make_immutable;
 1;
-
 __END__
 
 =head1 DESCRIPTION
