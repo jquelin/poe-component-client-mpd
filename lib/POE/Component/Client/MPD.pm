@@ -8,14 +8,16 @@ package POE::Component::Client::MPD;
 use Audio::MPD::Common::Stats;
 use Audio::MPD::Common::Status;
 use Carp;
+use Moose;
+use MooseX::Has::Sugar;
+use MooseX::Types::Moose qw{ Int Str };
 use POE;
+
 use POE::Component::Client::MPD::Commands;
 use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::MPD::Playlist;
-
-use base qw{ Class::Accessor::Fast };
 
 
 #--
