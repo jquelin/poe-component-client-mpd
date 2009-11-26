@@ -7,9 +7,10 @@ package POE::Component::Client::MPD::Connection;
 
 use Audio::MPD::Common::Item;
 use POE;
-use POE::Component::Client::MPD::Message; # for exported constants
 use POE::Component::Client::TCP;
 use Readonly;
+
+use POE::Component::Client::MPD::Message; # for exported constants
 
 
 #--
@@ -56,9 +57,8 @@ sub spawn {
         ServerInput  => \&_onpriv_ServerInput,
 
         InlineStates => {
-            # protected events
-            send       => \&_onprot_send,         # send data
-            disconnect => \&_onprot_disconnect,   # force quit
+            send       => \&send,         # send data
+            disconnect => \&disconnect,   # force quit
         }
     );
 
@@ -184,27 +184,31 @@ sub _got_first_input_line {
 # EVENTS HANDLERS
 #
 
-# -- protected events
+# -- public events
 
-#
-# event: disconnect()
-#
-# Request the pococm-connection to be shutdown. No argument.
-#
-sub _onprot_disconnect {
+=event disconnect( )
+
+Request the pococm-connection to be shutdown. This does B<not> shut down
+the MPD server. No argument.
+
+=cut
+
+sub disconnect {
     $_[HEAP]->{auto_reconnect} = 0;    # no more auto-reconnect.
     $_[KERNEL]->yield( 'shutdown' );   # shutdown socket.
 }
 
 
-#
-# event: send($message)
-#
-# Request pococm-conn to send the commands of $message over the wires.
-# Note that $message is a pococm-message object, and that the ->_commands
-# should *not* be newline terminated.
-#
-sub _onprot_send {
+=event send( $message )
+
+Request pococm-conn to send the C<$message> over the wires. Note that
+this request is a L<POE::Component::Client::MPD::Message> object
+properly filled up, and that the C<_commands()> attribute should B<not>
+be newline terminated.
+
+=cut
+
+sub send {
     my ($h, $msg) = @_[HEAP, ARG0];
     # $_[HEAP]->{server} is a reserved slot of pococ-tcp.
     $h->{server}->put( @{ $msg->_commands } );
@@ -323,10 +327,7 @@ sub _onpriv_ServerInput {
     }
 }
 
-
-
 1;
-
 __END__
 
 =head1 DESCRIPTION
@@ -385,27 +386,6 @@ reconnection. Defaults to 2.
 The args without default are not supposed to be empty - ie, you will get
 an error if you don't follow those requirements! Yes, this is a private
 class, and you're not supposed to use it beyond pococm. :-)
-
-
-
-=head1 PUBLIC EVENTS ACCEPTED
-
-The following events are accepted from outside this class - but of course
-restricted to POCOCM (in oo-lingo, they are more protected rather than
-public).
-
-
-=head2 disconnect()
-
-Request the pococm-connection to be shutdown. This does B<not> shut down
-the MPD server. No argument.
-
-
-=head2 send( $message )
-
-Request pococm-conn to send the C<$message> over the wires. Note that
-this request is a pococm-message object properly filled up, and that the
-C<_commands()> attribute should B<not> be newline terminated.
 
 
 
