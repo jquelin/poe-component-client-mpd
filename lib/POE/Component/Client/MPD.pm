@@ -113,7 +113,7 @@ sub _build__playlist   { POE::Component::Client::MPD::Playlist  ->new(mpd=>$_[0]
 # -- private methods
 
 sub _dispatch {
-    my ($self, $h, $event, $msg) = @_;
+    my ($self, $event, $msg) = @_;
 
     # dispatch the event.
     given ($event) {
@@ -224,7 +224,7 @@ event _default => sub {
     } );
 
     # dispatch the event so it is handled by the correct object/method.
-    $self->_dispatch($self, $event, $msg);
+    $self->_dispatch($event, $msg);
 };
 
 
@@ -327,7 +327,7 @@ event mpd_data => sub {
     if ( defined $msg->_post ) {
         my $event = $msg->_post;    # save postback.
         $msg->_set_post( undef );   # remove postback.
-        $self->_dispatch($self, $event, $msg);
+        $self->_dispatch($event, $msg);
         return;
     }
 

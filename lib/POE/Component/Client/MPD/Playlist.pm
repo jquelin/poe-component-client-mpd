@@ -151,7 +151,7 @@ sub _do_crop {
     if ( not defined $msg->_data ) {
         # no status yet - fire an event
         $msg->_set_post( 'pl.crop' );
-        $self->mpd->_dispatch($self->mpd, 'status', $msg);
+        $self->mpd->_dispatch('status', $msg);
         return;
     }
 
