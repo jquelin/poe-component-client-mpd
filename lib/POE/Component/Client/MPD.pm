@@ -64,7 +64,7 @@ has password       => ( ro, lazy_build );
 has port           => ( ro, lazy_build, isa=>Int );
 
 has alias          => ( ro, required, isa=>Str );
-has status_msgs_to => ( ro, isa=>Str );
+has status_msgs_to => ( ro, isa=>Str, predicate=>'has_peer' );
 has version        => ( rw, isa=>Str );
 
 has _collection    => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Collection' );
@@ -258,9 +258,8 @@ event mpd_connect_error_fatal     => \&_onprot_mpd_connect_error;
 sub _onprot_mpd_connect_error {
     my ($self, $reason) = @_[OBJECT, ARG0];
 
-    my $peer = $self->status_msgs_to;
-    return unless defined $peer;
-    $K->post($peer, 'mpd_connect_error_fatal', $reason);
+    return unless $self->has_peer;
+    $K->post($self->status_msgs_to, 'mpd_connect_error_fatal', $reason);
 }
 
 
@@ -273,9 +272,8 @@ event mpd_connected => sub {
     my ($self, $version) = @_[OBJECT, ARG0];
     $self->set_version( $version );
 
-    my $peer = $self->{status_msgs_to};
-    return unless defined $peer;
-    $K->post($peer, 'mpd_connected');
+    return unless $self->has_peer;
+    $K->post($self->status_msgs_to, 'mpd_connected');
     # FIXME: send password information to mpd
     # FIXME: send status information to peer
 };
@@ -289,9 +287,8 @@ event mpd_connected => sub {
 #
 event mpd_disconnected => sub {
     my ($self, $version) = @_[OBJECT, ARG0];
-    my $peer = $self->status_msgs_to;
-    return unless defined $peer;
-    $K->post($peer, 'mpd_disconnected');
+    return unless $self->has_peer;
+    $K->post($self->status_msgs_to, 'mpd_disconnected');
 };
 
 
@@ -497,6 +494,7 @@ Called when pococm-conn made sure we're talking to a mpd server.
 Called when pococm-conn has been disconnected from mpd server.
 
 =back
+
 
 
 =head1 SEE ALSO
