@@ -59,19 +59,19 @@ etc. You thus need to register some handlers for those events.
 
 =cut
 
-has host       => ( ro, lazy_build, isa=>Str );
-has password   => ( ro, lazy_build );
-has port       => ( ro, lazy_build, isa=>Int );
+has host           => ( ro, lazy_build, isa=>Str );
+has password       => ( ro, lazy_build );
+has port           => ( ro, lazy_build, isa=>Int );
 
 has alias          => ( ro, required, isa=>Str );
 has status_msgs_to => ( ro, isa=>Str );
 has version        => ( rw, isa=>Str );
 
-has _collection => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Collection' );
-has _commands   => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Commands' );
-has _playlist   => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Playlist'   );
+has _collection    => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Collection' );
+has _commands      => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Commands'   );
+has _playlist      => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Playlist'   );
 
-has _socket    => ( rw, isa=>Str );
+has _socket        => ( rw, isa=>Str );
 
 
 
