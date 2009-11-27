@@ -36,7 +36,7 @@ eval 'use Test::Corpus::Audio::MPD';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 plan tests => 1;
 
-POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+POE::Component::Client::MPD->spawn;
 My::Session->new;
 POE::Kernel->run;
 exit;

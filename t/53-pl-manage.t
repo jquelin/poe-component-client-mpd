@@ -16,7 +16,7 @@ plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
 plan tests => 11;
 
 # launch fake mpd
-POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+POE::Component::Client::MPD->spawn;
 
 # launch the tests
 POE::Component::Client::MPD::Test->new( { tests => [

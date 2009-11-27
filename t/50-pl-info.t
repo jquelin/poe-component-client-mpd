@@ -15,7 +15,7 @@ plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
 plan tests => 14;
 
 # launch fake mpd
-POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+POE::Component::Client::MPD->spawn;
 
 # launch the tests
 my @songs   = qw{

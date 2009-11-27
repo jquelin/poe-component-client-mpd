@@ -15,7 +15,7 @@ plan skip_all=>$@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
 plan tests => 20;
 
 # launch fake mpd
-POE::Component::Client::MPD->spawn( { alias => 'mpd' } );
+POE::Component::Client::MPD->spawn;
 
 # launch the tests
 my @songs   = qw{ title.ogg dir1/title-artist-album.ogg dir1/title-artist.ogg };

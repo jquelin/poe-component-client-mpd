@@ -47,7 +47,7 @@ empty string.
 
 =attr alias
 
-A string to alias the newly created POE session.
+A string to alias the newly created POE session. Defaults to C<mpd>.
 
 =attr status_msgs_to
 
@@ -63,7 +63,7 @@ has host           => ( ro, lazy_build, isa=>Str );
 has password       => ( ro, lazy_build );
 has port           => ( ro, lazy_build, isa=>Int );
 
-has alias          => ( ro, required, isa=>Str );
+has alias          => ( ro, isa=>Str, default=>'mpd' );
 has status_msgs_to => ( ro, isa=>Str, predicate=>'has_peer' );
 has version        => ( rw, isa=>Str );
 
