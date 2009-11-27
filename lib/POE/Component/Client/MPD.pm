@@ -110,59 +110,6 @@ sub _build__playlist   { POE::Component::Client::MPD::Playlist  ->new(mpd=>$_[0]
 
 
 
-#--
-# CLASS METHODS
-#
-
-# -- public methods
-
-#
-# my $id = POE::Component::Client::MPD->spawn( \%params )
-#
-# This method will create a POE session responsible for communicating
-# with mpd. It will return the poe id of the session newly created.
-#
-# You can tune the pococm by passing some arguments as a hash reference,
-# where the hash keys are:
-#   - host: the hostname of the mpd server. If none given, defaults to
-#     MPD_HOST env var. If this var isn't set, defaults to localhost.
-#   - port: the port of the mpd server. If none given, defaults to
-#     MPD_PORT env var. If this var isn't set, defaults to 6600.
-#   - password: the password to sent to mpd to authenticate the client.
-#     If none given, defaults to C<MPD_PASSWORD> env var. If this var
-#     isn't set, defaults to empty string.
-#   - alias: an optional string to alias the newly created POE session.
-#   - status_msgs_to: session to whom to send connection status.
-#     optional (although recommended), no default.
-#
-sub __spawn {
-    my ($type, $args) = @_;
-
-    my $session = POE::Session->create(
-        args          => [ $args ],
-        inline_states => {
-            # private events
-            '_start'         => \&_onpriv_start,
-            # protected events
-            'mpd_connect_error_fatal'     => \&_onprot_mpd_connect_error,
-            'mpd_connect_error_retriable' => \&_onprot_mpd_connect_error,
-            'mpd_connected'               => \&_onprot_mpd_connected,
-            'mpd_disconnected'            => \&_onprot_mpd_disconnected,
-            'mpd_data'       =>  \&_onprot_mpd_data,
-            'mpd_error'      =>  \&_onprot_mpd_error,
-            # public events
-            'disconnect'     => \&_onpub_disconnect,
-            '_default'       => \&POE::Component::Client::MPD::_onpub_default,
-        },
-    );
-    return $session->ID;
-}
-
-
-#--
-# METHODS
-#
-
 # -- private methods
 
 sub _dispatch {
@@ -191,11 +138,35 @@ sub _dispatch {
 }
 
 
-#--
-# EVENTS HANDLERS
-#
-
 # -- public events.
+
+=event MPD-related events
+
+The goal of a POCOCM session is to drive a remote MPD server. This can
+be achieved by a lot of events. Due to their sheer number, they have
+been regrouped logically in modules.
+
+However, note that to use those events, you need to send them to the
+POCOCM session that you created with C<spawn()> (see above). Indeed, the
+logical split is only internal: you are to use the same peer.
+
+
+For a list of public events that update and/or query MPD, see embedded
+pod in:
+
+=over 4
+
+=item * L<POE::Component::Client::MPD::Commands> for general commands
+
+=item * L<POE::Component::Client::MPD::Playlist> for playlist-related
+commands. Those events begin with C<pl.>.
+
+=item * L<POE::Component::Client::MPD::Collection> for collection-
+related commands. Those events begin with C<coll.>.
+
+=back
+
+=cut
 
 #
 # catch-all handler for pococm events that drive mpd.
@@ -244,11 +215,14 @@ event _default => sub {
 };
 
 
-#
-# event: disconnect()
-#
-# Request the pococm to be shutdown. Leave mpd running.
-#
+
+=event disconnect( )
+
+Request the POCOCM to be shutdown. Leave mpd running. Generally sent
+when one wants to exit her program.
+
+=cut
+
 event disconnect => sub {
     my $h = shift;
     $K->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
@@ -420,67 +394,7 @@ Commands are then sent to the server as messages are passed.
 
 
 
-=head1 PUBLIC EVENTS ACCEPTED
-
-POCOCM accepts two types of events: some are used to drive the mpd
-server, others will change the pococm status.
-
-
-=head2 MPD-related events
-
-The goal of a POCOCM session is to drive a remote MPD server. This can
-be achieved by a lot of events. Due to their sheer number, they have
-been regrouped logically in modules.
-
-However, note that to use those events, you need to send them to the
-POCOCM session that you created with C<spawn()> (see above). Indeed, the
-logical split is only internal: you are to use the same peer.
-
-
-For a list of public events that update and/or query MPD, see embedded
-pod in:
-
-=over 4
-
-=item *
-
-L<POE::Component::Client::MPD::Commands> for general commands
-
-
-=item *
-
-L<POE::Component::Client::MPD::Playlist> for playlist-related commands.
-Those events begin with C<pl.>.
-
-
-=item *
-
-L<POE::Component::Client::MPD::Collection> for collection-related
-commands. Those events begin with C<coll.>.
-
-
-=back
-
-
-
-=head2 POCOCM-related events
-
-Those events allow to drive the POCOCM session.
-
-
-=over 4
-
-=item * disconnect()
-
-Request the POCOCM to be shutdown. Leave mpd running. Generally sent
-when one wants to exit her program.
-
-
-=back
-
-
-
-=head1 PUBLIC EVENTS FIRED
+=head1 EVENTS FIRED
 
 A POCOCM session will fire events, either to answer an incoming event,
 or to inform about some changes regarding the remote MPD server.
@@ -545,7 +459,8 @@ MPD server.
 
 =head2 Auto-generated events
 
-The following events are fired by pococm:
+If you supplied the C<status_msgs_to> attribute, the following events
+are fired to this peer by pococm:
 
 =over 4
 
@@ -555,9 +470,14 @@ Called when pococm-conn could not connect to a mpd server. It can be
 either retriable, or fatal. Check C<$reason> for more information.
 
 
-=item * mpd_connected()
+=item * mpd_connected( )
 
 Called when pococm-conn made sure we're talking to a mpd server.
+
+
+=item * mpd_disconnected( )
+
+Called when pococm-conn has been disconnected from mpd server.
 
 =back
 
