@@ -120,19 +120,19 @@ sub _dispatch {
         # playlist commands
         when (/^pl\.(.*)$/) {
             my $meth = "_do_$1";
-            $h->_playlist->$meth($K, $h, $msg);
+            $self->_playlist->$meth($K, $h, $msg);
         }
 
         # collection commands
         when (/^coll\.(.*)$/) {
             my $meth = "_do_$1";
-            $h->_collection->$meth($K, $h, $msg);
+            $self->_collection->$meth($K, $h, $msg);
         }
 
         # basic commands
         default {
             my $meth = "_do_$event";
-            $h->_commands->$meth($K, $h, $msg);
+            $self->_commands->$meth($K, $h, $msg);
         }
     }
 }
@@ -172,7 +172,7 @@ related commands. Those events begin with C<coll.>.
 # catch-all handler for pococm events that drive mpd.
 #
 event _default => sub {
-    my ($h, $event, $params) = @_[OBJECT, ARG0, ARG1];
+    my ($self, $event, $params) = @_[OBJECT, ARG0, ARG1];
 
     # check if event is handled.
     my @events_commands = qw{
@@ -211,7 +211,7 @@ event _default => sub {
     } );
 
     # dispatch the event so it is handled by the correct object/method.
-    $h->_dispatch($h, $event, $msg);
+    $self->_dispatch($self, $event, $msg);
 };
 
 
@@ -224,13 +224,13 @@ when one wants to exit her program.
 =cut
 
 event disconnect => sub {
-    my $h = shift;
-    $K->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
-    $K->post( $h->_socket, 'disconnect' );                  # pococm-conn
+    my $self = shift;
+    $K->alias_remove( $self->alias );           # refcount--
+    $K->post( $self->_socket, 'disconnect' );   # pococm-conn
 };
 
 
-# -- protected events.
+# -- protected events fired by pococm-conn
 
 #
 # event: mpd_connect_error_retriable( $reason )
@@ -243,9 +243,9 @@ event mpd_connect_error_fatal     => \&_onprot_mpd_connect_error;
 # error to our peer session.
 #
 sub _onprot_mpd_connect_error {
-    my ($h, $reason) = @_[HEAP, ARG0];
+    my ($self, $reason) = @_[OBJECT, ARG0];
 
-    my $peer = $h->{status_msgs_to};
+    my $peer = $self->status_msgs_to;
     return unless defined $peer;
     $K->post($peer, 'mpd_connect_error_fatal', $reason);
 }
@@ -257,10 +257,10 @@ sub _onprot_mpd_connect_error {
 # Called when pococm-conn made sure we're talking to a mpd server.
 #
 event mpd_connected => sub {
-    my ($h, $version) = @_[OBJECT, ARG0];
-    $h->set_version( $version );
+    my ($self, $version) = @_[OBJECT, ARG0];
+    $self->set_version( $version );
 
-    my $peer = $h->{status_msgs_to};
+    my $peer = $self->{status_msgs_to};
     return unless defined $peer;
     $K->post($peer, 'mpd_connected');
     # FIXME: send password information to mpd
@@ -275,8 +275,8 @@ event mpd_connected => sub {
 # Called when pococm-conn got disconnected by mpd.
 #
 event mpd_disconnected => sub {
-    my ($h, $version) = @_[OBJECT, ARG0];
-    my $peer = $h->{status_msgs_to};
+    my ($self, $version) = @_[OBJECT, ARG0];
+    my $peer = $self->status_msgs_to;
     return unless defined $peer;
     $K->post($peer, 'mpd_disconnected');
 };
@@ -289,7 +289,7 @@ event mpd_disconnected => sub {
 # Received when mpd finished to send back some data.
 #
 event mpd_data => sub {
-    my ($h, $msg) = @_[OBJECT, ARG0];
+    my ($self, $msg) = @_[OBJECT, ARG0];
 
     # transform data if needed.
     given ($msg->_transform) {
@@ -314,7 +314,7 @@ event mpd_data => sub {
     if ( defined $msg->_post ) {
         my $event = $msg->_post;    # save postback.
         $msg->_set_post( undef );   # remove postback.
-        $h->_dispatch($h, $event, $msg);
+        $self->_dispatch($self, $event, $msg);
         return;
     }
 
