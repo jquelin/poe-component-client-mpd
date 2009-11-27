@@ -8,8 +8,14 @@ package POE::Component::Client::MPD::Commands;
 use Moose;
 use MooseX::Has::Sugar;
 use POE;
+use Readonly;
 
 use POE::Component::Client::MPD::Message;
+
+Readonly my $K => $poe_kernel;
+
+
+# -- attributes
 
 has mpd => ( ro, required, weak_ref, );# isa=>'POE::Component::Client::MPD' );
 
@@ -26,9 +32,9 @@ and thus advertising version 0.13.0.
 =cut
 
 sub _do_version {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     $msg->set_status(1);
-    $k->post( $msg->_from, 'mpd_result', $msg, $self->mpd->version );
+    $K->post( $msg->_from, 'mpd_result', $msg, $self->mpd->version );
 }
 
 
@@ -39,12 +45,12 @@ Kill the mpd server, and request the pococm to be shutdown.
 =cut
 
 sub _do_kill {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'kill' ] );
     $msg->_set_cooking  ( 'raw' );
     $self->mpd->_send_to_mpd( $msg );
-    $k->delay_set('disconnect'=>1);
+    $K->delay_set('disconnect'=>1);
 }
 
 
@@ -57,7 +63,7 @@ rescan its whole collection.
 =cut
 
 sub _do_updatedb {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $path = $msg->params->[0] // '';  # FIXME: padre//
 
     $msg->_set_commands( [ qq{update "$path"} ] );
@@ -73,7 +79,7 @@ Return an array of supported URL schemes.
 =cut
 
 sub _do_urlhandlers {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'urlhandlers' ] );
     $msg->_set_cooking  ( 'strip_first' );
@@ -93,7 +99,7 @@ relatively by that value.
 =cut
 
 sub _do_volume {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $volume;
     if ( $msg->params->[0] =~ /^(-|\+)(\d+)/ ) {
@@ -101,7 +107,7 @@ sub _do_volume {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'volume' );
-            $self->mpd->_dispatch($h, 'status', $msg);
+            $self->mpd->_dispatch($self->mpd, 'status', $msg);
             return;
         }
 
@@ -126,7 +132,7 @@ output.
 =cut
 
 sub _do_output_enable {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $output = $msg->params->[0];
 
     $msg->_set_commands ( [ "enableoutput $output" ] );
@@ -142,7 +148,7 @@ Disable the specified audio output. C<$output> is the ID of the audio output.
 =cut
 
 sub _do_output_disable {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $output = $msg->params->[0];
 
     $msg->_set_commands ( [ "disableoutput $output" ] );
@@ -162,7 +168,7 @@ statistics of MPD.
 =cut
 
 sub _do_stats {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'stats' ] );
     $msg->_set_cooking  ( 'as_kv' );
@@ -179,7 +185,7 @@ status of MPD.
 =cut
 
 sub _do_status {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'status' ] );
     $msg->_set_cooking  ( 'as_kv' );
@@ -196,7 +202,7 @@ currently playing.
 =cut
 
 sub _do_current {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'currentsong' ] );
     $msg->_set_cooking  ( 'as_items' );
@@ -213,7 +219,7 @@ C<$song>. If C<$song> is not supplied, returns the current song.
 =cut
 
 sub _do_song {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $song = $msg->params->[0];
 
     $msg->_set_commands ( [ defined $song ? "playlistinfo $song" : 'currentsong' ] );
@@ -231,7 +237,7 @@ C<$songid>. If C<$songid> is not supplied, returns the current song.
 =cut
 
 sub _do_songid {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $song = $msg->params->[0];
 
     $msg->_set_commands ( [ defined $song ? "playlistid $song" : 'currentsong' ] );
@@ -252,7 +258,7 @@ specified then the repeat mode is toggled.
 =cut
 
 sub _do_repeat {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $mode = $msg->params->[0];
     if ( defined $mode )  {
@@ -261,7 +267,7 @@ sub _do_repeat {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'repeat' );
-            $self->mpd->_dispatch($h, 'status', $msg);
+            $self->mpd->_dispatch($self->mpd, 'status', $msg);
             return;
         }
 
@@ -283,7 +289,7 @@ disabled.
 =cut
 
 sub _do_fade {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $seconds = $msg->params->[0] // 0;  # FIXME: padre//
 
     $msg->_set_commands ( [ "crossfade $seconds" ] );
@@ -300,7 +306,7 @@ specified then the random mode is toggled.
 =cut
 
 sub _do_random {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $mode = $msg->params->[0];
     if ( defined $mode )  {
@@ -309,7 +315,7 @@ sub _do_random {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'random' );
-            $self->mpd->_dispatch($h, 'status', $msg);
+            $self->mpd->_dispatch($self->mpd, 'status', $msg);
             return;
         }
 
@@ -332,7 +338,7 @@ resume playing.
 =cut
 
 sub _do_play {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $number = $msg->params->[0] // ''; # FIXME: padre//
     $msg->_set_commands ( [ "play $number" ] );
@@ -349,7 +355,7 @@ resume playing.
 =cut
 
 sub _do_playid {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $number = $msg->params->[0] // ''; # FIXME: padre//
     $msg->_set_commands ( [ "playid $number" ] );
@@ -368,7 +374,7 @@ Note that if C<$state> is not given, pause state will be toggled.
 =cut
 
 sub _do_pause {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $state = $msg->params->[0] // '';  # FIXME: padre//
     $msg->_set_commands ( [ "pause $state" ] );
@@ -384,7 +390,7 @@ Stop playback.
 =cut
 
 sub _do_stop {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'stop' ] );
     $msg->_set_cooking  ( 'raw' );
@@ -399,7 +405,7 @@ Play next song in playlist.
 =cut
 
 sub _do_next {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'next' ] );
     $msg->_set_cooking  ( 'raw' );
@@ -414,7 +420,7 @@ Play previous song in playlist.
 =cut
 
 sub _do_prev {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'previous' ] );
     $msg->_set_cooking  ( 'raw' );
@@ -431,7 +437,7 @@ current song.
 =cut
 
 sub _do_seek {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my ($time, $song) = @{ $msg->params }[0,1];
     $time ||= 0; $time = int $time;
@@ -439,7 +445,7 @@ sub _do_seek {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'seek' );
-            $self->mpd->_dispatch($h, 'status', $msg);
+            $self->mpd->_dispatch($self->mpd, 'status', $msg);
             return;
         }
 
@@ -461,7 +467,7 @@ current song.
 =cut
 
 sub _do_seekid {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my ($time, $songid) = @{ $msg->params }[0,1];
     $time ||= 0; $time = int $time;
@@ -469,7 +475,7 @@ sub _do_seekid {
         if ( not defined $msg->_data ) {
             # no status yet - fire an event
             $msg->_set_post( 'seekid' );
-            $self->mpd->_dispatch($h, 'status', $msg);
+            $self->mpd->_dispatch($self->mpd, 'status', $msg);
             return;
         }
 

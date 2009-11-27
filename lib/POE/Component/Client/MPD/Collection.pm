@@ -27,7 +27,7 @@ songs and dirs in this directory.
 =cut
 
 sub _do_all_items {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $path = $msg->params->[0] // ''; # FIXME: padre//
 
     $msg->_set_commands ( [ qq{listallinfo "$path"} ] );
@@ -51,7 +51,7 @@ don't use this sub for any other thing than a quick scan!
 =cut
 
 sub _do_all_items_simple {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $path = $msg->params->[0] // ''; # FIXME: padre//
 
     $msg->_set_commands ( [ qq{listall "$path"} ] );
@@ -70,7 +70,7 @@ Note that this sub does not work recusrively on all directories.
 =cut
 
 sub _do_items_in_dir {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $path = $msg->params->[0] // ''; # FIXME: padre//
 
     $msg->_set_commands ( [ qq{lsinfo "$path"} ] );
@@ -92,7 +92,7 @@ Return the list of all albums (strings) currently known by mpd.
 =cut
 
 sub _do_all_albums {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'list album' ] );
     $msg->_set_cooking  ( 'strip_first' );
@@ -107,7 +107,7 @@ Return the list of all artists (strings) currently known by mpd.
 =cut
 
 sub _do_all_artists {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'list artist' ] );
     $msg->_set_cooking  ( 'strip_first' );
@@ -122,7 +122,7 @@ Return the list of all titles (strings) currently known by mpd.
 =cut
 
 sub _do_all_titles {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'list title' ] );
     $msg->_set_cooking  ( 'strip_first' );
@@ -138,7 +138,7 @@ currently known by mpd.
 =cut
 
 sub _do_all_files {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'list filename' ] );
     $msg->_set_cooking  ( 'strip_first' );
@@ -156,7 +156,7 @@ C<$path>.
 =cut
 
 sub _do_song {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{find filename "$what"} ] );
@@ -174,7 +174,7 @@ their path.
 =cut
 
 sub _do_songs_with_filename_partial {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{search filename "$what"} ] );
@@ -193,7 +193,7 @@ participated.
 =cut
 
 sub _do_albums_by_artist {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{list album "$what"} ] );
@@ -209,7 +209,7 @@ Return all L<Audio::MPD::Common::Item::Song>s performed by C<$artist>.
 =cut
 
 sub _do_songs_by_artist {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{find artist "$what"} ] );
@@ -225,7 +225,7 @@ Return all L<Audio::MPD::Common::Item::Song>s performed by C<$artist>.
 =cut
 
 sub _do_songs_by_artist_partial {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{search artist "$what"} ] );
@@ -241,7 +241,7 @@ Return all L<Audio::MPD::Common::Item::Song>s appearing in C<$album>.
 =cut
 
 sub _do_songs_from_album {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{find album "$what"} ] );
@@ -258,7 +258,7 @@ containing C<$string>.
 =cut
 
 sub _do_songs_from_album_partial {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{search album "$what"} ] );
@@ -275,7 +275,7 @@ C<$title>.
 =cut
 
 sub _do_songs_with_title {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{find title "$what"} ] );
@@ -292,7 +292,7 @@ of the title.
 =cut
 
 sub _do_songs_with_title_partial {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $what = $msg->params->[0];
 
     $msg->_set_commands ( [ qq{search title "$what"} ] );

@@ -28,7 +28,7 @@ the songs in the current playlist.
 =cut
 
 sub _do_as_items {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'playlistinfo' ] );
     $msg->_set_cooking  ( 'as_items' );
@@ -44,7 +44,7 @@ objects) added to the playlist since playlist C<$plversion>.
 =cut
 
 sub _do_items_changed_since {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $plid = $msg->params->[0];
 
     $msg->_set_commands ( [ "plchanges $plid" ] );
@@ -64,7 +64,7 @@ to the current playlist.
 =cut
 
 sub _do_add {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $args   = $msg->params;
     my @pathes = @$args;         # args of the poe event
@@ -86,7 +86,7 @@ Remove song C<$number> (starting from 0) from the current playlist.
 =cut
 
 sub _do_delete {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $args    = $msg->params;
     my @numbers = @$args;
@@ -109,7 +109,7 @@ playlist) from the current playlist.
 =cut
 
 sub _do_deleteid {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     my $args    = $msg->params;
     my @songids = @$args;
@@ -131,7 +131,7 @@ Remove all the songs from the current playlist.
 =cut
 
 sub _do_clear {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_commands ( [ 'clear' ] );
     $msg->_set_cooking  ( 'raw' );
@@ -146,12 +146,12 @@ Remove all of the songs from the current playlist *except* the current one.
 =cut
 
 sub _do_crop {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     if ( not defined $msg->_data ) {
         # no status yet - fire an event
         $msg->_set_post( 'pl.crop' );
-        $self->mpd->_dispatch($h, 'status', $msg);
+        $self->mpd->_dispatch($self->mpd, 'status', $msg);
         return;
     }
 
@@ -180,7 +180,7 @@ Shuffle the current playlist.
 =cut
 
 sub _do_shuffle {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ 'shuffle' ] );
@@ -196,7 +196,7 @@ playlist.
 =cut
 
 sub _do_swap {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my ($from, $to) = @{ $msg->params }[0,1];
 
     $msg->_set_cooking  ( 'raw' );
@@ -213,7 +213,7 @@ playlist.
 =cut
 
 sub _do_swapid {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my ($from, $to) = @{ $msg->params }[0,1];
 
     $msg->_set_cooking  ( 'raw' );
@@ -229,7 +229,7 @@ Move song number C<$song> to the position C<$newpos>.
 =cut
 
 sub _do_move {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my ($song, $pos) = @{ $msg->params }[0,1];
 
     $msg->_set_cooking  ( 'raw' );
@@ -245,7 +245,7 @@ Move song id C<$songid> to the position C<$newpos>.
 =cut
 
 sub _do_moveid {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my ($songid, $pos) = @{ $msg->params }[0,1];
 
     $msg->_set_cooking  ( 'raw' );
@@ -264,7 +264,7 @@ Load list of songs from specified C<$playlist> file.
 =cut
 
 sub _do_load {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $playlist = $msg->params->[0];
 
     $msg->_set_cooking  ( 'raw' );
@@ -281,7 +281,7 @@ playlist directory.
 =cut
 
 sub _do_save {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $playlist = $msg->params->[0];
 
     $msg->_set_cooking  ( 'raw' );
@@ -297,7 +297,7 @@ Delete playlist named C<$playlist> from MPD's playlist directory.
 =cut
 
 sub _do_rm {
-    my ($self, $k, $h, $msg) = @_;
+    my ($self, $msg) = @_;
     my $playlist = $msg->params->[0];
 
     $msg->_set_cooking  ( 'raw' );

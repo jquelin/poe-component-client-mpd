@@ -120,19 +120,19 @@ sub _dispatch {
         # playlist commands
         when (/^pl\.(.*)$/) {
             my $meth = "_do_$1";
-            $self->_playlist->$meth($K, $h, $msg);
+            $self->_playlist->$meth($msg);
         }
 
         # collection commands
         when (/^coll\.(.*)$/) {
             my $meth = "_do_$1";
-            $self->_collection->$meth($K, $h, $msg);
+            $self->_collection->$meth($msg);
         }
 
         # basic commands
         default {
             my $meth = "_do_$event";
-            $self->_commands->$meth($K, $h, $msg);
+            $self->_commands->$meth($msg);
         }
     }
 }
