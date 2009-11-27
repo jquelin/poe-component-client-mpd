@@ -367,6 +367,10 @@ __PACKAGE__->meta->make_immutable;
 1;
 __END__
 
+=for Pod::Coverage::TrustPod
+    START
+
+
 =head1 SYNOPSIS
 
     use POE qw{ Component::Client::MPD };
