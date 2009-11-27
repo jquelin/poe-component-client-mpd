@@ -32,7 +32,7 @@ sub _do_all_items {
 
     $msg->_set_commands ( [ qq{listallinfo "$path"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -56,7 +56,7 @@ sub _do_all_items_simple {
 
     $msg->_set_commands ( [ qq{listall "$path"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -75,7 +75,7 @@ sub _do_items_in_dir {
 
     $msg->_set_commands ( [ qq{lsinfo "$path"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -96,7 +96,7 @@ sub _do_all_albums {
 
     $msg->_set_commands ( [ 'list album' ] );
     $msg->_set_cooking  ( 'strip_first' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -111,7 +111,7 @@ sub _do_all_artists {
 
     $msg->_set_commands ( [ 'list artist' ] );
     $msg->_set_cooking  ( 'strip_first' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -126,7 +126,7 @@ sub _do_all_titles {
 
     $msg->_set_commands ( [ 'list title' ] );
     $msg->_set_cooking  ( 'strip_first' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -142,7 +142,7 @@ sub _do_all_files {
 
     $msg->_set_commands ( [ 'list filename' ] );
     $msg->_set_cooking  ( 'strip_first' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -162,7 +162,7 @@ sub _do_song {
     $msg->_set_commands ( [ qq{find filename "$what"} ] );
     $msg->_set_cooking  ( 'as_items' );
     $msg->_set_transform( 'as_scalar' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -179,7 +179,7 @@ sub _do_songs_with_filename_partial {
 
     $msg->_set_commands ( [ qq{search filename "$what"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -198,7 +198,7 @@ sub _do_albums_by_artist {
 
     $msg->_set_commands ( [ qq{list album "$what"} ] );
     $msg->_set_cooking  ( 'strip_first' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -214,7 +214,7 @@ sub _do_songs_by_artist {
 
     $msg->_set_commands ( [ qq{find artist "$what"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -230,7 +230,7 @@ sub _do_songs_by_artist_partial {
 
     $msg->_set_commands ( [ qq{search artist "$what"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -246,7 +246,7 @@ sub _do_songs_from_album {
 
     $msg->_set_commands ( [ qq{find album "$what"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -263,7 +263,7 @@ sub _do_songs_from_album_partial {
 
     $msg->_set_commands ( [ qq{search album "$what"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -280,7 +280,7 @@ sub _do_songs_with_title {
 
     $msg->_set_commands ( [ qq{find title "$what"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -297,7 +297,7 @@ sub _do_songs_with_title_partial {
 
     $msg->_set_commands ( [ qq{search title "$what"} ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 

@@ -10,6 +10,7 @@ use Audio::MPD::Common::Status;
 use Carp;
 use Moose;
 use MooseX::Has::Sugar;
+use MooseX::POE;
 use MooseX::SemiAffordanceAccessor;
 use MooseX::Types::Moose qw{ Int Str };
 use POE;
@@ -55,10 +56,13 @@ has host       => ( ro, lazy_build, isa=>Str );
 has password   => ( ro, lazy_build );
 has port       => ( ro, lazy_build, isa=>Int );
 
+has alias          => ( ro, required, isa=>Str );
+has status_msgs_to => ( ro, isa=>Str );
+has version        => ( rw, isa=>Str );
+
 has _collection => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Collection' );
 has _commands   => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Commands' );
 has _playlist   => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Playlist'   );
-has version     => ( rw );
 
 has _socket    => ( rw, isa=>Str );
 
@@ -84,17 +88,6 @@ sub _build_password { return $ENV{MPD_PASSWORD} || ( _parse_env_var() )[0] || ''
 sub _build__collection { POE::Component::Client::MPD::Collection->new(mpd=>$_[0]); }
 sub _build__commands   { POE::Component::Client::MPD::Commands  ->new(mpd=>$_[0]); }
 sub _build__playlist   { POE::Component::Client::MPD::Playlist  ->new(mpd=>$_[0]); }
-
-sub _build__socket {
-    my $self = shift;
-    POE::Component::Client::MPD::Connection->spawn( {
-        host     => $self->host,
-        port     => $self->port,
-        password => $self->password,
-        id       => $self->alias,
-    } );
-}
-
 
 
 
@@ -123,7 +116,7 @@ sub _build__socket {
 #   - status_msgs_to: session to whom to send connection status.
 #     optional (although recommended), no default.
 #
-sub spawn {
+sub __spawn {
     my ($type, $args) = @_;
 
     my $session = POE::Session->create(
@@ -161,19 +154,19 @@ sub _dispatch {
         # playlist commands
         when (/^pl\.(.*)$/) {
             my $meth = "_do_$1";
-            $h->{playlist}->$meth($K, $h, $msg);
+            $h->_playlist->$meth($K, $h, $msg);
         }
 
         # collection commands
         when (/^coll\.(.*)$/) {
             my $meth = "_do_$1";
-            $h->{collection}->$meth($K, $h, $msg);
+            $h->_collection->$meth($K, $h, $msg);
         }
 
         # basic commands
         default {
             my $meth = "_do_$event";
-            $h->{commands}->$meth($K, $h, $msg);
+            $h->_commands->$meth($K, $h, $msg);
         }
     }
 }
@@ -188,8 +181,8 @@ sub _dispatch {
 #
 # catch-all handler for pococm events that drive mpd.
 #
-sub _onpub_default {
-    my ($h, $event, $params) = @_[HEAP, ARG0, ARG1];
+event _default => sub {
+    my ($h, $event, $params) = @_[OBJECT, ARG0, ARG1];
 
     # check if event is handled.
     my @events_commands = qw{
@@ -228,8 +221,8 @@ sub _onpub_default {
     } );
 
     # dispatch the event so it is handled by the correct object/method.
-    $h->{mpd}->_dispatch($h, $event, $msg);
-}
+    $h->_dispatch($h, $event, $msg);
+};
 
 
 #
@@ -237,11 +230,11 @@ sub _onpub_default {
 #
 # Request the pococm to be shutdown. Leave mpd running.
 #
-sub _onpub_disconnect {
-    my $h = $_[HEAP];
+event disconnect => sub {
+    my $h = shift;
     $K->alias_remove( $h->{alias} ) if defined $h->{alias}; # refcount--
-    $K->post( $h->{socket}, 'disconnect' );                 # pococm-conn
-}
+    $K->post( $h->_socket, 'disconnect' );                  # pococm-conn
+};
 
 
 # -- protected events.
@@ -249,7 +242,9 @@ sub _onpub_disconnect {
 #
 # event: mpd_connect_error_retriable( $reason )
 # event: mpd_connect_error_fatal( $reason )
-#
+event mpd_connect_error_retriable => \&_onprot_mpd_connect_error;
+event mpd_connect_error_fatal     => \&_onprot_mpd_connect_error;
+
 # Called when pococm-conn could not connect to a mpd server. It can be
 # either retriable, or fatal. In bth case, we just need to forward the
 # error to our peer session.
@@ -268,16 +263,16 @@ sub _onprot_mpd_connect_error {
 #
 # Called when pococm-conn made sure we're talking to a mpd server.
 #
-sub _onprot_mpd_connected {
-    my ($h, $version) = @_[HEAP, ARG0];
-    $h->{version} = $version;
+event mpd_connected => sub {
+    my ($h, $version) = @_[OBJECT, ARG0];
+    $h->set_version( $version );
 
     my $peer = $h->{status_msgs_to};
     return unless defined $peer;
     $K->post($peer, 'mpd_connected');
     # FIXME: send password information to mpd
     # FIXME: send status information to peer
-}
+};
 
 
 
@@ -286,12 +281,12 @@ sub _onprot_mpd_connected {
 #
 # Called when pococm-conn got disconnected by mpd.
 #
-sub _onprot_mpd_disconnected {
-    my ($h, $version) = @_[HEAP, ARG0];
+event mpd_disconnected => sub {
+    my ($h, $version) = @_[OBJECT, ARG0];
     my $peer = $h->{status_msgs_to};
     return unless defined $peer;
     $K->post($peer, 'mpd_disconnected');
-}
+};
 
 
 
@@ -300,8 +295,8 @@ sub _onprot_mpd_disconnected {
 #
 # Received when mpd finished to send back some data.
 #
-sub _onprot_mpd_data {
-    my ($h, $msg) = @_[HEAP, ARG0];
+event mpd_data => sub {
+    my ($h, $msg) = @_[OBJECT, ARG0];
 
     # transform data if needed.
     given ($msg->_transform) {
@@ -326,13 +321,13 @@ sub _onprot_mpd_data {
     if ( defined $msg->_post ) {
         my $event = $msg->_post;    # save postback.
         $msg->_set_post( undef );   # remove postback.
-        $h->{mpd}->_dispatch($h, $event, $msg);
+        $h->_dispatch($h, $event, $msg);
         return;
     }
 
     # send result.
     $K->post($msg->_from, 'mpd_result', $msg, $msg->_data);
-}
+};
 
 
 #
@@ -340,12 +335,12 @@ sub _onprot_mpd_data {
 #
 # Received when mpd didn't understood a command.
 #
-sub _onprot_mpd_error {
+event mpd_error => sub {
     my ($msg, $errstr) = @_[ARG0, ARG1];
 
     $msg->set_status(0); # failure
     $K->post( $msg->_from, 'mpd_error', $msg, $errstr );
-}
+};
 
 
 
@@ -357,35 +352,25 @@ sub _onprot_mpd_error {
 # Called when the poe session gets initialized. Receive a reference
 # to %params, same as spawn() received.
 #
-sub _onpriv_start {
-    my ($h, $args) = @_[HEAP, ARG0];
+sub START {
+    my $self = shift;
+    $K->alias_set( $self->alias );    # refcount++
 
-    # set up connection details.
-    $args = {} unless defined $args;
-    my %params = (
-        host     => $ENV{MPD_HOST}     // 'localhost',
-        port     => $ENV{MPD_PORT}     // '6600',
-        password => $ENV{MPD_PASSWORD} // '',
-        %$args,                        # overwrite previous defaults
-        id       => $_[SESSION]->ID,   # required for connection
-    );
-
-    $h->{alias} = delete $params{alias};
-    $K->alias_set($h->{alias}) if defined $h->{alias};    # refcount++
-
-    # store args for ourself.
-    $h->{status_msgs_to} = $args->{status_msgs_to};
-    $h->{socket}         = POE::Component::Client::MPD::Connection->spawn(\%params);
-
-    # create objects to treat dispatched events.
-    $h->{mpd}        = POE::Component::Client::MPD->new;
-    $h->{commands}   = POE::Component::Client::MPD::Commands->new({mpd=>$h});
-    $h->{playlist}   = POE::Component::Client::MPD::Playlist->new({mpd=>$h});
-    $h->{collection} = POE::Component::Client::MPD::Collection->new({mpd=>$h});
+    # create the connection to mpd. we *cannot* do this with a
+    # lazy_build, otherwise the connection will be started too late...
+    my $socket = POE::Component::Client::MPD::Connection->spawn( {
+        host     => $self->host,
+        port     => $self->port,
+        password => $self->password,
+        id       => $self->alias,
+    } );
+    $self->_set_socket( $socket );
 }
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
+*spawn = \&new;
 1;
 __END__
 

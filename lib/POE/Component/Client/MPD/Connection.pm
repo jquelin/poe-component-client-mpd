@@ -106,6 +106,10 @@ be newline terminated.
 sub send {
     my ($h, $msg) = @_[HEAP, ARG0];
     # $_[HEAP]->{server} is a reserved slot of pococ-tcp.
+    # note: calls to $h->{server}->put can fail with "no such method
+    #       put". this happens when trying to send data over wires
+    #       before having received the Connected event
+    # FIXME: really implement some offline mode
     $h->{server}->put( @{ $msg->_commands } );
     push @{ $h->{fifo} }, $msg;
 }

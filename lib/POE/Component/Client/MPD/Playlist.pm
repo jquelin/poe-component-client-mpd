@@ -28,7 +28,7 @@ sub _do_as_items {
 
     $msg->_set_commands ( [ 'playlistinfo' ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -45,7 +45,7 @@ sub _do_items_changed_since {
 
     $msg->_set_commands ( [ "plchanges $plid" ] );
     $msg->_set_cooking  ( 'as_items' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -71,7 +71,7 @@ sub _do_add {
     );
     $msg->_set_commands ( \@commands );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -93,7 +93,7 @@ sub _do_delete {
     );
     $msg->_set_commands ( \@commands );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -116,7 +116,7 @@ sub _do_deleteid {
     );
     $msg->_set_commands ( \@commands );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -131,7 +131,7 @@ sub _do_clear {
 
     $msg->_set_commands ( [ 'clear' ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -147,7 +147,7 @@ sub _do_crop {
     if ( not defined $msg->_data ) {
         # no status yet - fire an event
         $msg->_set_post( 'pl.crop' );
-        $h->{mpd}->_dispatch($h, 'status', $msg);
+        $self->mpd->_dispatch($h, 'status', $msg);
         return;
     }
 
@@ -162,7 +162,7 @@ sub _do_crop {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( \@commands );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -180,7 +180,7 @@ sub _do_shuffle {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ 'shuffle' ] );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -197,7 +197,7 @@ sub _do_swap {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ "swap $from $to" ] );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -214,7 +214,7 @@ sub _do_swapid {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ "swapid $from $to" ] );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -230,7 +230,7 @@ sub _do_move {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ "move $song $pos" ] );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -246,7 +246,7 @@ sub _do_moveid {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ "moveid $songid $pos" ] );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -265,7 +265,7 @@ sub _do_load {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ qq{load "$playlist"} ] );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -282,7 +282,7 @@ sub _do_save {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ qq{save "$playlist"} ] );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
@@ -298,7 +298,7 @@ sub _do_rm {
 
     $msg->_set_cooking  ( 'raw' );
     $msg->_set_commands ( [ qq{rm "$playlist"} ] );
-    $k->post( $h->{socket}, 'send', $msg );
+    $k->post( $h->_socket, 'send', $msg );
 }
 
 
