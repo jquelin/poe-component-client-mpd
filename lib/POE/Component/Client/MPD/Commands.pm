@@ -43,7 +43,7 @@ sub _do_kill {
 
     $msg->_set_commands ( [ 'kill' ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
     $k->delay_set('disconnect'=>1);
 }
 
@@ -62,7 +62,7 @@ sub _do_updatedb {
 
     $msg->_set_commands( [ qq{update "$path"} ] );
     $msg->_set_cooking ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -77,7 +77,7 @@ sub _do_urlhandlers {
 
     $msg->_set_commands ( [ 'urlhandlers' ] );
     $msg->_set_cooking  ( 'strip_first' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -114,7 +114,7 @@ sub _do_volume {
 
     $msg->_set_commands ( [ "setvol $volume" ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -131,7 +131,7 @@ sub _do_output_enable {
 
     $msg->_set_commands ( [ "enableoutput $output" ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -147,7 +147,7 @@ sub _do_output_disable {
 
     $msg->_set_commands ( [ "disableoutput $output" ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -167,7 +167,7 @@ sub _do_stats {
     $msg->_set_commands ( [ 'stats' ] );
     $msg->_set_cooking  ( 'as_kv' );
     $msg->_set_transform( 'as_stats' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -184,7 +184,7 @@ sub _do_status {
     $msg->_set_commands ( [ 'status' ] );
     $msg->_set_cooking  ( 'as_kv' );
     $msg->_set_transform( 'as_status' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -201,7 +201,7 @@ sub _do_current {
     $msg->_set_commands ( [ 'currentsong' ] );
     $msg->_set_cooking  ( 'as_items' );
     $msg->_set_transform( 'as_scalar' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -219,7 +219,7 @@ sub _do_song {
     $msg->_set_commands ( [ defined $song ? "playlistinfo $song" : 'currentsong' ] );
     $msg->_set_cooking  ( 'as_items' );
     $msg->_set_transform( 'as_scalar' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -237,7 +237,7 @@ sub _do_songid {
     $msg->_set_commands ( [ defined $song ? "playlistid $song" : 'currentsong' ] );
     $msg->_set_cooking  ( 'as_items' );
     $msg->_set_transform( 'as_scalar' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -270,7 +270,7 @@ sub _do_repeat {
 
     $msg->_set_cooking ( 'raw' );
     $msg->_set_commands( [ "repeat $mode" ] );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -288,7 +288,7 @@ sub _do_fade {
 
     $msg->_set_commands ( [ "crossfade $seconds" ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -318,7 +318,7 @@ sub _do_random {
 
     $msg->_set_cooking ( 'raw' );
     $msg->_set_commands( [ "random $mode" ] );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -337,7 +337,7 @@ sub _do_play {
     my $number = $msg->params->[0] // ''; # FIXME: padre//
     $msg->_set_commands ( [ "play $number" ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -354,7 +354,7 @@ sub _do_playid {
     my $number = $msg->params->[0] // ''; # FIXME: padre//
     $msg->_set_commands ( [ "playid $number" ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -373,7 +373,7 @@ sub _do_pause {
     my $state = $msg->params->[0] // '';  # FIXME: padre//
     $msg->_set_commands ( [ "pause $state" ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -388,7 +388,7 @@ sub _do_stop {
 
     $msg->_set_commands ( [ 'stop' ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -403,7 +403,7 @@ sub _do_next {
 
     $msg->_set_commands ( [ 'next' ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -418,7 +418,7 @@ sub _do_prev {
 
     $msg->_set_commands ( [ 'previous' ] );
     $msg->_set_cooking  ( 'raw' );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -448,7 +448,7 @@ sub _do_seek {
 
     $msg->_set_cooking ( 'raw' );
     $msg->_set_commands( [ "seek $song $time" ] );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 
@@ -478,7 +478,7 @@ sub _do_seekid {
 
     $msg->_set_cooking ( 'raw' );
     $msg->_set_commands( [ "seekid $songid $time" ] );
-    $k->post( $h->_socket, 'send', $msg );
+    $self->mpd->_send_to_mpd( $msg );
 }
 
 no Moose;

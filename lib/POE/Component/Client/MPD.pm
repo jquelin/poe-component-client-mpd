@@ -138,6 +138,19 @@ sub _dispatch {
 }
 
 
+#
+# $mpd->_send_to_mpd( $msg );
+#
+# send $msg to mpd using pococm.
+#
+sub _send_to_mpd {
+    my ($self, $msg) = @_;
+    $K->post( $self->_socket => send => $msg );
+}
+
+
+
+
 # -- public events.
 
 =event MPD-related events
