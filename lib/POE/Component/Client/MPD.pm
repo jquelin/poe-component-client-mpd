@@ -77,15 +77,6 @@ has _socket        => ( rw, isa=>Str );
 
 # -- builder & initializers
 
-=method my $id = POE::Component::Client::MPD->spawn( \%params );
-
-This method will create a POE session responsible for communicating with
-mpd. It will return the poe id of the session newly created. You can
-tune it by passing some arguments as a hash reference. See the
-attributes for allowed values.
-
-=cut
-
 #
 # my ($passwd, $host, $port) = _parse_env_var();
 #
@@ -107,6 +98,23 @@ sub _build_password { return $ENV{MPD_PASSWORD} || ( _parse_env_var() )[0] || ''
 sub _build__collection { POE::Component::Client::MPD::Collection->new(mpd=>$_[0]); }
 sub _build__commands   { POE::Component::Client::MPD::Commands  ->new(mpd=>$_[0]); }
 sub _build__playlist   { POE::Component::Client::MPD::Playlist  ->new(mpd=>$_[0]); }
+
+
+# -- public methods
+
+=method my $id = POE::Component::Client::MPD->spawn( \%params );
+
+This method will create a POE session responsible for communicating with
+mpd. It will return the poe id of the session newly created. You can
+tune it by passing some arguments as a hash reference. See the
+attributes for allowed values.
+
+=cut
+
+sub spawn {
+    my $self = shift->new(@_);
+    return $self->{session_id};
+}
 
 
 
@@ -373,7 +381,6 @@ sub START {
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
-*spawn = \&new;
 1;
 __END__
 
