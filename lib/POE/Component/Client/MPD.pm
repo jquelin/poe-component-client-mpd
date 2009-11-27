@@ -25,6 +25,8 @@ use POE::Component::Client::MPD::Playlist;
 Readonly my $K => $poe_kernel;
 
 
+# -- attributes
+
 =attr host
 
 The hostname where MPD is running. Defaults to environment var
@@ -43,12 +45,17 @@ The password to access special MPD functions. Defaults to environment
 var C<MPD_PASSWORD>, then to parsed C<MPD_HOST> (cf above), then to
 empty string.
 
-=attr conntype
+=attr alias
 
-Change how the connection to mpd server is handled. It should be of a
-C<CONNTYPE> type (cf L<Audio::MPD::Types>). Use either the C<reuse>
-string to reuse the same connection or C<once> to open a new connection
-per command (default).
+A string to alias the newly created POE session.
+
+=attr status_msgs_to
+
+A session (name or id) to whom to send connection status to. Optional,
+although recommended. No default. When this is done, pococm will send
+*additional* events to the session, such as: C<mpd_connected> when
+pococm is connected, C<mpd_disconnected> when pococm is disconnected,
+etc. You thus need to register some handlers for those events.
 
 =cut
 
@@ -66,6 +73,18 @@ has _playlist   => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Playlist
 
 has _socket    => ( rw, isa=>Str );
 
+
+
+# -- builder & initializers
+
+=method my $id = POE::Component::Client::MPD->spawn( \%params );
+
+This method will create a POE session responsible for communicating with
+mpd. It will return the poe id of the session newly created. You can
+tune it by passing some arguments as a hash reference. See the
+attributes for allowed values.
+
+=cut
 
 #
 # my ($passwd, $host, $port) = _parse_env_var();
@@ -386,7 +405,7 @@ __END__
     } );
 
     # ... later on ...
-    $_[KERNEL]->post( 'mpd', 'next' );
+    $_[KERNEL]->post( mpd => 'next' );
 
 
 
@@ -398,56 +417,6 @@ connection to the MPD server is established as soon as a new POCOCM
 object is created.
 
 Commands are then sent to the server as messages are passed.
-
-
-
-=head1 PUBLIC PACKAGE METHODS
-
-
-=head2 my $id = POCOCM->spawn( \%params )
-
-This method will create a POE session responsible for communicating with mpd.
-It will return the poe id of the session newly created.
-
-You can tune the pococm by passing some arguments as a hash reference, where
-the hash keys are:
-
-
-=over 4
-
-=item * host
-
-The hostname of the mpd server. If none given, defaults to C<MPD_HOST>
-environment variable. If this var isn't set, defaults to C<localhost>.
-
-
-=item * port
-
-The port of the mpd server. If none given, defaults to C<MPD_PORT>
-environment variable. If this var isn't set, defaults to C<6600>.
-
-
-=item * password
-
-The password to sent to mpd to authenticate the client. If none given, defaults
-to C<MPD_PASSWORD> environment variable. If this var isn't set, defaults to C<>.
-
-
-=item * alias
-
-An optional string to alias the newly created POE session.
-
-
-=item * status_msgs_to
-
-A session (name or id) to whom to send connection status to. Optional,
-although recommended. No default. When this is done, pococm will send
-*additional* events to the session, such as: C<mpd_connected> when
-pococm is connected, C<mpd_disconnected> when pococm is disconnected,
-etc. You thus need to register some handlers for those events.
-
-
-=back
 
 
 
