@@ -1,24 +1,14 @@
 Revision history for POE-Component-Client-MPD
 
-High-level changelog
-====================
+{{$NEXT}}
 
-0.9.x  api + internals simplification
-0.8.x  new design with 3 public sessions
-0.7.x  using common classes in audio::mpd::common
-0.6.x  pococm-coll implementation
-0.5.x  pococm-playlist implementation
-0.4.x  pre-events, data transform, more pococm-commands implemented
-0.3.x  post-events, helper classes, more pococm-commands implemented
-0.2.x  pococm-commands
-0.1.x  pococm-conn cleaning + features, pococm-message
-0.0.x  imported stuff from audio::mpd + porting to poe
-
-
-Low-level changelog
-===================
-
+1.093320  2009-11-28 10:30:47 Europe/Paris
+ - pococm is now stable, moving to 1.yydddn version scheme
+ - moosified pococm
+ - warning: if no alias specified, pococm will use 'mpd' alias
  - using Test::Corpus::Audio::MPD for tests
+
+**
 
 0.9.6 Sun Nov  8 09:50:18 CET 2009
  - skipping test compile
