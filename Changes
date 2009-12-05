@@ -2,6 +2,9 @@ Revision history for POE-Component-Client-MPD
 
 {{$NEXT}}
 
+1.093390  2009-12-05 20:21:01 Europe/Paris
+ - fix #52457 - missing test dependency (test::corpus::audio::mpd)
+
 1.093320  2009-11-28 10:30:47 Europe/Paris
  - pococm is now stable, moving to 1.yydddn version scheme
  - moosified pococm
