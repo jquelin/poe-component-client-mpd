@@ -197,7 +197,7 @@ event _default => sub {
 
     # check if event is handled.
     my @events_commands = qw{
-        version kill updatedb urlhandlers
+        password version kill updatedb urlhandlers
         volume output_enable output_disable
         stats status current song songid
         repeat fade random
@@ -282,7 +282,7 @@ event mpd_connected => sub {
 
     return unless $self->has_peer;
     $K->post($self->status_msgs_to, 'mpd_connected');
-    # FIXME: send password information to mpd
+    $K->yield(password => $self->password) if $self->password;
     # FIXME: send status information to peer
 };
 

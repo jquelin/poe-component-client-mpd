@@ -38,6 +38,22 @@ sub _do_version {
 }
 
 
+=ev_mpd_ctrl password( $password )
+
+Sends a connection password to mpd. Used internally on connect, but can
+be called whenever if you're feeling like it.
+
+=cut
+
+sub _do_password {
+    my ($self, $msg) = @_;
+    my $pw = $msg->params->[0];
+    $msg->_set_commands( [ qq{password $pw} ] );
+    $msg->_set_cooking ( 'raw' );
+    $self->mpd->_send_to_mpd( $msg );
+}
+
+
 =ev_mpd_ctrl kill( )
 
 Kill the mpd server, and request the pococm to be shutdown.
