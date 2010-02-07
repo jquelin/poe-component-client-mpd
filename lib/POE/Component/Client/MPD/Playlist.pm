@@ -124,7 +124,7 @@ sub _do_deleteid {
 }
 
 
-=ev_play_addrm clear( )
+=ev_play_addrm pl.clear( )
 
 Remove all the songs from the current playlist.
 
@@ -139,7 +139,7 @@ sub _do_clear {
 }
 
 
-=ev_play_addrm crop( )
+=ev_play_addrm pl.crop( )
 
 Remove all of the songs from the current playlist *except* the current one.
 
