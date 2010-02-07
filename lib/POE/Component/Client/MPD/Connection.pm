@@ -105,13 +105,15 @@ be newline terminated.
 
 sub send {
     my ($h, $msg) = @_[HEAP, ARG0];
-    # $_[HEAP]->{server} is a reserved slot of pococ-tcp.
-    # note: calls to $h->{server}->put can fail with "no such method
-    #       put". this happens when trying to send data over wires
-    #       before having received the Connected event
-    # FIXME: really implement some offline mode
-    $h->{server}->put( @{ $msg->_commands } );
-    push @{ $h->{fifo} }, $msg;
+    # Test to see if we're currently connected to MPD...
+    if ($h->{connected}) {
+        # ... if we are, it's all good, so send messages ...
+        $h->{server}->put( @{ $msg->_commands } );
+        push @{ $h->{fifo} }, $msg;
+    } elsif ($h->{auto_reconnect} == 1) {
+        # ... and if not, retry the send in 2 seconds.
+        $k->delay_set(send => 2, $msg);
+    }
 }
 
 
