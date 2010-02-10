@@ -116,7 +116,7 @@ sub _check_bad_command {
     like($_[1], qr/unknown command "bad"/, 'unknown command');
 }
 sub _check_bad_password {
-    like($_[1], qr/unknown command "password"/, 'bad password');
+    like($_[1], qr/incorrect password/, 'bad password');
 }
 sub _check_good_password {
     is($_[1], undef, 'no error message');
