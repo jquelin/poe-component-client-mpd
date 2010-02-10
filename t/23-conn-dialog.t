@@ -90,11 +90,13 @@ use Test::More;
 # are we able to test module?
 eval 'use Test::Corpus::Audio::MPD';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
-plan tests => 29;
+plan tests => 33;
 
 # tests to be run
 My::Session->new( { tests => [
     [ 'bad command', 'raw',         'mpd_error', \&_check_bad_command      ],
+    [ 'password fail', 'raw',       'mpd_error', \&_check_bad_password     ],
+    [ 'password foobar', 'raw',     'mpd_data',  \&_check_good_password    ],
     [ 'status',      'raw',         'mpd_data',  \&_check_data_raw         ],
     [ 'lsinfo',      'as_items',    'mpd_data',  \&_check_data_as_items    ],
     [ 'stats',       'strip_first', 'mpd_data',  \&_check_data_strip_first ],
@@ -112,6 +114,12 @@ exit;
 # private subs
 sub _check_bad_command {
     like($_[1], qr/unknown command "bad"/, 'unknown command');
+}
+sub _check_bad_password {
+    like($_[1], qr/unknown command "password"/, 'bad password');
+}
+sub _check_good_password {
+    is($_[1], undef, 'no error message');
 }
 sub _check_data_as_items {
     is($_[1], undef, 'no error message');
