@@ -104,7 +104,7 @@ be newline terminated.
 =cut
 
 sub send {
-    my ($h, $msg) = @_[HEAP, ARG0];
+    my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
     # Test to see if we're currently connected to MPD...
     if ($h->{connected}) {
         # ... if we are, it's all good, so send messages ...
