@@ -256,18 +256,18 @@ event disconnect => sub {
 #
 # event: mpd_connect_error_retriable( $reason )
 # event: mpd_connect_error_fatal( $reason )
-event mpd_connect_error_retriable => \&_onprot_mpd_connect_error;
-event mpd_connect_error_fatal     => \&_onprot_mpd_connect_error;
+event mpd_connect_error_retriable => \&_mpd_connect_error;
+event mpd_connect_error_fatal     => \&_mpd_connect_error;
 
 # Called when pococm-conn could not connect to a mpd server. It can be
 # either retriable, or fatal. In bth case, we just need to forward the
 # error to our peer session.
 #
-sub _onprot_mpd_connect_error {
+sub _mpd_connect_error {
     my ($self, $reason) = @_[OBJECT, ARG0];
 
     return unless $self->has_peer;
-    $K->post($self->status_msgs_to, 'mpd_connect_error_fatal', $reason);
+    $K->post($self->status_msgs_to, 'mpd_connect_error', $reason);
 }
 
 
@@ -485,7 +485,7 @@ are fired to this peer by pococm:
 
 =over 4
 
-=item * mpd_connect_error_fatal( $reason )
+=item * mpd_connect_error( $reason )
 
 Called when pococm-conn could not connect to a mpd server. It can be
 either retriable, or fatal. Check C<$reason> for more information.
