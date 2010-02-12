@@ -2,6 +2,13 @@ Revision history for POE-Component-Client-MPD
 
 {{$NEXT}}
 
+1.100430  2010-02-12 11:04:43 Europe/Paris
+ - WARNING: no more makefile.pl supplied, only a build.pl
+ - support for mpd password (alex bramley)
+ - make pococm:conn:send() retry if not connected (alex bramley)
+ - auto-generated event mpd_connect_error_fatal renamed to mpd_connect_error
+ - doc update
+
 1.093390  2009-12-05 20:21:01 Europe/Paris
  - fix #52457 - missing test dependency (test::corpus::audio::mpd)
 
