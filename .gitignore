@@ -1,5 +1,0 @@
-# avoid utility files
-.build
-
-# avoid archives of this distribution
-POE-Component-Client-MPD-*

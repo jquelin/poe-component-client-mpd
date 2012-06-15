@@ -1,8 +1,19 @@
+#
+# This file is part of POE-Component-Client-MPD
+#
+# This software is copyright (c) 2007 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.010;
 use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Playlist;
+{
+  $POE::Component::Client::MPD::Playlist::VERSION = '1.121670';
+}
 # ABSTRACT: module handling playlist commands
 
 use Moose;
@@ -20,12 +31,6 @@ has mpd => ( ro, required, weak_ref, );# isa=>'POE::Component::Client::MPD' );
 
 # -- Playlist: retrieving information
 
-=ev_play_info pl.as_items( )
-
-Return an array of L<Audio::MPD::Common::Item::Song>s, one for each of
-the songs in the current playlist.
-
-=cut
 
 sub _do_as_items {
     my ($self, $msg) = @_;
@@ -36,12 +41,6 @@ sub _do_as_items {
 }
 
 
-=ev_play_info pl.items_changed_since( $plversion )
-
-Return a list with all the songs (as L<Audio::MPD::Common::Item::Song>
-objects) added to the playlist since playlist C<$plversion>.
-
-=cut
 
 sub _do_items_changed_since {
     my ($self, $msg) = @_;
@@ -56,12 +55,6 @@ sub _do_items_changed_since {
 # -- Playlist: adding / removing songs
 
 
-=ev_play_addrm pl.add( $path, $path, ... )
-
-Add the songs identified by C<$path> (relative to MPD's music directory)
-to the current playlist.
-
-=cut
 
 sub _do_add {
     my ($self, $msg) = @_;
@@ -79,11 +72,6 @@ sub _do_add {
 }
 
 
-=ev_play_addrm pl.delete( $number, $number, ... )
-
-Remove song C<$number> (starting from 0) from the current playlist.
-
-=cut
 
 sub _do_delete {
     my ($self, $msg) = @_;
@@ -101,12 +89,6 @@ sub _do_delete {
 }
 
 
-=ev_play_addrm pl.deleteid( $songid, $songid, ... )
-
-Remove the specified C<$songid> (as assigned by mpd when inserted in
-playlist) from the current playlist.
-
-=cut
 
 sub _do_deleteid {
     my ($self, $msg) = @_;
@@ -124,11 +106,6 @@ sub _do_deleteid {
 }
 
 
-=ev_play_addrm pl.clear( )
-
-Remove all the songs from the current playlist.
-
-=cut
 
 sub _do_clear {
     my ($self, $msg) = @_;
@@ -139,11 +116,6 @@ sub _do_clear {
 }
 
 
-=ev_play_addrm pl.crop( )
-
-Remove all of the songs from the current playlist *except* the current one.
-
-=cut
 
 sub _do_crop {
     my ($self, $msg) = @_;
@@ -173,11 +145,6 @@ sub _do_crop {
 # -- Playlist: changing playlist order
 
 
-=ev_play_order pl.shuffle( )
-
-Shuffle the current playlist.
-
-=cut
 
 sub _do_shuffle {
     my ($self, $msg) = @_;
@@ -188,12 +155,6 @@ sub _do_shuffle {
 }
 
 
-=ev_play_order pl.swap( $song1, $song2 )
-
-Swap positions of song number C<$song1> and C<$song2> in the current
-playlist.
-
-=cut
 
 sub _do_swap {
     my ($self, $msg) = @_;
@@ -205,12 +166,6 @@ sub _do_swap {
 }
 
 
-=ev_play_order pl.swapid( $songid1, $songid2 )
-
-Swap positions of song id C<$songid1> and C<$songid2> in the current
-playlist.
-
-=cut
 
 sub _do_swapid {
     my ($self, $msg) = @_;
@@ -222,11 +177,6 @@ sub _do_swapid {
 }
 
 
-=ev_play_order pl.move( $song, $newpos )
-
-Move song number C<$song> to the position C<$newpos>.
-
-=cut
 
 sub _do_move {
     my ($self, $msg) = @_;
@@ -238,11 +188,6 @@ sub _do_move {
 }
 
 
-=ev_play_order pl.moveid( $songid, $newpos )
-
-Move song id C<$songid> to the position C<$newpos>.
-
-=cut
 
 sub _do_moveid {
     my ($self, $msg) = @_;
@@ -257,11 +202,6 @@ sub _do_moveid {
 # -- Playlist: managing playlists
 
 
-=ev_play_mgmt pl.load( $playlist )
-
-Load list of songs from specified C<$playlist> file.
-
-=cut
 
 sub _do_load {
     my ($self, $msg) = @_;
@@ -273,12 +213,6 @@ sub _do_load {
 }
 
 
-=ev_play_mgmt pl.save( $playlist )
-
-Save the current playlist to a file called C<$playlist> in MPD's
-playlist directory.
-
-=cut
 
 sub _do_save {
     my ($self, $msg) = @_;
@@ -290,11 +224,6 @@ sub _do_save {
 }
 
 
-=ev_play_mgmt pl.rm( $playlist )
-
-Delete playlist named C<$playlist> from MPD's playlist directory.
-
-=cut
 
 sub _do_rm {
     my ($self, $msg) = @_;
@@ -309,7 +238,17 @@ sub _do_rm {
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
+
+
+=pod
+
+=head1 NAME
+
+POE::Component::Client::MPD::Playlist - module handling playlist commands
+
+=head1 VERSION
+
+version 1.121670
 
 =head1 DESCRIPTION
 
@@ -326,3 +265,95 @@ Read L<POCOCM|POE::Component::Client::MPD>'s pod to learn how to deal
 with answers from those commands.
 
 Following is a list of playlist-related events accepted by POCOCM.
+
+=head1 RETRIEVING INFORMATION
+
+=head2 pl.as_items( )
+
+Return an array of L<Audio::MPD::Common::Item::Song>s, one for each of
+the songs in the current playlist.
+
+=head2 pl.items_changed_since( $plversion )
+
+Return a list with all the songs (as L<Audio::MPD::Common::Item::Song>
+objects) added to the playlist since playlist C<$plversion>.
+
+=head1 ADDING / REMOVING SONGS
+
+=head2 pl.add( $path, $path, ... )
+
+Add the songs identified by C<$path> (relative to MPD's music directory)
+to the current playlist.
+
+=head2 pl.delete( $number, $number, ... )
+
+Remove song C<$number> (starting from 0) from the current playlist.
+
+=head2 pl.deleteid( $songid, $songid, ... )
+
+Remove the specified C<$songid> (as assigned by mpd when inserted in
+playlist) from the current playlist.
+
+=head2 pl.clear( )
+
+Remove all the songs from the current playlist.
+
+=head2 pl.crop( )
+
+Remove all of the songs from the current playlist *except* the current one.
+
+=head1 CHANGING PLAYLIST ORDER
+
+=head2 pl.shuffle( )
+
+Shuffle the current playlist.
+
+=head2 pl.swap( $song1, $song2 )
+
+Swap positions of song number C<$song1> and C<$song2> in the current
+playlist.
+
+=head2 pl.swapid( $songid1, $songid2 )
+
+Swap positions of song id C<$songid1> and C<$songid2> in the current
+playlist.
+
+=head2 pl.move( $song, $newpos )
+
+Move song number C<$song> to the position C<$newpos>.
+
+=head2 pl.moveid( $songid, $newpos )
+
+Move song id C<$songid> to the position C<$newpos>.
+
+=head1 MANAGING PLAYLISTS
+
+=head2 pl.load( $playlist )
+
+Load list of songs from specified C<$playlist> file.
+
+=head2 pl.save( $playlist )
+
+Save the current playlist to a file called C<$playlist> in MPD's
+playlist directory.
+
+=head2 pl.rm( $playlist )
+
+Delete playlist named C<$playlist> from MPD's playlist directory.
+
+=head1 AUTHOR
+
+Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2007 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
+

@@ -1,8 +1,19 @@
+#
+# This file is part of POE-Component-Client-MPD
+#
+# This software is copyright (c) 2007 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.010;
 use strict;
 use warnings;
 
 package POE::Component::Client::MPD;
+{
+  $POE::Component::Client::MPD::VERSION = '1.121670';
+}
 # ABSTRACT: full-blown poe-aware mpd client library
 
 use Audio::MPD::Common::Stats;
@@ -27,37 +38,6 @@ Readonly my $K => $poe_kernel;
 
 # -- attributes
 
-=attr host
-
-The hostname where MPD is running. Defaults to environment var
-C<MPD_HOST>, then to 'localhost'. Note that C<MPD_HOST> can be of
-the form C<password@host:port> (each of C<password@> or C<:port> can
-be omitted).
-
-=attr port
-
-The port that MPD server listens to. Defaults to environment var
-C<MPD_PORT>, then to parsed C<MPD_HOST> (cf above), then to 6600.
-
-=attr password
-
-The password to access special MPD functions. Defaults to environment
-var C<MPD_PASSWORD>, then to parsed C<MPD_HOST> (cf above), then to
-empty string.
-
-=attr alias
-
-A string to alias the newly created POE session. Defaults to C<mpd>.
-
-=attr status_msgs_to
-
-A session (name or id) to whom to send connection status to. Optional,
-although recommended. No default. When this is done, pococm will send
-*additional* events to the session, such as: C<mpd_connected> when
-pococm is connected, C<mpd_disconnected> when pococm is disconnected,
-etc. You thus need to register some handlers for those events.
-
-=cut
 
 has host           => ( ro, lazy_build, isa=>Str );
 has password       => ( ro, lazy_build );
@@ -102,14 +82,6 @@ sub _build__playlist   { POE::Component::Client::MPD::Playlist  ->new(mpd=>$_[0]
 
 # -- public methods
 
-=method my $id = POE::Component::Client::MPD->spawn( \%params );
-
-This method will create a POE session responsible for communicating with
-mpd. It will return the poe id of the session newly created. You can
-tune it by passing some arguments as a hash reference. See the
-attributes for allowed values.
-
-=cut
 
 sub spawn {
     my $self = shift->new(@_);
@@ -161,33 +133,6 @@ sub _send_to_mpd {
 
 # -- public events.
 
-=event MPD-related events
-
-The goal of a POCOCM session is to drive a remote MPD server. This can
-be achieved by a lot of events. Due to their sheer number, they have
-been regrouped logically in modules.
-
-However, note that to use those events, you need to send them to the
-POCOCM session that you created with C<spawn()> (see above). Indeed, the
-logical split is only internal: you are to use the same peer.
-
-
-For a list of public events that update and/or query MPD, see embedded
-pod in:
-
-=over 4
-
-=item * L<POE::Component::Client::MPD::Commands> for general commands
-
-=item * L<POE::Component::Client::MPD::Playlist> for playlist-related
-commands. Those events begin with C<pl.>.
-
-=item * L<POE::Component::Client::MPD::Collection> for collection-
-related commands. Those events begin with C<coll.>.
-
-=back
-
-=cut
 
 #
 # catch-all handler for pococm events that drive mpd.
@@ -237,12 +182,6 @@ event _default => sub {
 
 
 
-=event disconnect( )
-
-Request the POCOCM to be shutdown. Leave mpd running. Generally sent
-when one wants to exit her program.
-
-=cut
 
 event disconnect => sub {
     my $self = shift;
@@ -382,11 +321,17 @@ sub START {
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
-__END__
 
-=for Pod::Coverage::TrustPod
-    START
 
+=pod
+
+=head1 NAME
+
+POE::Component::Client::MPD - full-blown poe-aware mpd client library
+
+=head1 VERSION
+
+version 1.121670
 
 =head1 SYNOPSIS
 
@@ -402,8 +347,6 @@ __END__
     # ... later on ...
     $_[KERNEL]->post( mpd => 'next' );
 
-
-
 =head1 DESCRIPTION
 
 POCOCM gives a clear message-passing interface (sitting on top of POE)
@@ -413,19 +356,90 @@ object is created.
 
 Commands are then sent to the server as messages are passed.
 
+=head1 ATTRIBUTES
 
+=head2 host
+
+The hostname where MPD is running. Defaults to environment var
+C<MPD_HOST>, then to 'localhost'. Note that C<MPD_HOST> can be of
+the form C<password@host:port> (each of C<password@> or C<:port> can
+be omitted).
+
+=head2 port
+
+The port that MPD server listens to. Defaults to environment var
+C<MPD_PORT>, then to parsed C<MPD_HOST> (cf above), then to 6600.
+
+=head2 password
+
+The password to access special MPD functions. Defaults to environment
+var C<MPD_PASSWORD>, then to parsed C<MPD_HOST> (cf above), then to
+empty string.
+
+=head2 alias
+
+A string to alias the newly created POE session. Defaults to C<mpd>.
+
+=head2 status_msgs_to
+
+A session (name or id) to whom to send connection status to. Optional,
+although recommended. No default. When this is done, pococm will send
+*additional* events to the session, such as: C<mpd_connected> when
+pococm is connected, C<mpd_disconnected> when pococm is disconnected,
+etc. You thus need to register some handlers for those events.
+
+=head1 METHODS
+
+=head2 my $id = POE::Component::Client::MPD->spawn( \%params );
+
+This method will create a POE session responsible for communicating with
+mpd. It will return the poe id of the session newly created. You can
+tune it by passing some arguments as a hash reference. See the
+attributes for allowed values.
+
+=head1 PUBLIC EVENTS ACCEPTED
+
+=head2 MPD-related events
+
+The goal of a POCOCM session is to drive a remote MPD server. This can
+be achieved by a lot of events. Due to their sheer number, they have
+been regrouped logically in modules.
+
+However, note that to use those events, you need to send them to the
+POCOCM session that you created with C<spawn()> (see above). Indeed, the
+logical split is only internal: you are to use the same peer.
+
+For a list of public events that update and/or query MPD, see embedded
+pod in:
+
+=over 4
+
+=item * L<POE::Component::Client::MPD::Commands> for general commands
+
+=item * L<POE::Component::Client::MPD::Playlist> for playlist-related
+commands. Those events begin with C<pl.>.
+
+=item * L<POE::Component::Client::MPD::Collection> for collection-
+related commands. Those events begin with C<coll.>.
+
+=back
+
+=head2 disconnect( )
+
+Request the POCOCM to be shutdown. Leave mpd running. Generally sent
+when one wants to exit her program.
+
+=for Pod::Coverage::TrustPod START
 
 =head1 EVENTS FIRED
 
 A POCOCM session will fire events, either to answer an incoming event,
 or to inform about some changes regarding the remote MPD server.
 
-
 =head2 Answer events
 
 For each incoming event received by the POCOCM session, it will fire
 back one of the following answers:
-
 
 =over 4
 
@@ -436,7 +450,6 @@ L<POE::Component::Client::MPD::Message> object with the original
 request, to identify the issued command (see
 L<POE::Component::Client::MPD::Message> pod for more information). Its
 C<status()> attribute is true, further confirming success.
-
 
 C<$answer> is what has been answered by the MPD server. Depending on the
 command, it can be either:
@@ -460,7 +473,6 @@ command, it can be either:
 Refer to the documentation of each event to know what type of answer you
 can expect.
 
-
 =item * mpd_error( $msg, $errstr )
 
 Indicates a failure. C<$msg> is a
@@ -469,14 +481,10 @@ request, to identify the issued command (see
 L<POE::Component::Client::MPD::Message> pod for more information). Its
 C<status()> attribute is false, further confirming failure.
 
-
 C<$errstr> is what the error message as returned been answered by the
 MPD server.
 
-
 =back
-
-
 
 =head2 Auto-generated events
 
@@ -490,19 +498,15 @@ are fired to this peer by pococm:
 Called when pococm-conn could not connect to a mpd server. It can be
 either retriable, or fatal. Check C<$reason> for more information.
 
-
 =item * mpd_connected( )
 
 Called when pococm-conn made sure we're talking to a mpd server.
-
 
 =item * mpd_disconnected( )
 
 Called when pococm-conn has been disconnected from mpd server.
 
 =back
-
-
 
 =head1 SEE ALSO
 
@@ -540,3 +544,20 @@ L<http://annocpan.org/dist/POE-Component-Client-MPD>
 L<http://cpanratings.perl.org/d/POE-Component-Client-MPD>
 
 =back
+
+=head1 AUTHOR
+
+Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2007 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
+

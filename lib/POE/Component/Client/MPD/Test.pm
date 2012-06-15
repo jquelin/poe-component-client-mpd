@@ -1,8 +1,19 @@
+#
+# This file is part of POE-Component-Client-MPD
+#
+# This software is copyright (c) 2007 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.010;
 use strict;
 use warnings;
 
 package POE::Component::Client::MPD::Test;
+{
+  $POE::Component::Client::MPD::Test::VERSION = '1.121670';
+}
 # ABSTRACT: automate pococ-mpd testing
 
 use Moose 0.92;
@@ -15,31 +26,6 @@ use Readonly;
 
 Readonly my $K => $poe_kernel;
 
-=attr alias
-
-The session alias. Defaults to C<tester>.
-
-=attr tests
-
-The list (array ref) of tests to run. It is required in the constructor
-call. Each list item is an array reference with the following sub-items:
-
-=over 4
-
-=item * event - the event to send to the
-L<POE::Component::Client::MPD> session
-
-=item * args - event arguments (an array reference)
-
-=item * sleep - number of seconds to wait before calling next events
-
-=item * callback - a sub reference to check the results of current
-event. The real tests should be done in this sub. It will be called with
-the message received and the message payload.
-
-=back
-
-=cut
 
 has alias => ( ro, isa=>Str, default=>'tester' );
 has tests => (
@@ -70,11 +56,6 @@ sub START {
 
 # -- public events
 
-=event next_test( )
-
-Called to schedule the next test.
-
-=cut
 
 event next_test => sub {
     my $self = shift;
@@ -93,12 +74,6 @@ event next_test => sub {
 };
 
 
-=event mpd_result( $msg )
-
-Called when mpd talks back, with C<$msg> as a
-L<POE::Component::Client::MPD::Message> param.
-
-=cut
 
 event mpd_result => sub {
     my ($self, $msg, $results) = @_[OBJECT, ARG0, ARG1];
@@ -112,10 +87,17 @@ event mpd_result => sub {
 
 1;
 
-__END__
 
-=for Pod::Coverage::TrustPod
-    START
+
+=pod
+
+=head1 NAME
+
+POE::Component::Client::MPD::Test - automate pococ-mpd testing
+
+=head1 VERSION
+
+version 1.121670
 
 =head1 SYNOPSIS
 
@@ -125,7 +107,6 @@ __END__
         ...
     ] } );
     POE::Kernel->run;
-
 
 =head1 DESCRIPTION
 
@@ -143,3 +124,59 @@ call the check callback, and wait a bit... before starting again with
 the next event in the list.
 
 When all events have been sent, the session will shut down itself.
+
+=head1 ATTRIBUTES
+
+=head2 alias
+
+The session alias. Defaults to C<tester>.
+
+=head2 tests
+
+The list (array ref) of tests to run. It is required in the constructor
+call. Each list item is an array reference with the following sub-items:
+
+=over 4
+
+=item * event - the event to send to the
+L<POE::Component::Client::MPD> session
+
+=item * args - event arguments (an array reference)
+
+=item * sleep - number of seconds to wait before calling next events
+
+=item * callback - a sub reference to check the results of current
+event. The real tests should be done in this sub. It will be called with
+the message received and the message payload.
+
+=back
+
+=head1 PUBLIC EVENTS ACCEPTED
+
+=head2 next_test( )
+
+Called to schedule the next test.
+
+=head2 mpd_result( $msg )
+
+Called when mpd talks back, with C<$msg> as a
+L<POE::Component::Client::MPD::Message> param.
+
+=for Pod::Coverage::TrustPod START
+
+=head1 AUTHOR
+
+Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2007 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
+

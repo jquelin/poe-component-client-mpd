@@ -1,8 +1,19 @@
+#
+# This file is part of POE-Component-Client-MPD
+#
+# This software is copyright (c) 2007 by Jerome Quelin.
+#
+# This is free software; you can redistribute it and/or modify it under
+# the same terms as the Perl 5 programming language system itself.
+#
 use 5.008;
 use warnings;
 use strict;
 
 package POE::Component::Client::MPD::Types;
+{
+  $POE::Component::Client::MPD::Types::VERSION = '1.121670';
+}
 # ABSTRACT: types used in the distribution
 
 use Moose::Util::TypeConstraints;
@@ -14,7 +25,17 @@ enum Cooking   => qw{ raw as_items as_kv strip_first };
 enum Transform => qw{ as_scalar as_stats as_status };
 
 1;
-__END__
+
+
+=pod
+
+=head1 NAME
+
+POE::Component::Client::MPD::Types - types used in the distribution
+
+=head1 VERSION
+
+version 1.121670
 
 =head1 DESCRIPTION
 
@@ -40,7 +61,6 @@ Current types defined and exported:
 
 =back
 
-
 =item * C<Transform> - a simple enum to know what to do about the data,
 B<after> it has been cooked. Possible values are:
 
@@ -57,3 +77,20 @@ C<Audio::MPD::Common::Status>
 =back
 
 =back
+
+=head1 AUTHOR
+
+Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2007 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+__END__
+
