@@ -54,7 +54,7 @@ sub check_update  {
 sub check_urlhandlers {
     my ($msg, $handlers) = @_;
     check_success($msg);
-    is(scalar @$handlers, 1, 'no url handler supported by default');
+    ok( scalar @$handlers >= 1, 'at least one url handler supported' );
 }
 
 sub check_version {
