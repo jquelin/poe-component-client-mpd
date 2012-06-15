@@ -90,7 +90,7 @@ use Test::More;
 # are we able to test module?
 eval 'use Test::Corpus::Audio::MPD';
 plan skip_all => $@ if $@ =~ s/\n+BEGIN failed--compilation aborted.*//s;
-plan tests => 33;
+plan tests => 34;
 
 # tests to be run
 My::Session->new( { tests => [
