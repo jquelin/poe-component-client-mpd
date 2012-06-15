@@ -12,7 +12,7 @@ use Test::More;
 # are we able to test module?
 eval 'use Test::Corpus::Audio::MPD';
 plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
-plan tests => 8;
+plan tests => 9;
 
 # launch fake mpd
 POE::Component::Client::MPD->spawn;

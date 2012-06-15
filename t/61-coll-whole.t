@@ -71,6 +71,6 @@ sub check_all_titles {
 sub check_all_files {
     my ($msg, $items) = @_;
     check_success($msg);
-    is(scalar @$items, 4, 'all_files() return the pathes');
+    is(scalar @$items, 5, 'all_files() return the pathes');
     like($items->[0], qr/\.ogg$/, 'all_files() return strings');
 }
