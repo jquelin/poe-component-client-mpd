@@ -10,8 +10,8 @@ use Sub::Exporter -setup => { exports => [ qw{
     Cooking Transform
 } ] };
 
-enum Cooking   => qw{ raw as_items as_kv strip_first };
-enum Transform => qw{ as_scalar as_stats as_status };
+enum Cooking   => [qw{ raw as_items as_kv strip_first }];
+enum Transform => [qw{ as_scalar as_stats as_status }];
 
 1;
 __END__
