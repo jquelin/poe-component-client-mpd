@@ -1,6 +1,8 @@
 Revision history for POE-Component-Client-MPD
 
 {{$NEXT}}
+
+2.000     2014-06-11 15:26:59+02:00 Europe/Paris
  - adapt to new moose (rt#90686)
  - fix build failures (rt#93635)
 

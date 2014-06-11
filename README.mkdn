@@ -4,7 +4,7 @@ POE::Component::Client::MPD - full-blown poe-aware mpd client library
 
 # VERSION
 
-version 1.121671
+version 2.000
 
 # SYNOPSIS
 
