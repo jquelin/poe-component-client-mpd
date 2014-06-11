@@ -33,7 +33,7 @@ POE::Component::Client::MPD::Test->new( { tests => [
     [ 'pl.delete',          [1,2], 0, \&check_success ],
     [ 'status',                [], 0, \&check_del     ],
     [ 'status',                [], 0, \&get_nb        ],
-    [ 'pl.deleteid',          [0], 0, \&check_success ],
+    [ 'pl.deleteid',          [1], 0, \&check_success ],
     [ 'status',                [], 0, \&check_delid   ],
 
     # add

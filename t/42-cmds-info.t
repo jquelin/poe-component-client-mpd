@@ -40,7 +40,7 @@ POE::Component::Client::MPD::Test->new( { tests => [
     [ 'song',     [],      0, \&check_song_current ],
 
     # songid (use the same checkers as song)
-    [ 'songid',   [1],     0, \&check_song         ],
+    [ 'songid',   [2],     0, \&check_song         ],
     [ 'songid',   [],      0, \&check_song_current ],
 ] } );
 POE::Kernel->run;

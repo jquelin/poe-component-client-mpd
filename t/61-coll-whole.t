@@ -4,6 +4,7 @@ use 5.010;
 use strict;
 use warnings;
 
+use List::AllUtils qw{ any };
 use POE;
 use POE::Component::Client::MPD;
 use POE::Component::Client::MPD::Test;
@@ -56,7 +57,7 @@ sub check_all_artists {
     check_success($msg);
     # mpd 0.14 returns empty strings too
     is(scalar @$items, 2, 'all_artists() return the artists');
-    is($items->[0], 'dir1-artist', 'all_artists() return strings');
+    ok( any { $_ eq 'dir1-artist' } @$items, 'all_artists() return strings');
 }
 
 sub check_all_titles {
@@ -64,7 +65,7 @@ sub check_all_titles {
     check_success($msg);
     # mpd 0.14 returns empty strings too
     is(scalar @$items, 4, 'all_titles() return the titles');
-    like( $items->[0], qr/-title$/, 'all_titles() return strings');
+    ok( any { /-title$/ } @$items, 'all_titles() return strings');
 }
 
 

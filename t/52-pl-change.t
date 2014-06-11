@@ -30,15 +30,15 @@ POE::Component::Client::MPD::Test->new( { tests => [
     # test should come first to know the song id
     [ 'pl.clear',         [], 0, \&check_success ],
     [ 'pl.add',      \@songs, 0, \&check_success ],
-    [ 'pl.swapid',     [0,2], 0, \&check_success ],
+    [ 'pl.swapid',     [1,3], 0, \&check_success ],
     [ 'pl.as_items',      [], 0, \&check_2ndpos  ],
-    [ 'pl.swapid',     [0,2], 0, \&check_success ],
+    [ 'pl.swapid',     [1,3], 0, \&check_success ],
 
     # pl.moveid
     # test should come second to know the song id
-    [ 'pl.moveid',     [0,2], 0, \&check_success ],
+    [ 'pl.moveid',     [1,2], 0, \&check_success ],
     [ 'pl.as_items',      [], 0, \&check_2ndpos  ],
-    [ 'pl.moveid',     [0,0], 0, \&check_success ],
+    [ 'pl.moveid',     [1,0], 0, \&check_success ],
 
     # pl.swap
     [ 'pl.swap',       [0,2], 0, \&check_success ],
