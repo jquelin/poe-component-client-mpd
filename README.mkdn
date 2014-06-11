@@ -1,0 +1,201 @@
+# NAME
+
+POE::Component::Client::MPD - full-blown poe-aware mpd client library
+
+# VERSION
+
+version 1.121671
+
+# SYNOPSIS
+
+    use POE qw{ Component::Client::MPD };
+    POE::Component::Client::MPD->spawn( {
+        host           => 'localhost',
+        port           => 6600,
+        password       => 's3kr3t',  # mpd password
+        alias          => 'mpd',     # poe alias
+        status_msgs_to => 'myapp',   # session to send status info to
+    } );
+
+    # ... later on ...
+    $_[KERNEL]->post( mpd => 'next' );
+
+# DESCRIPTION
+
+POCOCM gives a clear message-passing interface (sitting on top of POE)
+for talking to and controlling MPD (Music Player Daemon) servers. A
+connection to the MPD server is established as soon as a new POCOCM
+object is created.
+
+Commands are then sent to the server as messages are passed.
+
+# ATTRIBUTES
+
+## host
+
+The hostname where MPD is running. Defaults to environment var
+`MPD_HOST`, then to 'localhost'. Note that `MPD_HOST` can be of
+the form `password@host:port` (each of `password@` or `:port` can
+be omitted).
+
+## port
+
+The port that MPD server listens to. Defaults to environment var
+`MPD_PORT`, then to parsed `MPD_HOST` (cf above), then to 6600.
+
+## password
+
+The password to access special MPD functions. Defaults to environment
+var `MPD_PASSWORD`, then to parsed `MPD_HOST` (cf above), then to
+empty string.
+
+## alias
+
+A string to alias the newly created POE session. Defaults to `mpd`.
+
+## status\_msgs\_to
+
+A session (name or id) to whom to send connection status to. Optional,
+although recommended. No default. When this is done, pococm will send
+\*additional\* events to the session, such as: `mpd_connected` when
+pococm is connected, `mpd_disconnected` when pococm is disconnected,
+etc. You thus need to register some handlers for those events.
+
+# METHODS
+
+## my $id = POE::Component::Client::MPD->spawn( \\%params );
+
+This method will create a POE session responsible for communicating with
+mpd. It will return the poe id of the session newly created. You can
+tune it by passing some arguments as a hash reference. See the
+attributes for allowed values.
+
+# PUBLIC EVENTS ACCEPTED
+
+## MPD-related events
+
+The goal of a POCOCM session is to drive a remote MPD server. This can
+be achieved by a lot of events. Due to their sheer number, they have
+been regrouped logically in modules.
+
+However, note that to use those events, you need to send them to the
+POCOCM session that you created with `spawn()` (see above). Indeed, the
+logical split is only internal: you are to use the same peer.
+
+For a list of public events that update and/or query MPD, see embedded
+pod in:
+
+- [POE::Component::Client::MPD::Commands](https://metacpan.org/pod/POE::Component::Client::MPD::Commands) for general commands
+- [POE::Component::Client::MPD::Playlist](https://metacpan.org/pod/POE::Component::Client::MPD::Playlist) for playlist-related
+commands. Those events begin with `pl.`.
+- [POE::Component::Client::MPD::Collection](https://metacpan.org/pod/POE::Component::Client::MPD::Collection) for collection-
+related commands. Those events begin with `coll.`.
+
+## disconnect( )
+
+Request the POCOCM to be shutdown. Leave mpd running. Generally sent
+when one wants to exit her program.
+
+# EVENTS FIRED
+
+A POCOCM session will fire events, either to answer an incoming event,
+or to inform about some changes regarding the remote MPD server.
+
+## Answer events
+
+For each incoming event received by the POCOCM session, it will fire
+back one of the following answers:
+
+- mpd\_result( $msg, $answer )
+
+    Indicates a success. `$msg` is a
+    [POE::Component::Client::MPD::Message](https://metacpan.org/pod/POE::Component::Client::MPD::Message) object with the original
+    request, to identify the issued command (see
+    [POE::Component::Client::MPD::Message](https://metacpan.org/pod/POE::Component::Client::MPD::Message) pod for more information). Its
+    `status()` attribute is true, further confirming success.
+
+    `$answer` is what has been answered by the MPD server. Depending on the
+    command, it can be either:
+
+    - `undef`: commands `play`, etc.
+    - an [Audio::MPD::Common::Stats](https://metacpan.org/pod/Audio::MPD::Common::Stats) object: command `stats`
+    - an [Audio::MPD::Common::Status](https://metacpan.org/pod/Audio::MPD::Common::Status) object: command `status`
+    - an [Audio::MPD::Common::Item](https://metacpan.org/pod/Audio::MPD::Common::Item) object: commands `song`, etc.
+    - an array reference: commands `coll.files`, etc.
+    - etc.
+
+    Refer to the documentation of each event to know what type of answer you
+    can expect.
+
+- mpd\_error( $msg, $errstr )
+
+    Indicates a failure. `$msg` is a
+    [POE::Component::Client::MPD::Message](https://metacpan.org/pod/POE::Component::Client::MPD::Message) object with the original
+    request, to identify the issued command (see
+    [POE::Component::Client::MPD::Message](https://metacpan.org/pod/POE::Component::Client::MPD::Message) pod for more information). Its
+    `status()` attribute is false, further confirming failure.
+
+    `$errstr` is what the error message as returned been answered by the
+    MPD server.
+
+## Auto-generated events
+
+If you supplied the `status_msgs_to` attribute, the following events
+are fired to this peer by pococm:
+
+- mpd\_connect\_error( $reason )
+
+    Called when pococm-conn could not connect to a mpd server. It can be
+    either retriable, or fatal. Check `$reason` for more information.
+
+- mpd\_connected( )
+
+    Called when pococm-conn made sure we're talking to a mpd server.
+
+- mpd\_disconnected( )
+
+    Called when pococm-conn has been disconnected from mpd server.
+
+# SEE ALSO
+
+You can find more information on the mpd project on its homepage at
+[http://www.musicpd.org](http://www.musicpd.org), or its wiki [http://mpd.wikia.com](http://mpd.wikia.com). You may
+want to have a look at [Audio::MPD](https://metacpan.org/pod/Audio::MPD), a non-[POE](https://metacpan.org/pod/POE) aware module to
+access MPD.
+
+You can look for information on this module at:
+
+- Search CPAN
+
+    [http://search.cpan.org/dist/POE-Component-Client-MPD](http://search.cpan.org/dist/POE-Component-Client-MPD)
+
+- See open / report bugs
+
+    [http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD](http://rt.cpan.org/NoAuth/Bugs.html?Dist=POE-Component-Client-MPD)
+
+- Mailing-list (same as [Audio::MPD](https://metacpan.org/pod/Audio::MPD))
+
+    [http://groups.google.com/group/audio-mpd](http://groups.google.com/group/audio-mpd)
+
+- Git repository
+
+    [http://github.com/jquelin/poe-component-client-mpd](http://github.com/jquelin/poe-component-client-mpd)
+
+- AnnoCPAN: Annotated CPAN documentation
+
+    [http://annocpan.org/dist/POE-Component-Client-MPD](http://annocpan.org/dist/POE-Component-Client-MPD)
+
+- CPAN Ratings
+
+    [http://cpanratings.perl.org/d/POE-Component-Client-MPD](http://cpanratings.perl.org/d/POE-Component-Client-MPD)
+
+# AUTHOR
+
+Jerome Quelin
+
+# COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2007 by Jerome Quelin.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
