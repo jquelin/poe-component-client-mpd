@@ -221,10 +221,12 @@ sub _ServerInput {
     }
 
     # table of dispatch: check input against regex, and process it.
-    given ($input) {
-        when ( /^OK$/ )      { _got_data_eot($k, $h);     }
-        when ( /^ACK (.*)/ ) { _got_error($k, $h, $1);    }
-        default              { _got_data($k, $h, $input); }
+    if ( $input =~ /^OK$/ ) {
+        _got_data_eot($k, $h);
+    } elsif ( $input =~ /^ACK (.*)/ ) {
+        _got_error($k, $h, $1);
+    } else {
+        _got_data($k, $h, $input);
     }
 }
 
@@ -242,44 +244,36 @@ sub _got_data {
     # regular data, to be cooked (if needed) and stored.
     my $msg = $h->{fifo}[0];
 
-    given ($msg->_cooking) {
-        when ('raw') {
-            # nothing to do, just push the data.
-            push @{ $h->{incoming} }, $input;
+    if ( $msg->_cooking eq "raw" ) {
+        # nothing to do, just push the data.
+        push @{ $h->{incoming} }, $input;
+    } elsif ( $msg->_cooking eq "as_items" ) {
+        # Lots of POCOCM methods are sending commands and then parse the
+        # output to build an amc-item.
+        my ($k,$v) = split /:\s+/, $input, 2;
+        $k = lc $k;
+        $k =~ s/-/_/;
+
+        if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
+            # build a new amc-item
+            my $item = Audio::MPD::Common::Item->new( $k => $v );
+            push @{ $h->{incoming} }, $item;
         }
 
-        when ('as_items') {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to build an amc-item.
-            my ($k,$v) = split /:\s+/, $input, 2;
-            $k = lc $k;
-            $k =~ s/-/_/;
-
-            if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
-                # build a new amc-item
-                my $item = Audio::MPD::Common::Item->new( $k => $v );
-                push @{ $h->{incoming} }, $item;
-            }
-
-            # just complete the current amc-item
-            $h->{incoming}[-1]->$k($v);
-        }
-
-        when ('as_kv') {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to get a list of key / value (with the colon ":" acting
-            # as separator).
-            my @data = split(/:\s+/, $input, 2);
-            push @{ $h->{incoming} }, @data;
-        }
-
-        when ('strip_first') {
-            # Lots of POCOCM methods are sending commands and then parse the
-            # output to remove the first field (with the colon ":" acting as
-            # separator).
-            $input = ( split(/:\s+/, $input, 2) )[1];
-            push @{ $h->{incoming} }, $input;
-        }
+        # just complete the current amc-item
+        $h->{incoming}[-1]->$k($v);
+    } elsif ( $msg->_cooking eq "as_kv" ) {
+        # Lots of POCOCM methods are sending commands and then parse the
+        # output to get a list of key / value (with the colon ":" acting
+        # as separator).
+        my @data = split(/:\s+/, $input, 2);
+        push @{ $h->{incoming} }, @data;
+    } elsif ( $msg->_cooking eq "strip_first" ) {
+        # Lots of POCOCM methods are sending commands and then parse the
+        # output to remove the first field (with the colon ":" acting as
+        # separator).
+        $input = ( split(/:\s+/, $input, 2) )[1];
+        push @{ $h->{incoming} }, $input;
     }
 }
 
