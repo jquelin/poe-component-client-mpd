@@ -1,6 +1,7 @@
 Revision history for POE-Component-Client-MPD
 
 {{$NEXT}}
+ - adapt to new moose (rt#90686)
 
 1.121670  2012-06-15 16:58:43 Europe/Paris
  - fix rt#76145 - multiple test failures
