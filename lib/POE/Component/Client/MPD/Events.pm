@@ -2,8 +2,8 @@ use 5.010;
 use strict;
 use warnings;
 
-package POE::Component::Client::MPD::Connection;
-# ABSTRACT: module handling the tcp connection with mpd
+package POE::Component::Client::MPD::Events;
+# ABSTRACT: module handling the tcp event connection with mpd
 
 use Audio::MPD::Common::Item;
 use POE;
@@ -11,7 +11,6 @@ use POE::Component::Client::TCP;
 use Readonly;
 
 use POE::Component::Client::MPD::Message; # for exported constants
-
 
 # -- attributes
 
@@ -59,7 +58,7 @@ sub spawn {
         RemotePort    => $args->{port},
         Filter        => 'POE::Filter::Line',
         Args          => [ $args ],
-        Alias         => '_mpd_conn',
+        Alias         => '_mpd_event',
 
         ServerError  => sub { }, # quiet errors
         Started      => \&_Started,
@@ -104,15 +103,15 @@ be newline terminated.
 =cut
 
 sub send {
-    my ($k, $h, $msg) = @_[KERNEL, HEAP, ARG0];
+    my ($k, $h) = @_[KERNEL, HEAP];
     # Test to see if we're currently connected to MPD...
     if ($h->{connected}) {
         # ... if we are, it's all good, so send messages ...
-        $h->{server}->put( @{ $msg->_commands } );
-        push @{ $h->{fifo} }, $msg;
+        #$h->{server}->put( @{ $msg->_commands } );
+        $h->{server}->put( 'idle' );
     } elsif ($h->{auto_reconnect} == 1) {
         # ... and if not, retry the send in 2 seconds.
-        $k->delay_set(send => 2, $msg);
+        $k->delay_set(send => 2);
     }
 }
 
@@ -147,11 +146,13 @@ sub _Started {
 # Called whenever the tcp connection is established.
 #
 sub _Connected {
-    my $h = $_[HEAP];
+    my ($k, $h) = @_[KERNEL, HEAP];
     $h->{fifo}         = [];                 # reset current messages
     $h->{incoming}     = [];                 # reset incoming data
     $h->{is_mpd}       = 0;                  # is remote server a mpd sever?
     $h->{retries_left} = $h->{max_retries};  # reset connection retries count
+
+    $k->yield('send');
 }
 
 
@@ -223,11 +224,16 @@ sub _ServerInput {
 
     # table of dispatch: check input against regex, and process it.
     if ( $input =~ /^OK$/ ) {
-        _got_data_eot($k, $h);
+        #_got_data_eot($k, $h);
     } elsif ( $input =~ /^ACK (.*)/ ) {
+        #$k->yield('send');
         _got_error($k, $h, $1);
-    } else {
-        _got_data($k, $h, $input);
+    } elsif ( $input =~ /^changed\: (.*)/ ) {
+	print "Events: got response: $1\n";
+        $k->post($h->{session}, 'mpd_event', $1);    # signal poe session
+        $k->yield('send');
+        #_got_data($k, $h, $input);
+        #$k->yield('send');
     }
 }
 
@@ -323,6 +329,7 @@ sub _got_first_input_line {
     if ( $input =~ /^OK MPD (.*)$/ ) {
         $h->{is_mpd} = 1;  # remote server *is* a mpd sever
         $k->post($h->{session}, 'mpd_connected', $1, $h->{purpose});
+        #$k->yield(send);
     } else {
         # oops, it appears that it's not a mpd server...
         $k->post(

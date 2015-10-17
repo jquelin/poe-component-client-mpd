@@ -20,11 +20,11 @@ use Readonly;
 use POE::Component::Client::MPD::Commands;
 use POE::Component::Client::MPD::Collection;
 use POE::Component::Client::MPD::Connection;
+use POE::Component::Client::MPD::Events;
 use POE::Component::Client::MPD::Message;
 use POE::Component::Client::MPD::Playlist;
 
 Readonly my $K => $poe_kernel;
-
 
 # -- attributes
 
@@ -73,6 +73,7 @@ has _commands      => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Comma
 has _playlist      => ( ro, lazy_build, isa=>'POE::Component::Client::MPD::Playlist'   );
 
 has _socket        => ( rw, isa=>Str );
+has _socket_events => ( rw, isa=>Str );
 
 
 
@@ -272,11 +273,11 @@ sub _mpd_connect_error {
 # Called when pococm-conn made sure we're talking to a mpd server.
 #
 event mpd_connected => sub {
-    my ($self, $version) = @_[OBJECT, ARG0];
+    my ($self, $version, $source) = @_[OBJECT, ARG0, ARG1];
     $self->set_version( $version );
 
     return unless $self->has_peer;
-    $K->post($self->status_msgs_to, 'mpd_connected');
+    $K->post($self->status_msgs_to, 'mpd_connected', $source);
     $K->yield(password => $self->password) if $self->password;
     # FIXME: send status information to peer
 };
@@ -289,9 +290,9 @@ event mpd_connected => sub {
 # Called when pococm-conn got disconnected by mpd.
 #
 event mpd_disconnected => sub {
-    my ($self, $version) = @_[OBJECT, ARG0];
+    my ($self, $source) = @_[OBJECT, ARG0];
     return unless $self->has_peer;
-    $K->post($self->status_msgs_to, 'mpd_disconnected');
+    $K->post($self->status_msgs_to, 'mpd_disconnected', $source);
 };
 
 
@@ -346,7 +347,10 @@ event mpd_error => sub {
     $K->post( $msg->_from, 'mpd_error', $msg, $errstr );
 };
 
-
+event mpd_event => sub {
+    my ($self, $type) = @_[OBJECT, ARG0];
+    $K->post($self->status_msgs_to, "mpd_event_$type");
+};
 
 # -- private events
 
@@ -367,8 +371,19 @@ sub START {
         port     => $self->port,
         password => $self->password,
         id       => $self->alias,
+	purpose  => 'commands',
     } );
     $self->_set_socket( $socket );
+
+    my $socket2 = POE::Component::Client::MPD::Events->spawn( {
+        host     => $self->host,
+        port     => $self->port,
+        password => $self->password,
+        id       => $self->alias,
+	purpose  => 'events',
+    } );
+    $self->_set_socket_events( $socket2 );
+
 }
 
 
