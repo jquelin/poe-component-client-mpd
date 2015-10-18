@@ -133,7 +133,7 @@ sub _Started {
     $h->{session}     = $args->{id};                # poe-session peer
     $h->{max_retries} = $args->{max_retries} // 5;  # max retries before giving up
     $h->{retry_wait}  = $args->{retry_wait}  // 2;  # sleep time before retry
-    $h->{purpose}     = $args->{purpose};           # source of events
+    $h->{function}    = $args->{function};          # source of events
 
     # setting session vars
     $h->{auto_reconnect} = 1;                   # on-disconnect policy
@@ -185,7 +185,7 @@ sub _ConnectError {
 
     # signal that there was a problem during connection
     my $error = $msg . "$syscall: ($errno) $errstr";
-    $k->post( $h->{session}, $event, $error, $h->{purpose} );
+    $k->post( $h->{session}, $event, $error, $h->{function} );
 }
 
 
@@ -198,7 +198,7 @@ sub _Disconnected {
     my ($k, $h) = @_[KERNEL, HEAP];
 
     # signal that we're disconnected
-    $k->post($h->{session}, 'mpd_disconnected', $h->{purpose});
+    $k->post($h->{session}, 'mpd_disconnected', $h->{function});
 
     # auto-reconnect in $retry_wait seconds
     return unless $h->{auto_reconnect};
@@ -322,12 +322,12 @@ sub _got_first_input_line {
 
     if ( $input =~ /^OK MPD (.*)$/ ) {
         $h->{is_mpd} = 1;  # remote server *is* a mpd sever
-        $k->post($h->{session}, 'mpd_connected', $1, $h->{purpose});
+        $k->post($h->{session}, 'mpd_connected', $1, $h->{function});
     } else {
         # oops, it appears that it's not a mpd server...
         $k->post(
             $h->{session}, 'mpd_connect_error_fatal',
-            "Not a mpd server - welcome string was: '$input'", $h->{purpose}
+            "Not a mpd server - welcome string was: '$input'", $h->{function}
         );
     }
 }
@@ -354,7 +354,7 @@ the helper class for L<POE::Component::Client::MPD>.
 The following events are fired from the spawned session.
 
 
-=head2 mpd_connected( $version )
+=head2 mpd_connected( $version, $function )
 
 Fired when the session is connected to a mpd server. This event isn't
 fired when the socket connection takes place, but when the session has
@@ -362,7 +362,7 @@ checked that remote peer is a real mpd server. C<$version> is the
 advertised mpd server version.
 
 
-=head2 mpd_connect_error_fatal( $errstr )
+=head2 mpd_connect_error_fatal( $errstr, $function )
 
 Fired when the session encounters a fatal error. This happens either
 when the session is connected to a server which happens to be something
@@ -371,7 +371,7 @@ C<spawn()> params) connection retries in a row. C<$errstr> will contain
 the problem encountered. No retries will be done.
 
 
-=head2 mpd_connect_error_retriable( $errstr )
+=head2 mpd_connect_error_retriable( $errstr, $function )
 
 Fired when the session has troubles connecting to the server. C<$errstr>
 will point the faulty syscall that failed. Re-connection will be tried
@@ -385,7 +385,7 @@ answered with success. The actual output should be looked up in
 C<$msg->_data>.
 
 
-=head2 mpd_disconnected( )
+=head2 mpd_disconnected( $function )
 
 Fired when the socket has been disconnected for whatever reason. Note
 that this event is B<not> fired in the case of a programmed shutdown

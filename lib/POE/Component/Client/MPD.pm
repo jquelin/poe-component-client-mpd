@@ -371,7 +371,7 @@ sub START {
         port     => $self->port,
         password => $self->password,
         id       => $self->alias,
-	purpose  => 'commands',
+        function => 'commands',
     } );
     $self->_set_socket( $socket );
 
@@ -380,7 +380,7 @@ sub START {
         port     => $self->port,
         password => $self->password,
         id       => $self->alias,
-	purpose  => 'events',
+        function => 'events',
     } );
     $self->_set_socket_events( $socket2 );
 
