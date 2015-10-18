@@ -224,83 +224,17 @@ sub _ServerInput {
 
     # table of dispatch: check input against regex, and process it.
     if ( $input =~ /^OK$/ ) {
-        #_got_data_eot($k, $h);
+        # do nothing
     } elsif ( $input =~ /^ACK (.*)/ ) {
-        #$k->yield('send');
         _got_error($k, $h, $1);
     } elsif ( $input =~ /^changed\: (.*)/ ) {
-	print "Events: got response: $1\n";
         $k->post($h->{session}, 'mpd_event', $1);    # signal poe session
         $k->yield('send');
-        #_got_data($k, $h, $input);
-        #$k->yield('send');
     }
 }
 
 
 # -- private subs
-
-#
-# _got_data($kernel, $heap, $input);
-#
-# called when receiving another piece of data.
-#
-sub _got_data {
-    my ($k, $h, $input) = @_;
-
-    # regular data, to be cooked (if needed) and stored.
-    my $msg = $h->{fifo}[0];
-
-    if ( $msg->_cooking eq "raw" ) {
-        # nothing to do, just push the data.
-        push @{ $h->{incoming} }, $input;
-    } elsif ( $msg->_cooking eq "as_items" ) {
-        # Lots of POCOCM methods are sending commands and then parse the
-        # output to build an amc-item.
-        my ($k,$v) = split /:\s+/, $input, 2;
-        $k = lc $k;
-        $k =~ s/-/_/;
-
-        if ( $k eq 'file' || $k eq 'directory' || $k eq 'playlist' ) {
-            # build a new amc-item
-            my $item = Audio::MPD::Common::Item->new( $k => $v );
-            push @{ $h->{incoming} }, $item;
-        }
-
-        # just complete the current amc-item
-        $h->{incoming}[-1]->$k($v);
-    } elsif ( $msg->_cooking eq "as_kv" ) {
-        # Lots of POCOCM methods are sending commands and then parse the
-        # output to get a list of key / value (with the colon ":" acting
-        # as separator).
-        my @data = split(/:\s+/, $input, 2);
-        push @{ $h->{incoming} }, @data;
-    } elsif ( $msg->_cooking eq "strip_first" ) {
-        # Lots of POCOCM methods are sending commands and then parse the
-        # output to remove the first field (with the colon ":" acting as
-        # separator).
-        $input = ( split(/:\s+/, $input, 2) )[1];
-        push @{ $h->{incoming} }, $input;
-    }
-}
-
-
-#
-# _got_data_eot($kernel, $heap)
-#
-# called when the stream of data is finished. used to send the received
-# data.
-#
-sub _got_data_eot {
-    my ($k, $h) = @_;
-    my $session = $h->{session};
-    my $msg     = shift @{ $h->{fifo} };     # remove completed msg
-    $msg->_set_data($h->{incoming});         # complete message with data
-    $msg->set_status(1);                     # success
-    $k->post($session, 'mpd_data', $msg);    # signal poe session
-    $h->{incoming} = [];                     # reset incoming data
-}
-
 
 #
 # _got_error($kernel, $heap, $errstr);
@@ -329,7 +263,6 @@ sub _got_first_input_line {
     if ( $input =~ /^OK MPD (.*)$/ ) {
         $h->{is_mpd} = 1;  # remote server *is* a mpd sever
         $k->post($h->{session}, 'mpd_connected', $1, $h->{purpose});
-        #$k->yield(send);
     } else {
         # oops, it appears that it's not a mpd server...
         $k->post(
