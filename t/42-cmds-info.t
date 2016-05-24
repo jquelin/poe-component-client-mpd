@@ -12,7 +12,7 @@ use Test::More;
 # are we able to test module?
 eval 'use Test::Corpus::Audio::MPD';
 plan skip_all => $@ if $@ =~ s/\n+Compilation failed.*//s;
-plan tests => 29;
+plan tests => 30;
 
 # launch fake mpd
 POE::Component::Client::MPD->spawn;
@@ -62,7 +62,8 @@ sub check_stats {
     is($stats->albums,          1, 'one album in the database');
     is($stats->songs,           5, '5 songs in the database');
     is($stats->playtime,        0, 'already played 0 seconds');
-    is($stats->db_playtime,    10, '10 seconds worth of music in the db');
+    cmp_ok($stats->db_playtime, '>=',  9, '>= 9 seconds worth of music in the db');
+    cmp_ok($stats->db_playtime, '<=', 10, '<= 10 seconds worth of music in the db');
     isnt($stats->uptime,    undef, 'uptime is defined');
     isnt($stats->db_update,     0, 'database has been updated');
 }
