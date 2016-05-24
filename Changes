@@ -1,6 +1,8 @@
 Revision history for POE-Component-Client-MPD
 
 {{$NEXT}}
+
+2.001     2016-05-24 15:12:09+02:00 Europe/Paris
  - fix rt#100301 - adapt test for mpd >= 0.19 (gregoa)
 
 2.000     2014-06-11 15:26:59+02:00 Europe/Paris
